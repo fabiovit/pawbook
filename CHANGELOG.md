@@ -1,6 +1,16 @@
 # Changelog
 
 
+## 0.4.1
+
+- Corretto l'errore `'bool' object has no attribute 'data'` durante
+  l'inserimento di peso, vaccini, visite, terapie, calori e genealogia
+  dal pannello.
+- Il resolver dei servizi ora ignora correttamente i metadati interni
+  del pannello e considera soltanto i coordinatori PawBook.
+
+
+
 ## 0.4.0
 
 - Aggiunto pannello PawBook nel menu laterale di Home Assistant.

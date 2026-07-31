@@ -24,6 +24,11 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     async def get_coordinator(call: ServiceCall) -> PawBookCoordinator:
         dog_id = call.data["dog_id"]
         for coordinator in hass.data[DOMAIN].values():
+            # The domain dictionary also contains panel metadata, such as
+            # ``panel_registered``. Only PawBook coordinators have pet data.
+            if not isinstance(coordinator, PawBookCoordinator):
+                continue
+
             profile = coordinator.data.profile
             if dog_id in (
                 coordinator.entry.entry_id,
