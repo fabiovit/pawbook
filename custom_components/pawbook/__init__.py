@@ -97,6 +97,31 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         c = await get_coordinator(call)
         await c.async_clear_genealogy()
 
+
+    async def update_record(call: ServiceCall) -> None:
+        c = await get_coordinator(call)
+        updates = dict(call.data)
+        updates.pop("dog_id", None)
+        category = updates.pop("category")
+        record_id = updates.pop("record_id")
+
+        for key in (
+            "date",
+            "administered_on",
+            "expires_on",
+            "starts_on",
+            "ends_on",
+        ):
+            if key in updates and updates[key] is not None:
+                updates[key] = updates[key].isoformat()
+
+        if "weight" in updates:
+            updates["weight"] = float(updates["weight"])
+
+        changed = await c.async_update_record(category, record_id, updates)
+        if not changed:
+            raise HomeAssistantError("Record non trovato oppure categoria non valida")
+
     async def delete_record(call: ServiceCall) -> None:
         c = await get_coordinator(call)
         changed = await c.async_delete_record(call.data["category"], call.data["record_id"])
@@ -165,6 +190,28 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         })),
         SERVICE_CLEAR_GENEALOGY: (clear_genealogy, vol.Schema({
             vol.Required("dog_id"): cv.string,
+        })),
+
+        SERVICE_UPDATE_RECORD: (update_record, vol.Schema({
+            vol.Required("dog_id"): cv.string,
+            vol.Required("category"): vol.In(
+                ["weights", "vaccinations", "visits", "treatments", "heat_cycles"]
+            ),
+            vol.Required("record_id"): cv.string,
+            vol.Optional("weight"): vol.Coerce(float),
+            vol.Optional("date"): cv.date,
+            vol.Optional("name"): cv.string,
+            vol.Optional("administered_on"): cv.date,
+            vol.Optional("expires_on"): cv.date,
+            vol.Optional("veterinarian"): cv.string,
+            vol.Optional("batch"): cv.string,
+            vol.Optional("reason"): cv.string,
+            vol.Optional("outcome"): cv.string,
+            vol.Optional("starts_on"): cv.date,
+            vol.Optional("ends_on"): cv.date,
+            vol.Optional("dosage"): cv.string,
+            vol.Optional("frequency"): cv.string,
+            vol.Optional("notes"): cv.string,
         })),
         SERVICE_DELETE_RECORD: (delete_record, vol.Schema({
             vol.Required("dog_id"): cv.string,

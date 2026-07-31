@@ -121,6 +121,25 @@ class PawBookCoordinator(DataUpdateCoordinator[PetBookData]):
         self.data.genealogy = {}
         await self._save()
 
+
+    async def async_update_record(
+        self,
+        category: str,
+        record_id: str,
+        updates: dict[str, Any],
+    ) -> bool:
+        allowed = {"weights", "vaccinations", "visits", "treatments", "heat_cycles"}
+        if category not in allowed:
+            return False
+
+        records = getattr(self.data, category)
+        for item in records:
+            if item.get("id") == record_id:
+                item.update({key: value for key, value in updates.items() if value is not None})
+                await self._save()
+                return True
+        return False
+
     async def async_delete_record(self, category: str, record_id: str) -> bool:
         allowed = {"weights", "vaccinations", "visits", "treatments", "heat_cycles"}
         if category not in allowed:

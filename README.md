@@ -146,3 +146,33 @@ Dal pannello è possibile:
 
 Non è necessario aggiungere risorse Lovelace o modificare `configuration.yaml`.
 Il pannello viene distribuito direttamente dall'integrazione.
+
+
+## Modifica ed eliminazione
+
+Nel pannello PawBook clicca su una registrazione di peso, vaccino, visita,
+terapia o calore per aprire il modulo di modifica già compilato.
+
+Dal modulo puoi:
+
+- correggere i dati;
+- salvare le modifiche;
+- eliminare definitivamente la registrazione dopo conferma.
+
+
+## Editor genealogico visuale
+
+La genealogia non richiede più l'inserimento manuale di JSON.
+
+Dal pannello PawBook premi **Modifica albero** e compila i campi dedicati per:
+
+- animale;
+- padre e madre;
+- nonni paterni;
+- nonni materni;
+- ROI/RSR;
+- microchip;
+- titoli;
+- informazioni sanitarie.
+
+I dati già salvati vengono mostrati automaticamente durante la modifica.

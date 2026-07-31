@@ -85,63 +85,58 @@ class PawBookPanel extends HTMLElement {
     window.dispatchEvent(new Event("location-changed"));
   }
 
-  showForm(kind) {
+  showForm(kind, record = null, category = null) {
     const book = this._books[this._selected];
     if (!book) return;
+    const editMode = Boolean(record && category);
 
     const forms = {
       weight: {
         title: "Registra peso",
         fields: [
-          ["weight", "number", "Peso (kg)", "", "0.1"],
-          ["date", "date", "Data", new Date().toISOString().slice(0, 10)],
-          ["notes", "textarea", "Note", ""],
+          ["weight", "number", "Peso (kg)", record?.weight ?? "", "0.1"],
+          ["date", "date", "Data", record?.date || new Date().toISOString().slice(0, 10)],
+          ["notes", "textarea", "Note", record?.notes || ""],
         ],
       },
       vaccination: {
         title: "Aggiungi vaccinazione",
         fields: [
-          ["name", "text", "Vaccino", ""],
-          ["administered_on", "date", "Somministrato il", new Date().toISOString().slice(0, 10)],
-          ["expires_on", "date", "Richiamo / scadenza", ""],
-          ["veterinarian", "text", "Veterinario", book.profile.veterinarian || ""],
-          ["batch", "text", "Lotto", ""],
-          ["notes", "textarea", "Note", ""],
+          ["name", "text", "Vaccino", record?.name || ""],
+          ["administered_on", "date", "Somministrato il", record?.administered_on || new Date().toISOString().slice(0, 10)],
+          ["expires_on", "date", "Richiamo / scadenza", record?.expires_on || ""],
+          ["veterinarian", "text", "Veterinario", record?.veterinarian || book.profile.veterinarian || ""],
+          ["batch", "text", "Lotto", record?.batch || ""],
+          ["notes", "textarea", "Note", record?.notes || ""],
         ],
       },
       visit: {
         title: "Aggiungi visita",
         fields: [
-          ["date", "date", "Data", new Date().toISOString().slice(0, 10)],
-          ["reason", "text", "Motivo", ""],
-          ["veterinarian", "text", "Veterinario", book.profile.veterinarian || ""],
-          ["outcome", "textarea", "Esito", ""],
-          ["notes", "textarea", "Note", ""],
+          ["date", "date", "Data", record?.date || new Date().toISOString().slice(0, 10)],
+          ["reason", "text", "Motivo", record?.reason || ""],
+          ["veterinarian", "text", "Veterinario", record?.veterinarian || book.profile.veterinarian || ""],
+          ["outcome", "textarea", "Esito", record?.outcome || ""],
+          ["notes", "textarea", "Note", record?.notes || ""],
         ],
       },
       treatment: {
         title: "Aggiungi terapia",
         fields: [
-          ["name", "text", "Farmaco o terapia", ""],
-          ["starts_on", "date", "Inizio", new Date().toISOString().slice(0, 10)],
-          ["ends_on", "date", "Fine", ""],
-          ["dosage", "text", "Dosaggio", ""],
-          ["frequency", "text", "Frequenza", ""],
-          ["notes", "textarea", "Note", ""],
+          ["name", "text", "Farmaco o terapia", record?.name || ""],
+          ["starts_on", "date", "Inizio", record?.starts_on || new Date().toISOString().slice(0, 10)],
+          ["ends_on", "date", "Fine", record?.ends_on || ""],
+          ["dosage", "text", "Dosaggio", record?.dosage || ""],
+          ["frequency", "text", "Frequenza", record?.frequency || ""],
+          ["notes", "textarea", "Note", record?.notes || ""],
         ],
       },
       heat: {
         title: "Aggiungi ciclo di calore",
         fields: [
-          ["starts_on", "date", "Inizio", new Date().toISOString().slice(0, 10)],
-          ["ends_on", "date", "Fine", ""],
-          ["notes", "textarea", "Note", ""],
-        ],
-      },
-      genealogy: {
-        title: "Importa genealogia",
-        fields: [
-          ["genealogy_json", "textarea", "JSON genealogia", JSON.stringify(book.genealogy || {}, null, 2)],
+          ["starts_on", "date", "Inizio", record?.starts_on || new Date().toISOString().slice(0, 10)],
+          ["ends_on", "date", "Fine", record?.ends_on || ""],
+          ["notes", "textarea", "Note", record?.notes || ""],
         ],
       },
     };
@@ -152,7 +147,7 @@ class PawBookPanel extends HTMLElement {
       <div class="modal">
         <div class="modal-card">
           <div class="modal-head">
-            <h2>${this.esc(spec.title)}</h2>
+            <h2>${this.esc(editMode ? `Modifica ${spec.title.replace("Aggiungi ", "").replace("Registra ", "")}` : spec.title)}</h2>
             <button class="icon-btn" data-close aria-label="Chiudi">✕</button>
           </div>
           <form id="entry-form">
@@ -166,6 +161,7 @@ class PawBookPanel extends HTMLElement {
               </label>
             `).join("")}
             <div class="modal-actions">
+              ${editMode ? `<button type="button" class="danger" id="delete-record">Elimina</button>` : ""}
               <button type="button" class="secondary" data-close>Annulla</button>
               <button type="submit">Salva</button>
             </div>
@@ -177,6 +173,23 @@ class PawBookPanel extends HTMLElement {
       button.addEventListener("click", () => { dialog.innerHTML = ""; })
     );
 
+    dialog.querySelector("#delete-record")?.addEventListener("click", async () => {
+      const confirmed = confirm("Eliminare definitivamente questa registrazione?");
+      if (!confirmed) return;
+
+      try {
+        await this._hass.callService("pawbook", "delete_record", {
+          dog_id: book.entry_id,
+          category,
+          record_id: record.id,
+        });
+        dialog.innerHTML = "";
+        await this.loadBooks();
+      } catch (err) {
+        alert(`Errore: ${err?.message || err}`);
+      }
+    });
+
     dialog.querySelector("#entry-form").addEventListener("submit", async (event) => {
       event.preventDefault();
       const button = event.submitter;
@@ -186,6 +199,10 @@ class PawBookPanel extends HTMLElement {
         if (data[key] === "") delete data[key];
       });
       data.dog_id = book.entry_id;
+      if (editMode) {
+        data.category = category;
+        data.record_id = record.id;
+      }
 
       const serviceMap = {
         weight: "add_weight",
@@ -198,7 +215,165 @@ class PawBookPanel extends HTMLElement {
 
       try {
         if (data.weight) data.weight = Number(data.weight);
-        await this._hass.callService("pawbook", serviceMap[kind], data);
+        await this._hass.callService(
+          "pawbook",
+          editMode ? "update_record" : serviceMap[kind],
+          data
+        );
+        dialog.innerHTML = "";
+        await this.loadBooks();
+      } catch (err) {
+        alert(`Errore: ${err?.message || err}`);
+        button.disabled = false;
+      }
+    });
+  }
+
+
+  genealogyValue(path, key) {
+    let node = this._books[this._selected]?.genealogy || {};
+    for (const part of path) {
+      node = node?.[part] || {};
+    }
+    return node?.[key] || "";
+  }
+
+  buildGenealogyFromForm(form) {
+    const data = Object.fromEntries(new FormData(form).entries());
+
+    const node = (prefix) => {
+      const item = {
+        name: data[`${prefix}_name`]?.trim() || "",
+        roi: data[`${prefix}_roi`]?.trim() || "",
+        microchip: data[`${prefix}_microchip`]?.trim() || "",
+        titles: data[`${prefix}_titles`]
+          ? data[`${prefix}_titles`].split(",").map((v) => v.trim()).filter(Boolean)
+          : [],
+        health: data[`${prefix}_health`]
+          ? data[`${prefix}_health`].split(",").map((v) => v.trim()).filter(Boolean)
+          : [],
+      };
+      return item;
+    };
+
+    const root = node("dog");
+    root.father = node("father");
+    root.mother = node("mother");
+
+    root.father.father = node("paternal_grandfather");
+    root.father.mother = node("paternal_grandmother");
+    root.mother.father = node("maternal_grandfather");
+    root.mother.mother = node("maternal_grandmother");
+
+    const clean = (item) => {
+      if (!item || typeof item !== "object") return {};
+      for (const key of ["father", "mother"]) {
+        if (item[key]) {
+          item[key] = clean(item[key]);
+          if (!item[key].name && !item[key].roi && !item[key].microchip) delete item[key];
+        }
+      }
+      if (!item.name && !item.roi && !item.microchip) return {};
+      if (!item.titles?.length) delete item.titles;
+      if (!item.health?.length) delete item.health;
+      return item;
+    };
+
+    return clean(root);
+  }
+
+  showGenealogyEditor() {
+    const book = this._books[this._selected];
+    if (!book) return;
+
+    const dialog = this.shadowRoot.querySelector("#dialog");
+    const field = (prefix, title, path = []) => `
+      <section class="ancestor-block">
+        <h3>${this.esc(title)}</h3>
+        <div class="ancestor-grid">
+          <label><span>Nome</span><input name="${prefix}_name" value="${this.esc(this.genealogyValue(path, "name"))}"></label>
+          <label><span>ROI/RSR</span><input name="${prefix}_roi" value="${this.esc(this.genealogyValue(path, "roi"))}"></label>
+          <label><span>Microchip</span><input name="${prefix}_microchip" value="${this.esc(this.genealogyValue(path, "microchip"))}"></label>
+          <label><span>Titoli</span><input name="${prefix}_titles" value="${this.esc((this.genealogyValue(path, "titles") || []).join(", "))}" placeholder="Separati da virgola"></label>
+          <label class="wide-field"><span>Dati sanitari</span><input name="${prefix}_health" value="${this.esc((this.genealogyValue(path, "health") || []).join(", "))}" placeholder="Separati da virgola"></label>
+        </div>
+      </section>`;
+
+    dialog.innerHTML = `
+      <div class="modal">
+        <div class="modal-card genealogy-modal">
+          <div class="modal-head">
+            <div>
+              <h2>Editor genealogico</h2>
+              <p class="muted">Inserisci manualmente i dati del pedigree ENCI. Nessun JSON richiesto.</p>
+            </div>
+            <button class="icon-btn" data-close aria-label="Chiudi">✕</button>
+          </div>
+
+          <form id="genealogy-form">
+            ${field("dog", "Animale", [])}
+
+            <div class="generation-title">Genitori</div>
+            <div class="generation-grid">
+              ${field("father", "Padre", ["father"])}
+              ${field("mother", "Madre", ["mother"])}
+            </div>
+
+            <div class="generation-title">Nonni paterni</div>
+            <div class="generation-grid">
+              ${field("paternal_grandfather", "Nonno paterno", ["father", "father"])}
+              ${field("paternal_grandmother", "Nonna paterna", ["father", "mother"])}
+            </div>
+
+            <div class="generation-title">Nonni materni</div>
+            <div class="generation-grid">
+              ${field("maternal_grandfather", "Nonno materno", ["mother", "father"])}
+              ${field("maternal_grandmother", "Nonna materna", ["mother", "mother"])}
+            </div>
+
+            <div class="modal-actions">
+              ${book.genealogy && Object.keys(book.genealogy).length
+                ? `<button type="button" class="danger" id="clear-genealogy">Cancella albero</button>`
+                : ""}
+              <button type="button" class="secondary" data-close>Annulla</button>
+              <button type="submit">Salva albero</button>
+            </div>
+          </form>
+        </div>
+      </div>`;
+
+    dialog.querySelectorAll("[data-close]").forEach((button) =>
+      button.addEventListener("click", () => { dialog.innerHTML = ""; })
+    );
+
+    dialog.querySelector("#clear-genealogy")?.addEventListener("click", async () => {
+      if (!confirm("Eliminare definitivamente l'intero albero genealogico?")) return;
+      try {
+        await this._hass.callService("pawbook", "clear_genealogy", { dog_id: book.entry_id });
+        dialog.innerHTML = "";
+        await this.loadBooks();
+      } catch (err) {
+        alert(`Errore: ${err?.message || err}`);
+      }
+    });
+
+    dialog.querySelector("#genealogy-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = event.submitter;
+      button.disabled = true;
+
+      const genealogy = this.buildGenealogyFromForm(event.target);
+      if (!genealogy.name) {
+        alert("Inserisci almeno il nome dell'animale.");
+        button.disabled = false;
+        return;
+      }
+
+      try {
+        await this._hass.callService("pawbook", "import_genealogy", {
+          dog_id: book.entry_id,
+          genealogy_json: JSON.stringify(genealogy),
+        });
         dialog.innerHTML = "";
         await this.loadBooks();
       } catch (err) {
@@ -250,6 +425,7 @@ class PawBookPanel extends HTMLElement {
         background: var(--primary-color); color: var(--text-primary-color, white);
         font: inherit; font-weight: 600; cursor: pointer;
       }
+      button.danger { background: var(--error-color); color: white; margin-right: auto; }
       button.secondary, .button.secondary {
         background: var(--secondary-background-color);
         color: var(--primary-text-color);
@@ -297,6 +473,9 @@ class PawBookPanel extends HTMLElement {
       .record:first-of-type { border-top:none; }
       .record strong { display:block; margin-bottom:4px; }
       .record small { color:var(--secondary-text-color); }
+      .record.editable { position:relative; cursor:pointer; padding-right:70px; }
+      .record.editable:hover { background:var(--secondary-background-color); border-radius:10px; padding-left:10px; }
+      .record-actions { position:absolute; right:8px; top:50%; transform:translateY(-50%); opacity:.65; }
       .empty { padding:18px 0; text-align:center; color:var(--secondary-text-color); }
       .wide { grid-column:1/-1; }
       .tree { overflow:auto; padding:10px 0; }
@@ -310,6 +489,23 @@ class PawBookPanel extends HTMLElement {
         position:fixed; inset:0; z-index:1000; display:grid; place-items:center;
         padding:20px; background:rgba(0,0,0,.58);
       }
+      .genealogy-modal { width:min(1100px,100%); }
+      .generation-title {
+        margin-top:8px; padding:10px 0 4px; font-weight:700;
+        color:var(--primary-color); border-bottom:1px solid var(--divider-color);
+      }
+      .generation-grid {
+        display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px;
+      }
+      .ancestor-block {
+        padding:14px; border:1px solid var(--divider-color);
+        border-radius:14px; background:var(--secondary-background-color);
+      }
+      .ancestor-block h3 { margin-bottom:12px; }
+      .ancestor-grid {
+        display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px;
+      }
+      .wide-field { grid-column:1/-1; }
       .modal-card {
         width:min(650px,100%); max-height:90vh; overflow:auto;
         padding:22px; border-radius:20px; background:var(--card-background-color);
@@ -341,6 +537,8 @@ class PawBookPanel extends HTMLElement {
         .stats { grid-template-columns:1fr 1fr; }
         .topbar { align-items:flex-start; }
         .tree-children { grid-template-columns:1fr; }
+        .generation-grid, .ancestor-grid { grid-template-columns:1fr; }
+        .wide-field { grid-column:auto; }
       }
     `;
 
@@ -436,40 +634,50 @@ class PawBookPanel extends HTMLElement {
           <article class="card">
             <div class="card-head"><h3>⚖️ Peso</h3><button class="small-btn" data-form="weight">Aggiungi</button></div>
             ${records(book.weights, (item) => `
-              <div class="record"><strong>${this.esc(item.weight)} kg</strong>
-              <small>${this.formatDate(item.date)}${item.notes ? ` · ${this.esc(item.notes)}` : ""}</small></div>`)}
+              <div class="record editable" data-edit-kind="weight" data-category="weights" data-record-id="${this.esc(item.id)}">
+              <strong>${this.esc(item.weight)} kg</strong>
+              <small>${this.formatDate(item.date)}${item.notes ? ` · ${this.esc(item.notes)}` : ""}</small>
+              <span class="record-actions">✏️ 🗑️</span></div>`)}
           </article>
 
           <article class="card">
             <div class="card-head"><h3>💉 Vaccinazioni</h3><button class="small-btn" data-form="vaccination">Aggiungi</button></div>
             ${records(book.vaccinations, (item) => `
-              <div class="record"><strong>${this.esc(item.name)}</strong>
+              <div class="record editable" data-edit-kind="vaccination" data-category="vaccinations" data-record-id="${this.esc(item.id)}">
+              <strong>${this.esc(item.name)}</strong>
               <small>${this.formatDate(item.administered_on)}
-              ${item.expires_on ? ` · richiamo ${this.formatDate(item.expires_on)}` : ""}</small></div>`)}
+              ${item.expires_on ? ` · richiamo ${this.formatDate(item.expires_on)}` : ""}</small>
+              <span class="record-actions">✏️ 🗑️</span></div>`)}
           </article>
 
           <article class="card">
             <div class="card-head"><h3>🩺 Visite</h3><button class="small-btn" data-form="visit">Aggiungi</button></div>
             ${records(book.visits, (item) => `
-              <div class="record"><strong>${this.esc(item.reason)}</strong>
-              <small>${this.formatDate(item.date)}${item.veterinarian ? ` · ${this.esc(item.veterinarian)}` : ""}</small></div>`)}
+              <div class="record editable" data-edit-kind="visit" data-category="visits" data-record-id="${this.esc(item.id)}">
+              <strong>${this.esc(item.reason)}</strong>
+              <small>${this.formatDate(item.date)}${item.veterinarian ? ` · ${this.esc(item.veterinarian)}` : ""}</small>
+              <span class="record-actions">✏️ 🗑️</span></div>`)}
           </article>
 
           <article class="card">
             <div class="card-head"><h3>💊 Terapie</h3><button class="small-btn" data-form="treatment">Aggiungi</button></div>
             ${records(book.treatments, (item) => `
-              <div class="record"><strong>${this.esc(item.name)}</strong>
+              <div class="record editable" data-edit-kind="treatment" data-category="treatments" data-record-id="${this.esc(item.id)}">
+              <strong>${this.esc(item.name)}</strong>
               <small>Dal ${this.formatDate(item.starts_on)}
               ${item.ends_on ? ` al ${this.formatDate(item.ends_on)}` : " · in corso"}
-              ${item.dosage ? ` · ${this.esc(item.dosage)}` : ""}</small></div>`)}
+              ${item.dosage ? ` · ${this.esc(item.dosage)}` : ""}</small>
+              <span class="record-actions">✏️ 🗑️</span></div>`)}
           </article>
 
           <article class="card">
             <div class="card-head"><h3>🔥 Calori</h3><button class="small-btn" data-form="heat">Aggiungi</button></div>
             ${records(book.heat_cycles, (item) => `
-              <div class="record"><strong>${this.formatDate(item.starts_on)}</strong>
+              <div class="record editable" data-edit-kind="heat" data-category="heat_cycles" data-record-id="${this.esc(item.id)}">
+              <strong>${this.formatDate(item.starts_on)}</strong>
               <small>${item.ends_on ? `Fine: ${this.formatDate(item.ends_on)}` : "In corso"}
-              ${item.notes ? ` · ${this.esc(item.notes)}` : ""}</small></div>`)}
+              ${item.notes ? ` · ${this.esc(item.notes)}` : ""}</small>
+              <span class="record-actions">✏️ 🗑️</span></div>`)}
           </article>
 
           <article class="card">
@@ -481,7 +689,7 @@ class PawBookPanel extends HTMLElement {
           </article>
 
           <article class="card wide">
-            <div class="card-head"><h3>🌳 Albero genealogico</h3><button class="small-btn" data-form="genealogy">Importa / modifica</button></div>
+            <div class="card-head"><h3>🌳 Albero genealogico</h3><button class="small-btn" id="edit-genealogy">Modifica albero</button></div>
             <div class="tree">
               ${book.genealogy && Object.keys(book.genealogy).length
                 ? this.renderGenealogyNode(book.genealogy)
@@ -498,8 +706,19 @@ class PawBookPanel extends HTMLElement {
     this.shadowRoot.querySelector("#open-enci")?.addEventListener("click", () => {
       window.open(p.enci_url || "https://www.enci.it/libro-genealogico/libro-genealogico-on-line", "_blank", "noopener");
     });
+    this.shadowRoot.querySelector("#edit-genealogy")?.addEventListener("click", () => {
+      this.showGenealogyEditor();
+    });
     this.shadowRoot.querySelectorAll("[data-form]").forEach((button) =>
       button.addEventListener("click", () => this.showForm(button.dataset.form))
+    );
+    this.shadowRoot.querySelectorAll("[data-edit-kind]").forEach((row) =>
+      row.addEventListener("click", () => {
+        const category = row.dataset.category;
+        const recordId = row.dataset.recordId;
+        const record = (book[category] || []).find((item) => item.id === recordId);
+        if (record) this.showForm(row.dataset.editKind, record, category);
+      })
     );
     this.shadowRoot.querySelectorAll("[data-pet]").forEach((button) =>
       button.addEventListener("click", () => {

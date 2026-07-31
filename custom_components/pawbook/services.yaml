@@ -261,3 +261,92 @@ clear_genealogy:
       required: true
       selector:
         text:
+
+
+update_record:
+  name: Modifica registrazione
+  description: Modifica una registrazione sanitaria esistente.
+  fields:
+    dog_id:
+      name: Animale
+      required: true
+      selector:
+        text:
+    category:
+      name: Categoria
+      required: true
+      selector:
+        select:
+          options:
+            - weights
+            - vaccinations
+            - visits
+            - treatments
+            - heat_cycles
+    record_id:
+      name: ID registrazione
+      required: true
+      selector:
+        text:
+    weight:
+      name: Peso
+      selector:
+        number:
+          min: 0.1
+          max: 150
+          step: 0.1
+          unit_of_measurement: kg
+    date:
+      name: Data
+      selector:
+        date:
+    name:
+      name: Nome
+      selector:
+        text:
+    administered_on:
+      name: Somministrato il
+      selector:
+        date:
+    expires_on:
+      name: Richiamo o scadenza
+      selector:
+        date:
+    veterinarian:
+      name: Veterinario
+      selector:
+        text:
+    batch:
+      name: Lotto
+      selector:
+        text:
+    reason:
+      name: Motivo
+      selector:
+        text:
+    outcome:
+      name: Esito
+      selector:
+        text:
+          multiline: true
+    starts_on:
+      name: Inizio
+      selector:
+        date:
+    ends_on:
+      name: Fine
+      selector:
+        date:
+    dosage:
+      name: Dosaggio
+      selector:
+        text:
+    frequency:
+      name: Frequenza
+      selector:
+        text:
+    notes:
+      name: Note
+      selector:
+        text:
+          multiline: true

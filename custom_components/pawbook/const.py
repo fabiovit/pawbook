@@ -34,3 +34,5 @@ SERVICE_SET_PROFILE = "set_profile"
 SERVICE_DELETE_RECORD = "delete_record"
 SERVICE_IMPORT_GENEALOGY = "import_genealogy"
 SERVICE_CLEAR_GENEALOGY = "clear_genealogy"
+
+SERVICE_UPDATE_RECORD = "update_record"

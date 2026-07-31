@@ -1,6 +1,29 @@
 # Changelog
 
 
+## 0.6.0
+
+- Rimosso il campo JSON dalla gestione genealogica.
+- Aggiunto editor genealogico visuale e guidato.
+- Inserimento separato di animale, genitori e quattro nonni.
+- Campi per nome, ROI/RSR, microchip, titoli e informazioni sanitarie.
+- Modifica dell'albero con dati già compilati.
+- Eliminazione completa dell'albero con conferma.
+- L'integrazione continua a salvare internamente la genealogia in formato strutturato.
+
+
+
+## 0.5.0
+
+- Aggiunta modifica dei record direttamente dal pannello.
+- Aggiunta eliminazione con conferma.
+- Supporto a peso, vaccini, visite, terapie e cicli di calore.
+- Nuova azione `pawbook.update_record`.
+- Le righe modificabili mostrano i comandi modifica/elimina.
+- I moduli di modifica vengono aperti con i valori già compilati.
+
+
+
 ## 0.4.1
 
 - Corretto l'errore `'bool' object has no attribute 'data'` durante
