@@ -1,5 +1,24 @@
 # Changelog
 
+## 0.6.3
+
+- Rinominato il Web Component del pannello per impedire il riuso della vecchia interfaccia in cache.
+- Rinominato il file JavaScript frontend con una versione univoca.
+- Resi visibili i pulsanti **Modifica** ed **Elimina** per peso, vaccini, visite, terapie e calori.
+- Conservata la migrazione automatica degli ID dei record esistenti.
+
+
+
+## 0.6.2
+
+- Aggiunta migrazione automatica dei record creati con le prime versioni.
+- I record privi di identificatore ricevono automaticamente un ID al riavvio.
+- Ripristinata la modifica e l'eliminazione di vecchi pesi, vaccini, visite,
+  terapie e cicli di calore.
+- Forzato nuovamente l'aggiornamento del pannello frontend.
+- Nessun dato sanitario esistente viene eliminato o riscritto.
+
+
 
 ## 0.6.1
 

@@ -27,7 +27,27 @@ class PawBookCoordinator(DataUpdateCoordinator[PetBookData]):
     async def async_initialize(self) -> None:
         stored = await self.store.async_load()
         profile = {**self.entry.data, **self.entry.options}
-        self.async_set_updated_data(PetBookData.from_dict(stored or {}, profile))
+        data = PetBookData.from_dict(stored or {}, profile)
+
+        # Records created by early PawBook versions did not always have an ID.
+        # Add one automatically so they can be edited and deleted from the panel.
+        migrated = False
+        for category in (
+            "weights",
+            "vaccinations",
+            "visits",
+            "treatments",
+            "heat_cycles",
+        ):
+            for item in getattr(data, category):
+                if not item.get("id"):
+                    item["id"] = new_id()
+                    migrated = True
+
+        self.async_set_updated_data(data)
+
+        if migrated:
+            await self.store.async_save(data.as_dict())
 
     async def _save(self) -> None:
         await self.store.async_save(self.data.as_dict())
