@@ -34,6 +34,7 @@ async def async_setup_entry(
         LastHeatSensor(coordinator),
         ActiveTreatmentsSensor(coordinator),
         HealthSummarySensor(coordinator),
+        GenealogySensor(coordinator),
     ])
 
 
@@ -218,4 +219,48 @@ class HealthSummarySensor(PawBookEntity, SensorEntity):
             "foto": profile.get("photo_url"),
             "numero_visite": len(self.coordinator.data.visits),
             "numero_vaccinazioni": len(self.coordinator.data.vaccinations),
+        }
+
+
+def _count_ancestors(node):
+    if not isinstance(node, dict):
+        return 0
+    count = 1 if node.get("name") else 0
+    count += _count_ancestors(node.get("father"))
+    count += _count_ancestors(node.get("mother"))
+    return count
+
+
+class GenealogySensor(PawBookEntity, SensorEntity):
+    _attr_name = "Genealogia"
+    _attr_icon = "mdi:family-tree"
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "genealogy")
+
+    @property
+    def native_value(self):
+        tree = self.coordinator.data.genealogy
+        if not tree:
+            return "non_importata"
+        return f"{_count_ancestors(tree)} soggetti"
+
+    @property
+    def extra_state_attributes(self):
+        tree = self.coordinator.data.genealogy
+        return {
+            "albero": tree,
+            "nome": tree.get("name") if isinstance(tree, dict) else None,
+            "padre": (
+                tree.get("father", {}).get("name")
+                if isinstance(tree.get("father"), dict)
+                else None
+            ) if isinstance(tree, dict) else None,
+            "madre": (
+                tree.get("mother", {}).get("name")
+                if isinstance(tree.get("mother"), dict)
+                else None
+            ) if isinstance(tree, dict) else None,
+            "soggetti_totali": _count_ancestors(tree),
+            "fonte": "ENCI/manuale",
         }

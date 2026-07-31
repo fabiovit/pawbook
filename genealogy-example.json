@@ -1,0 +1,33 @@
+{
+  "name": "NOME REGISTRATO ENCI",
+  "roi": "ROI 00/00000",
+  "microchip": "",
+  "breed": "",
+  "sex": "female",
+  "titles": [],
+  "health": [],
+  "father": {
+    "name": "PADRE",
+    "roi": "",
+    "father": {
+      "name": "NONNO PATERNO",
+      "roi": ""
+    },
+    "mother": {
+      "name": "NONNA PATERNA",
+      "roi": ""
+    }
+  },
+  "mother": {
+    "name": "MADRE",
+    "roi": "",
+    "father": {
+      "name": "NONNO MATERNO",
+      "roi": ""
+    },
+    "mother": {
+      "name": "NONNA MATERNA",
+      "roi": ""
+    }
+  }
+}

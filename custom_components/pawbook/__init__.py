@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+import json
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
@@ -72,6 +73,24 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         updates.pop("dog_id", None)
         await c.async_set_profile(updates)
 
+
+    async def import_genealogy(call: ServiceCall) -> None:
+        c = await get_coordinator(call)
+        raw = call.data["genealogy_json"]
+        try:
+            genealogy = json.loads(raw)
+        except json.JSONDecodeError as err:
+            raise HomeAssistantError(f"JSON genealogia non valido: {err}") from err
+
+        if not isinstance(genealogy, dict):
+            raise HomeAssistantError("La genealogia deve essere un oggetto JSON.")
+
+        await c.async_import_genealogy(genealogy)
+
+    async def clear_genealogy(call: ServiceCall) -> None:
+        c = await get_coordinator(call)
+        await c.async_clear_genealogy()
+
     async def delete_record(call: ServiceCall) -> None:
         c = await get_coordinator(call)
         changed = await c.async_delete_record(call.data["category"], call.data["record_id"])
@@ -132,6 +151,14 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
             vol.Optional("father"): cv.string,
             vol.Optional("mother"): cv.string,
             vol.Optional("breeder"): cv.string,
+        })),
+
+        SERVICE_IMPORT_GENEALOGY: (import_genealogy, vol.Schema({
+            vol.Required("dog_id"): cv.string,
+            vol.Required("genealogy_json"): cv.string,
+        })),
+        SERVICE_CLEAR_GENEALOGY: (clear_genealogy, vol.Schema({
+            vol.Required("dog_id"): cv.string,
         })),
         SERVICE_DELETE_RECORD: (delete_record, vol.Schema({
             vol.Required("dog_id"): cv.string,

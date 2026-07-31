@@ -49,3 +49,9 @@ cards:
       action: url
       url_path: >
         {{ state_attr('sensor.evie_stato_sanitario', 'enci_url') }}
+
+
+- type: custom:mushroom-entity-card
+  entity: sensor.evie_genealogia
+  name: Albero genealogico
+  icon: mdi:family-tree

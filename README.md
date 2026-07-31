@@ -65,3 +65,63 @@ data:
 ## License
 
 MIT
+
+
+## Genealogia ENCI
+
+PawBook può memorizzare un albero genealogico completo fino ai trisnonni.
+
+L'importazione avviene tramite l'azione:
+
+```yaml
+action: pawbook.import_genealogy
+data:
+  dog_id: Evie
+  genealogy_json: >
+    {
+      "name": "Nome registrato ENCI",
+      "roi": "ROI 00/00000",
+      "father": {
+        "name": "Padre",
+        "roi": "ROI 00/00001",
+        "father": {
+          "name": "Nonno paterno"
+        },
+        "mother": {
+          "name": "Nonna paterna"
+        }
+      },
+      "mother": {
+        "name": "Madre",
+        "roi": "ROI 00/00002",
+        "father": {
+          "name": "Nonno materno"
+        },
+        "mother": {
+          "name": "Nonna materna"
+        }
+      }
+    }
+```
+
+Ogni soggetto può contenere:
+
+- `name`
+- `roi`
+- `microchip`
+- `breed`
+- `sex`
+- `titles`
+- `health`
+- `father`
+- `mother`
+
+`father` e `mother` possono contenere a loro volta la stessa struttura, così
+l'albero può essere esteso fino a quattro generazioni o oltre.
+
+L'integrazione crea il sensore `Genealogia`, che espone l'intero albero
+nell'attributo `albero`.
+
+PawBook non accede automaticamente all'area riservata ENCI, non salva password
+e non effettua scraping. I dati devono essere copiati dal pedigree o inseriti
+manualmente finché non sarà disponibile un servizio ufficiale documentato.

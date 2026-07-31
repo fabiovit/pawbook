@@ -232,3 +232,32 @@ delete_record:
       required: true
       selector:
         text:
+
+
+import_genealogy:
+  name: Importa genealogia
+  description: Importa un albero genealogico da JSON, ad esempio ricavato manualmente dal pedigree ENCI.
+  fields:
+    dog_id:
+      name: Animale
+      description: Nome, microchip oppure ID della configurazione.
+      required: true
+      selector:
+        text:
+    genealogy_json:
+      name: Genealogia JSON
+      description: Incolla l'albero genealogico nel formato documentato da PawBook.
+      required: true
+      selector:
+        text:
+          multiline: true
+
+clear_genealogy:
+  name: Cancella genealogia
+  description: Elimina l'albero genealogico importato.
+  fields:
+    dog_id:
+      name: Animale
+      required: true
+      selector:
+        text:

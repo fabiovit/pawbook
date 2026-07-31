@@ -112,6 +112,15 @@ class PawBookCoordinator(DataUpdateCoordinator[PetBookData]):
         self.data.profile.update({k: v for k, v in updates.items() if v is not None})
         await self._save()
 
+
+    async def async_import_genealogy(self, genealogy: dict[str, Any]) -> None:
+        self.data.genealogy = genealogy
+        await self._save()
+
+    async def async_clear_genealogy(self) -> None:
+        self.data.genealogy = {}
+        await self._save()
+
     async def async_delete_record(self, category: str, record_id: str) -> bool:
         allowed = {"weights", "vaccinations", "visits", "treatments", "heat_cycles"}
         if category not in allowed:
