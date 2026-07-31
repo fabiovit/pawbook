@@ -11,6 +11,7 @@ from homeassistant.helpers import config_validation as cv
 
 from .const import *
 from .coordinator import PawBookCoordinator
+from .panel import async_setup_panel, async_unload_panel
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 
@@ -179,6 +180,7 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
 async def async_setup_entry(hass: HomeAssistant, entry: PawBookConfigEntry) -> bool:
     coordinator = PawBookCoordinator(hass, entry)
     await coordinator.async_initialize()
+    await async_setup_panel(hass)
     entry.runtime_data = coordinator
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
@@ -189,4 +191,10 @@ async def async_unload_entry(hass: HomeAssistant, entry: PawBookConfigEntry) -> 
     unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unloaded:
         hass.data[DOMAIN].pop(entry.entry_id, None)
+        remaining = [
+            key for key in hass.data.get(DOMAIN, {})
+            if key != "panel_registered"
+        ]
+        if not remaining:
+            async_unload_panel(hass)
     return unloaded

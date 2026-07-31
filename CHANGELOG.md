@@ -1,6 +1,20 @@
 # Changelog
 
 
+## 0.4.0
+
+- Aggiunto pannello PawBook nel menu laterale di Home Assistant.
+- Interfaccia dedicata e responsive.
+- Gestione di più animali dal pannello.
+- Inserimento diretto di peso, vaccini, visite, terapie e calori.
+- Scheda ENCI con collegamento ufficiale.
+- Visualizzazione grafica ricorsiva dell'albero genealogico.
+- Importazione/modifica della genealogia dal pannello.
+- Nuova WebSocket API locale `pawbook/get_books`.
+- Nessuna risorsa Lovelace o configurazione YAML richiesta.
+
+
+
 ## 0.3.0
 
 - Aggiunto archivio genealogico persistente.

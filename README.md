@@ -125,3 +125,24 @@ nell'attributo `albero`.
 PawBook non accede automaticamente all'area riservata ENCI, non salva password
 e non effettua scraping. I dati devono essere copiati dal pedigree o inseriti
 manualmente finché non sarà disponibile un servizio ufficiale documentato.
+
+
+## Pannello PawBook
+
+Dalla versione 0.4.0 PawBook aggiunge automaticamente una voce **PawBook**
+nel menu laterale di Home Assistant.
+
+Dal pannello è possibile:
+
+- consultare tutti gli animali configurati;
+- registrare peso;
+- aggiungere vaccinazioni;
+- registrare visite veterinarie;
+- aggiungere terapie;
+- registrare cicli di calore;
+- consultare i dati ENCI;
+- importare e visualizzare l'albero genealogico;
+- aprire la configurazione del profilo.
+
+Non è necessario aggiungere risorse Lovelace o modificare `configuration.yaml`.
+Il pannello viene distribuito direttamente dall'integrazione.
