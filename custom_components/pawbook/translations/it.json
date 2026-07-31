@@ -4,23 +4,50 @@
     "step": {
       "user": {
         "title": "Aggiungi un animale",
-        "description": "Crea il libretto sanitario locale e collega i dati genealogici ENCI.",
+        "description": "Crea il libretto sanitario locale. Le credenziali ENCI non vengono richieste né salvate.",
         "data": {
           "dog_name": "Nome",
           "birth_date": "Data di nascita",
           "sex": "Sesso",
           "breed": "Razza",
+          "color": "Colore",
           "microchip": "Microchip",
+          "veterinarian": "Veterinario",
+          "photo_url": "URL foto",
           "enci_name": "Nome registrato ENCI",
           "enci_registry": "Registro ENCI (ROI/RSR)",
           "pedigree_number": "Numero pedigree",
-          "enci_url": "Collegamento al Libro genealogico ENCI",
-          "photo_url": "URL della foto"
+          "breeder": "Allevatore",
+          "father": "Padre",
+          "mother": "Madre",
+          "enci_url": "Collegamento scheda/ricerca ENCI"
         }
       }
     },
     "abort": {
       "already_configured": "Questo animale è già configurato."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Modifica PawBook",
+        "description": "Aggiorna anagrafica, veterinario e informazioni genealogiche ENCI. Per sicurezza PawBook non salva le credenziali ENCI.",
+        "data": {
+          "breed": "Razza",
+          "color": "Colore",
+          "microchip": "Microchip",
+          "veterinarian": "Veterinario",
+          "photo_url": "URL foto",
+          "enci_name": "Nome registrato ENCI",
+          "enci_registry": "Registro ENCI (ROI/RSR)",
+          "pedigree_number": "Numero pedigree",
+          "breeder": "Allevatore",
+          "father": "Padre",
+          "mother": "Madre",
+          "enci_url": "Collegamento scheda/ricerca ENCI"
+        }
+      }
     }
   }
 }

@@ -120,7 +120,9 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
         SERVICE_SET_PROFILE: (set_profile, vol.Schema({
             vol.Required("dog_id"): cv.string,
             vol.Optional("breed"): cv.string,
+            vol.Optional("color"): cv.string,
             vol.Optional("microchip"): cv.string,
+            vol.Optional("veterinarian"): cv.string,
             vol.Optional("enci_name"): cv.string,
             vol.Optional("enci_registry"): cv.string,
             vol.Optional("pedigree_number"): cv.string,
@@ -130,7 +132,6 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
             vol.Optional("father"): cv.string,
             vol.Optional("mother"): cv.string,
             vol.Optional("breeder"): cv.string,
-            vol.Optional("veterinarian"): cv.string,
         })),
         SERVICE_DELETE_RECORD: (delete_record, vol.Schema({
             vol.Required("dog_id"): cv.string,

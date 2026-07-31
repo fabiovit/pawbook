@@ -26,7 +26,7 @@ class PawBookCoordinator(DataUpdateCoordinator[PetBookData]):
 
     async def async_initialize(self) -> None:
         stored = await self.store.async_load()
-        profile = dict(self.entry.data)
+        profile = {**self.entry.data, **self.entry.options}
         self.async_set_updated_data(PetBookData.from_dict(stored or {}, profile))
 
     async def _save(self) -> None:

@@ -5,12 +5,22 @@ CONF_DOG_NAME = "dog_name"
 CONF_BIRTH_DATE = "birth_date"
 CONF_SEX = "sex"
 CONF_BREED = "breed"
+CONF_COLOR = "color"
 CONF_MICROCHIP = "microchip"
+CONF_VETERINARIAN = "veterinarian"
+
 CONF_ENCI_NAME = "enci_name"
 CONF_ENCI_REGISTRY = "enci_registry"
 CONF_PEDIGREE_NUMBER = "pedigree_number"
 CONF_ENCI_URL = "enci_url"
+CONF_BREEDER = "breeder"
+CONF_FATHER = "father"
+CONF_MOTHER = "mother"
+
 CONF_PHOTO_URL = "photo_url"
+
+ENCI_PUBLIC_URL = "https://www.enci.it/libro-genealogico/libro-genealogico-on-line"
+ENCI_LOGIN_URL = "https://auth.enci.it/Identity/Account/Login"
 
 STORAGE_VERSION = 1
 STORAGE_KEY_PREFIX = "pawbook"
