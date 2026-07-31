@@ -1,6 +1,15 @@
 # Changelog
 
 
+## 0.6.1
+
+- Aggiunti pulsanti visibili **Modifica** ed **Elimina** su ogni registrazione.
+- Eliminazione disponibile direttamente dalla scheda con conferma.
+- Forzato l'aggiornamento del frontend tramite cache busting.
+- Migliorata la disposizione dei comandi su desktop e dispositivi mobili.
+
+
+
 ## 0.6.0
 
 - Rimosso il campo JSON dalla gestione genealogica.

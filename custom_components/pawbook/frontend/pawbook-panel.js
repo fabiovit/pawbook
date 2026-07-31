@@ -473,9 +473,13 @@ class PawBookPanel extends HTMLElement {
       .record:first-of-type { border-top:none; }
       .record strong { display:block; margin-bottom:4px; }
       .record small { color:var(--secondary-text-color); }
-      .record.editable { position:relative; cursor:pointer; padding-right:70px; }
+      .record.editable { position:relative; padding-right:170px; }
       .record.editable:hover { background:var(--secondary-background-color); border-radius:10px; padding-left:10px; }
-      .record-actions { position:absolute; right:8px; top:50%; transform:translateY(-50%); opacity:.65; }
+      .record-actions {
+        position:absolute; right:8px; top:50%; transform:translateY(-50%);
+        display:flex; gap:7px;
+      }
+      .record-actions button { padding:7px 10px; font-size:12px; border-radius:9px; }
       .empty { padding:18px 0; text-align:center; color:var(--secondary-text-color); }
       .wide { grid-column:1/-1; }
       .tree { overflow:auto; padding:10px 0; }
@@ -538,6 +542,8 @@ class PawBookPanel extends HTMLElement {
         .topbar { align-items:flex-start; }
         .tree-children { grid-template-columns:1fr; }
         .generation-grid, .ancestor-grid { grid-template-columns:1fr; }
+        .record.editable { padding-right:10px; padding-bottom:54px; }
+        .record-actions { left:8px; right:auto; top:auto; bottom:8px; transform:none; }
         .wide-field { grid-column:auto; }
       }
     `;
@@ -637,7 +643,10 @@ class PawBookPanel extends HTMLElement {
               <div class="record editable" data-edit-kind="weight" data-category="weights" data-record-id="${this.esc(item.id)}">
               <strong>${this.esc(item.weight)} kg</strong>
               <small>${this.formatDate(item.date)}${item.notes ? ` · ${this.esc(item.notes)}` : ""}</small>
-              <span class="record-actions">✏️ 🗑️</span></div>`)}
+              <span class="record-actions">
+                <button type="button" class="record-edit" title="Modifica">Modifica</button>
+                <button type="button" class="record-delete danger" title="Elimina">Elimina</button>
+              </span></div>`)}
           </article>
 
           <article class="card">
@@ -647,7 +656,10 @@ class PawBookPanel extends HTMLElement {
               <strong>${this.esc(item.name)}</strong>
               <small>${this.formatDate(item.administered_on)}
               ${item.expires_on ? ` · richiamo ${this.formatDate(item.expires_on)}` : ""}</small>
-              <span class="record-actions">✏️ 🗑️</span></div>`)}
+              <span class="record-actions">
+                <button type="button" class="record-edit" title="Modifica">Modifica</button>
+                <button type="button" class="record-delete danger" title="Elimina">Elimina</button>
+              </span></div>`)}
           </article>
 
           <article class="card">
@@ -656,7 +668,10 @@ class PawBookPanel extends HTMLElement {
               <div class="record editable" data-edit-kind="visit" data-category="visits" data-record-id="${this.esc(item.id)}">
               <strong>${this.esc(item.reason)}</strong>
               <small>${this.formatDate(item.date)}${item.veterinarian ? ` · ${this.esc(item.veterinarian)}` : ""}</small>
-              <span class="record-actions">✏️ 🗑️</span></div>`)}
+              <span class="record-actions">
+                <button type="button" class="record-edit" title="Modifica">Modifica</button>
+                <button type="button" class="record-delete danger" title="Elimina">Elimina</button>
+              </span></div>`)}
           </article>
 
           <article class="card">
@@ -667,7 +682,10 @@ class PawBookPanel extends HTMLElement {
               <small>Dal ${this.formatDate(item.starts_on)}
               ${item.ends_on ? ` al ${this.formatDate(item.ends_on)}` : " · in corso"}
               ${item.dosage ? ` · ${this.esc(item.dosage)}` : ""}</small>
-              <span class="record-actions">✏️ 🗑️</span></div>`)}
+              <span class="record-actions">
+                <button type="button" class="record-edit" title="Modifica">Modifica</button>
+                <button type="button" class="record-delete danger" title="Elimina">Elimina</button>
+              </span></div>`)}
           </article>
 
           <article class="card">
@@ -677,7 +695,10 @@ class PawBookPanel extends HTMLElement {
               <strong>${this.formatDate(item.starts_on)}</strong>
               <small>${item.ends_on ? `Fine: ${this.formatDate(item.ends_on)}` : "In corso"}
               ${item.notes ? ` · ${this.esc(item.notes)}` : ""}</small>
-              <span class="record-actions">✏️ 🗑️</span></div>`)}
+              <span class="record-actions">
+                <button type="button" class="record-edit" title="Modifica">Modifica</button>
+                <button type="button" class="record-delete danger" title="Elimina">Elimina</button>
+              </span></div>`)}
           </article>
 
           <article class="card">
@@ -712,14 +733,33 @@ class PawBookPanel extends HTMLElement {
     this.shadowRoot.querySelectorAll("[data-form]").forEach((button) =>
       button.addEventListener("click", () => this.showForm(button.dataset.form))
     );
-    this.shadowRoot.querySelectorAll("[data-edit-kind]").forEach((row) =>
-      row.addEventListener("click", () => {
-        const category = row.dataset.category;
-        const recordId = row.dataset.recordId;
-        const record = (book[category] || []).find((item) => item.id === recordId);
+    this.shadowRoot.querySelectorAll("[data-edit-kind]").forEach((row) => {
+      const category = row.dataset.category;
+      const recordId = row.dataset.recordId;
+      const record = (book[category] || []).find((item) => item.id === recordId);
+
+      row.querySelector(".record-edit")?.addEventListener("click", (event) => {
+        event.stopPropagation();
         if (record) this.showForm(row.dataset.editKind, record, category);
-      })
-    );
+      });
+
+      row.querySelector(".record-delete")?.addEventListener("click", async (event) => {
+        event.stopPropagation();
+        if (!record) return;
+        if (!confirm("Eliminare definitivamente questa registrazione?")) return;
+
+        try {
+          await this._hass.callService("pawbook", "delete_record", {
+            dog_id: book.entry_id,
+            category,
+            record_id: record.id,
+          });
+          await this.loadBooks();
+        } catch (err) {
+          alert(`Errore: ${err?.message || err}`);
+        }
+      });
+    });
     this.shadowRoot.querySelectorAll("[data-pet]").forEach((button) =>
       button.addEventListener("click", () => {
         this._selected = Number(button.dataset.pet);

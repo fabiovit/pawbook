@@ -47,7 +47,7 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
                 "name": PANEL_ELEMENT,
                 "embed_iframe": False,
                 "trust_external": False,
-                "js_url": f"{STATIC_URL}/pawbook-panel.js",
+                "js_url": f"{STATIC_URL}/pawbook-panel.js?v=0.6.1",
             }
         },
         require_admin=False,
