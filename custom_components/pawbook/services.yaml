@@ -1,0 +1,234 @@
+add_weight:
+  name: Aggiungi peso
+  description: Registra una pesata nel libretto sanitario.
+  fields:
+    dog_id:
+      name: Cane
+      description: Nome, microchip oppure ID della configurazione.
+      required: true
+      selector:
+        text:
+    weight:
+      name: Peso
+      required: true
+      selector:
+        number:
+          min: 0.1
+          max: 150
+          step: 0.1
+          unit_of_measurement: kg
+    date:
+      name: Data
+      selector:
+        date:
+    notes:
+      name: Note
+      selector:
+        text:
+          multiline: true
+
+add_vaccination:
+  name: Aggiungi vaccinazione
+  fields:
+    dog_id:
+      name: Cane
+      required: true
+      selector:
+        text:
+    name:
+      name: Vaccino
+      required: true
+      selector:
+        text:
+    administered_on:
+      name: Somministrato il
+      required: true
+      selector:
+        date:
+    expires_on:
+      name: Scadenza o richiamo
+      selector:
+        date:
+    veterinarian:
+      name: Veterinario
+      selector:
+        text:
+    batch:
+      name: Lotto
+      selector:
+        text:
+    notes:
+      name: Note
+      selector:
+        text:
+          multiline: true
+
+add_visit:
+  name: Aggiungi visita
+  fields:
+    dog_id:
+      name: Cane
+      required: true
+      selector:
+        text:
+    date:
+      name: Data
+      required: true
+      selector:
+        date:
+    reason:
+      name: Motivo
+      required: true
+      selector:
+        text:
+    veterinarian:
+      name: Veterinario
+      selector:
+        text:
+    outcome:
+      name: Esito
+      selector:
+        text:
+          multiline: true
+    notes:
+      name: Note
+      selector:
+        text:
+          multiline: true
+
+add_treatment:
+  name: Aggiungi terapia
+  fields:
+    dog_id:
+      name: Cane
+      required: true
+      selector:
+        text:
+    name:
+      name: Farmaco o terapia
+      required: true
+      selector:
+        text:
+    starts_on:
+      name: Inizio
+      required: true
+      selector:
+        date:
+    ends_on:
+      name: Fine
+      selector:
+        date:
+    dosage:
+      name: Dosaggio
+      selector:
+        text:
+    frequency:
+      name: Frequenza
+      selector:
+        text:
+    notes:
+      name: Note
+      selector:
+        text:
+          multiline: true
+
+add_heat_cycle:
+  name: Aggiungi calore
+  fields:
+    dog_id:
+      name: Cane
+      required: true
+      selector:
+        text:
+    starts_on:
+      name: Inizio
+      required: true
+      selector:
+        date:
+    ends_on:
+      name: Fine
+      selector:
+        date:
+    notes:
+      name: Note
+      selector:
+        text:
+          multiline: true
+
+set_profile:
+  name: Aggiorna profilo
+  fields:
+    dog_id:
+      name: Cane
+      required: true
+      selector:
+        text:
+    breed:
+      name: Razza
+      selector:
+        text:
+    microchip:
+      name: Microchip
+      selector:
+        text:
+    enci_name:
+      name: Nome registrato ENCI
+      selector:
+        text:
+    enci_registry:
+      name: Registro ENCI (ROI/RSR)
+      selector:
+        text:
+    pedigree_number:
+      name: Numero pedigree
+      selector:
+        text:
+    enci_url:
+      name: Collegamento ENCI
+      selector:
+        text:
+    photo_url:
+      name: URL foto
+      selector:
+        text:
+    father:
+      name: Padre
+      selector:
+        text:
+    mother:
+      name: Madre
+      selector:
+        text:
+    breeder:
+      name: Allevatore
+      selector:
+        text:
+    veterinarian:
+      name: Veterinario
+      selector:
+        text:
+
+delete_record:
+  name: Elimina registrazione
+  fields:
+    dog_id:
+      name: Cane
+      required: true
+      selector:
+        text:
+    category:
+      name: Categoria
+      required: true
+      selector:
+        select:
+          options:
+            - weights
+            - vaccinations
+            - visits
+            - treatments
+            - heat_cycles
+    record_id:
+      name: ID registrazione
+      required: true
+      selector:
+        text:

@@ -1,0 +1,51 @@
+type: vertical-stack
+cards:
+  - type: custom:mushroom-title-card
+    title: 🐕 Evie
+    subtitle: Libretto sanitario
+
+  - type: custom:mushroom-template-card
+    primary: Stato sanitario
+    secondary: >
+      {{ states('sensor.evie_stato_sanitario') | replace('_', ' ') | title }}
+    icon: mdi:heart-pulse
+    icon_color: >
+      {% set stato = states('sensor.evie_stato_sanitario') %}
+      {% if stato == 'regolare' %}green
+      {% elif stato == 'in_scadenza' %}orange
+      {% else %}red{% endif %}
+    multiline_secondary: true
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-entity-card
+        entity: sensor.evie_peso
+        name: Peso
+      - type: custom:mushroom-entity-card
+        entity: sensor.evie_eta
+        name: Età
+      - type: custom:mushroom-entity-card
+        entity: sensor.evie_prossimo_vaccino
+        name: Prossimo vaccino
+      - type: custom:mushroom-entity-card
+        entity: sensor.evie_ultima_visita
+        name: Ultima visita
+      - type: custom:mushroom-entity-card
+        entity: sensor.evie_ultimo_calore
+        name: Ultimo calore
+      - type: custom:mushroom-entity-card
+        entity: sensor.evie_terapie_attive
+        name: Terapie
+
+  - type: custom:mushroom-template-card
+    primary: Pedigree ENCI
+    secondary: >
+      Microchip: {{ state_attr('sensor.evie_stato_sanitario', 'microchip') or 'non inserito' }}
+      · ROI: {{ state_attr('sensor.evie_stato_sanitario', 'registro_enci') or 'non inserito' }}
+    icon: mdi:certificate
+    tap_action:
+      action: url
+      url_path: >
+        {{ state_attr('sensor.evie_stato_sanitario', 'enci_url') }}

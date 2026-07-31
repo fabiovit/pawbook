@@ -1,0 +1,26 @@
+{
+  "title": "PawBook",
+  "config": {
+    "step": {
+      "user": {
+        "title": "Aggiungi un animale",
+        "description": "Crea il libretto sanitario locale e collega i dati genealogici ENCI.",
+        "data": {
+          "dog_name": "Nome",
+          "birth_date": "Data di nascita",
+          "sex": "Sesso",
+          "breed": "Razza",
+          "microchip": "Microchip",
+          "enci_name": "Nome registrato ENCI",
+          "enci_registry": "Registro ENCI (ROI/RSR)",
+          "pedigree_number": "Numero pedigree",
+          "enci_url": "Collegamento al Libro genealogico ENCI",
+          "photo_url": "URL della foto"
+        }
+      }
+    },
+    "abort": {
+      "already_configured": "Questo animale è già configurato."
+    }
+  }
+}
