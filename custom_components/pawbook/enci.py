@@ -118,50 +118,15 @@ class EnciClient:
         _LOGGER.debug("ENCI search returned %s normalized rows", len(normalized))
         return normalized
 
-    async def _detail_request(
-        self,
-        endpoint: str,
-        *,
-        dog_id: str,
-        registry: str,
-        microchip: str,
-    ) -> Any:
-        """Try the request shapes used by different ENCI API revisions."""
-        candidates: list[tuple[str, dict[str, Any]]] = []
-        identifiers = [
-            ("ID_CANE", dog_id),
-            ("IdCane", dog_id),
-            ("idCane", dog_id),
-            ("ROI_RSR_ES", registry),
-            ("LOI_CANE", registry),
-            ("Microchip", microchip),
-        ]
-        for key, value in identifiers:
-            if value:
-                candidates.append(("GET", {"params": {key: value}}))
-                candidates.append(("POST", {"json": {key: value}}))
-
-        errors: list[str] = []
-        for method, kwargs in candidates:
-            try:
-                result = await self._request(method, endpoint, **kwargs)
-                if _has_meaningful_data(result):
-                    _LOGGER.debug(
-                        "ENCI endpoint %s succeeded with %s and keys=%s",
-                        endpoint,
-                        method,
-                        _shape_summary(result),
-                    )
-                    return result
-            except EnciError as err:
-                errors.append(f"{method} {list((kwargs.get('params') or kwargs.get('json') or {}).keys())}: {err}")
-
-        _LOGGER.warning(
-            "ENCI endpoint %s returned no usable data. Attempts: %s",
-            endpoint,
-            " | ".join(errors[-8:]) if errors else "no meaningful response",
-        )
-        return None
+    async def _detail_request(self, endpoint: str, *, dog_id: str) -> Any:
+        """Call an ENCI detail endpoint using the request shape used by enci.it."""
+        try:
+            return await self._request(
+                "GET", endpoint, params={"ID_CANE": dog_id}
+            )
+        except EnciError as err:
+            _LOGGER.warning("ENCI endpoint %s failed: %s", endpoint, err)
+            return None
 
     async def dog_details(
         self,
@@ -186,15 +151,16 @@ class EnciClient:
             "show_results": "GetRisultatiExpoCane",
             "trial_results": "GetRisultatiProveCane",
             "descendants": "GetDiscendentiCane",
+            "breed_changes": "GetCambioRazzaCane",
+            "practices": "GetPraticheCane",
+            "health_documents": "GetDocumentiSanitariCane",
             "dental": "GetCartaDentariaCane",
+            "foreign_titles": "GetTitoliEsteri",
         }
         data: dict[str, Any] = {"search_row": search_row}
         for key, endpoint in endpoints.items():
             data[key] = await self._detail_request(
-                endpoint,
-                dog_id=dog_id_text,
-                registry=registry_text,
-                microchip=microchip_text,
+                endpoint, dog_id=dog_id_text
             )
 
         if not data.get("profile") and not data.get("pedigree"):
@@ -304,13 +270,16 @@ def normalize_import(
         "roi": registry,
         "pedigree_number": registry,
         "breed": _pick(merged, "RAZZA", "Razza", "DESC_RAZZA", "DescrizioneRazza", "breed"),
-        "color": _pick(merged, "COLORE", "Colore"),
-        "microchip": _pick(merged, "MICROCHIP", "Microchip", "MicroChip", "microchip"),
+        "color": _pick(merged, "MANTELLO", "COLORE", "Colore"),
+        "microchip": _pick(merged, "CHIP", "MICROCHIP", "Microchip", "MicroChip", "microchip"),
         "sex": _pick(merged, "SESSO", "Sesso", "sex"),
         "birth_date": _format_enci_date(_pick(merged, "DATA_NASCITA_CANE", "DATA_NASCITA", "DataNascita", "DataN", "birth_date")),
         "breeder": _pick(merged, "ALLEVATORE", "Allevatore", "NOME_ALLEVATORE"),
-        "father": _pick(merged, "PADRE", "NomePadre", "NOME_PADRE"),
-        "mother": _pick(merged, "MADRE", "NomeMadre", "NOME_MADRE"),
+        "father": _pick(merged, "DES_PADRE", "PADRE", "NomePadre", "NOME_PADRE"),
+        "mother": _pick(merged, "DES_MADRE", "MADRE", "NomeMadre", "NOME_MADRE"),
+        "owner": _pick(merged, "PROPRIETARIO", "Proprietario"),
+        "deceased": _pick(merged, "FLAG_DECEDUTO") == "SI",
+        "selected_breeder": _pick(merged, "FLAG_RIPRODUTTORE_SELEZIONATO") == "SI",
         "enci_url": "https://www.enci.it/libro-genealogico/libro-genealogico-on-line",
         "enci_last_sync": datetime.now().isoformat(timespec="seconds"),
     }
@@ -322,6 +291,10 @@ def normalize_import(
         "trial_results": details.get("trial_results") or [],
         "descendants": details.get("descendants") or [],
         "dental": details.get("dental") or [],
+        "health_documents": details.get("health_documents") or {},
+        "practices": details.get("practices") or [],
+        "breed_changes": details.get("breed_changes") or [],
+        "foreign_titles": details.get("foreign_titles") or [],
         "raw_profile": details.get("profile") or {},
         "raw_pedigree": details.get("pedigree") or {},
     }

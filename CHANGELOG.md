@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.0.0
+
+- Prima release stabile di PawBook.
+- Nuovo albero genealogico ENCI orizzontale, suddiviso chiaramente per generazioni.
+- Distinzione visiva tra antenati maschi e femmine.
+- Importazione completa dell’anagrafica ENCI disponibile: razza, mantello, sesso, data di nascita, microchip, allevatore, proprietario, padre e madre.
+- Visualizzazione separata degli avvenimenti ufficiali ENCI.
+- Stato dei documenti sanitari e della carta dentaria ENCI.
+- Richieste agli endpoint ENCI allineate al portale ufficiale con `GET` e parametro `ID_CANE`.
+- Mantenuta la verifica TLS completa con il certificato intermedio Actalis.
+- Nuovo asset frontend versionato per evitare problemi di cache dopo l’aggiornamento.
+
 ## 0.8.1
 
 - Fixed parsing of the real flat ENCI pedigree response.

@@ -1,4 +1,4 @@
-class PawBookPanel extends HTMLElement {
+class PawBookPanelV100 extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: "open" });
@@ -83,6 +83,45 @@ class PawBookPanel extends HTMLElement {
   openConfig() {
     history.pushState(null, "", "/config/integrations/integration/pawbook");
     window.dispatchEvent(new Event("location-changed"));
+  }
+
+  showEnciSearch() {
+    const book = this._books[this._selected];
+    if (!book) return;
+    const dialog = this.shadowRoot.querySelector("#dialog");
+    dialog.innerHTML = `
+      <div class="modal"><div class="modal-card genealogy-modal">
+        <div class="modal-head"><div><h2>Importa da ENCI</h2><p class="muted">Cerca per ROI/LOI, nome oppure microchip.</p></div><button class="icon-btn" data-close>✕</button></div>
+        <form id="enci-search-form">
+          <div class="grid">
+            <label><span>ROI / LOI / RSR</span><input name="registry" value="${this.esc(book.profile.enci_registry || book.profile.roi || "")}"></label>
+            <label><span>Nome registrato</span><input name="name" value="${this.esc(book.profile.enci_name || "")}"></label>
+            <label><span>Microchip</span><input name="microchip" value="${this.esc(book.profile.microchip || "")}"></label>
+          </div>
+          <div class="modal-actions"><button type="button" class="secondary" data-close>Annulla</button><button type="submit">Cerca su ENCI</button></div>
+        </form>
+        <div id="enci-results"></div>
+      </div></div>`;
+    dialog.querySelectorAll("[data-close]").forEach(b => b.addEventListener("click", () => dialog.innerHTML = ""));
+    dialog.querySelector("#enci-search-form").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const fd = new FormData(event.target);
+      const out = dialog.querySelector("#enci-results");
+      out.innerHTML = `<div class="empty">Ricerca in corso…</div>`;
+      try {
+        const rows = await this._hass.callWS({ type: "pawbook/enci_search", registry: fd.get("registry") || "", name: fd.get("name") || "", microchip: fd.get("microchip") || "" });
+        if (!rows.length) { out.innerHTML = `<div class="empty">Nessun soggetto trovato</div>`; return; }
+        out.innerHTML = `<div class="records">${rows.map((row, i) => `<div class="record"><strong>${this.esc(row.name || "Senza nome")}</strong><small>${this.esc(row.registry || "—")} · ${this.esc(row.breed || "Razza non indicata")} ${row.birth_date ? `· ${this.esc(row.birth_date)}` : ""}</small><button class="small-btn" data-enci-index="${i}">Importa</button></div>`).join("")}</div>`;
+        out.querySelectorAll("[data-enci-index]").forEach(button => button.addEventListener("click", async () => {
+          const row = rows[Number(button.dataset.enciIndex)];
+          button.disabled = true; button.textContent = "Importazione…";
+          try {
+            await this._hass.callWS({ type: "pawbook/enci_import", entry_id: book.entry_id, enci_dog_id: row.id || "", registry: row.registry || "", microchip: row.microchip || "", search_row: row });
+            await this.loadBooks(); dialog.innerHTML = "";
+          } catch (err) { button.disabled = false; button.textContent = "Importa"; alert(`Errore ENCI: ${err?.message || err}`); }
+        }));
+      } catch (err) { out.innerHTML = `<div class="empty">Errore: ${this.esc(err?.message || err)}</div>`; }
+    });
   }
 
   showForm(kind, record = null, category = null) {
@@ -804,7 +843,7 @@ class PawBookPanel extends HTMLElement {
           </article>
 
           <article class="card">
-            <div class="card-head"><h3>🏆 ENCI</h3><button class="small-btn secondary" id="open-enci">Apri ENCI</button></div>
+            <div class="card-head"><h3>🏆 ENCI</h3><span><button class="small-btn" id="import-enci">Importa / aggiorna</button> <button class="small-btn secondary" id="open-enci">Apri ENCI</button></span></div>
             <div class="record"><strong>Nome registrato</strong><small>${this.esc(p.enci_name || "—")}</small></div>
             <div class="record"><strong>ROI/RSR</strong><small>${this.esc(p.enci_registry || "—")}</small></div>
             <div class="record"><strong>Pedigree</strong><small>${this.esc(p.pedigree_number || "—")}</small></div>
@@ -824,6 +863,7 @@ class PawBookPanel extends HTMLElement {
 
     this.shadowRoot.querySelector("#refresh")?.addEventListener("click", () => this.loadBooks());
     this.shadowRoot.querySelector("#profile-config")?.addEventListener("click", () => this.openConfig());
+    this.shadowRoot.querySelector("#import-enci")?.addEventListener("click", () => this.showEnciSearch());
     this.shadowRoot.querySelector("#open-enci")?.addEventListener("click", () => {
       window.open(p.enci_url || "https://www.enci.it/libro-genealogico/libro-genealogico-on-line", "_blank", "noopener");
     });
@@ -869,6 +909,6 @@ class PawBookPanel extends HTMLElement {
   }
 }
 
-if (!customElements.get("pawbook-panel")) {
-  customElements.define("pawbook-panel", PawBookPanel);
+if (!customElements.get("pawbook-panel-v100")) {
+  customElements.define("pawbook-panel-v100", PawBookPanelV100);
 }

@@ -422,19 +422,92 @@ class PawBookPanelV070 extends HTMLElement {
     });
   }
 
-  renderGenealogyNode(node, label = "") {
-    if (!node || typeof node !== "object" || !node.name) return "";
+  genealogyAt(root, index) {
+    if (!root || index < 1) return null;
+    const bits = (index + 1).toString(2).slice(1);
+    let node = root;
+    for (const bit of bits) {
+      node = bit === "0" ? node?.father : node?.mother;
+      if (!node) return null;
+    }
+    return node;
+  }
+
+  renderPedigreeCard(node, index, generation) {
+    if (!node?.name) return `<div class="pedigree-person empty-person">—</div>`;
+    const female = index % 2 === 0;
+    const relation = female ? "Madre" : "Padre";
     return `
-      <div class="tree-node">
-        ${label ? `<small>${this.esc(label)}</small>` : ""}
+      <div class="pedigree-person ${female ? "female" : "male"} generation-${generation}">
+        <div class="person-relation">${female ? "♀" : "♂"} ${generation === 1 ? relation : ""}</div>
         <strong>${this.esc(node.name)}</strong>
         ${node.roi ? `<span>${this.esc(node.roi)}</span>` : ""}
-        ${(node.father || node.mother) ? `
-          <div class="tree-children">
-            ${this.renderGenealogyNode(node.father, "Padre")}
-            ${this.renderGenealogyNode(node.mother, "Madre")}
-          </div>` : ""}
+        ${node.birth_date ? `<small>${this.formatDate(node.birth_date)}</small>` : ""}
       </div>`;
+  }
+
+  renderPedigree(root) {
+    const labels = ["Genitori", "Nonni", "Bisnonni", "Trisnonni"];
+    const rows = [];
+    for (let generation = 1; generation <= 4; generation += 1) {
+      const first = (2 ** generation) - 1;
+      const count = 2 ** generation;
+      const cards = [];
+      for (let offset = 0; offset < count; offset += 1) {
+        const index = first + offset;
+        cards.push(this.renderPedigreeCard(this.genealogyAt(root, index), index, generation));
+      }
+      rows.push(`
+        <div class="pedigree-row">
+          <div class="generation-label"><strong>${generation}ª</strong><span>${labels[generation - 1]}</span></div>
+          <div class="pedigree-cards generation-count-${count}">${cards.join("")}</div>
+        </div>`);
+    }
+    return `
+      <div class="pedigree-wrap">
+        <div class="pedigree-root">
+          <strong>${this.esc(root.name || "—")}</strong>
+          ${root.roi ? `<span>${this.esc(root.roi)}</span>` : ""}
+          <small>${[this._books[this._selected]?.profile?.sex, this._books[this._selected]?.profile?.birth_date ? this.formatDate(this._books[this._selected].profile.birth_date) : "", this._books[this._selected]?.profile?.breed].filter(Boolean).map(v => this.esc(v)).join(" · ")}</small>
+        </div>
+        ${rows.join("")}
+      </div>`;
+  }
+
+  renderEnciPanels(book) {
+    const p = book.profile || {};
+    const enci = book.enci_data || {};
+    const events = Array.isArray(enci.events) ? enci.events : [];
+    const docs = enci.health_documents || {};
+    const dental = Array.isArray(enci.dental) ? enci.dental : [];
+    const info = (label, value) => `<div class="enci-field"><span>${this.esc(label)}</span><strong>${this.esc(value || "—")}</strong></div>`;
+    return `
+      <div class="enci-panels">
+        <section class="enci-panel">
+          <h4>👥 Anagrafica ENCI</h4>
+          <div class="enci-info-grid">
+            ${info("Razza", p.breed)}${info("Mantello", p.color)}${info("Sesso", p.sex)}
+            ${info("Data di nascita", p.birth_date ? this.formatDate(p.birth_date) : "")}${info("Allevatore", p.breeder)}${info("Proprietario", p.owner)}
+            ${info("Microchip", p.microchip)}${info("ROI / LOI", p.enci_registry)}${info("Stato", p.deceased ? "Deceduto" : "Vivo")}
+            ${info("Padre", p.father)}${info("Madre", p.mother)}
+          </div>
+        </section>
+        <section class="enci-panel">
+          <h4>🩺 Avvenimenti ENCI</h4>
+          ${events.length ? `<div class="enci-events">${events.map(item => `
+            <div class="enci-event">
+              <span>${this.esc(item.DATA_CHAR || (item.DATA ? this.formatDate(item.DATA) : "—"))}</span>
+              <strong>${this.esc(item.TIPO || "Avvenimento")}</strong>
+              <small>${this.esc(item.AVVENIMENTO || "—")}${item.CODICE ? ` · ${this.esc(item.CODICE)}` : ""}</small>
+            </div>`).join("")}</div>` : `<div class="empty">Nessun avvenimento disponibile</div>`}
+        </section>
+        <section class="enci-panel">
+          <h4>📄 Documenti sanitari ENCI</h4>
+          <div class="document-status"><span>Documenti sanitari</span><strong>${Array.isArray(docs.Dto) && docs.Dto.length ? `${docs.Dto.length} disponibili` : "Nessun documento disponibile"}</strong></div>
+          <div class="document-status"><span>Carta dentaria</span><strong>${dental.length ? `${dental.length} disponibile` : "Nessuna carta dentaria disponibile"}</strong></div>
+        </section>
+      </div>
+      <div class="enci-note">ℹ️ I dati sono importati dal Libro genealogico ENCI e potrebbero non essere completi. Verifica sempre con la documentazione ufficiale.</div>`;
   }
 
   render() {
@@ -521,13 +594,40 @@ class PawBookPanelV070 extends HTMLElement {
       .record-actions button { padding:7px 10px; font-size:12px; border-radius:9px; }
       .empty { padding:18px 0; text-align:center; color:var(--secondary-text-color); }
       .wide { grid-column:1/-1; }
-      .tree { overflow:auto; padding:10px 0; }
-      .tree-node {
-        min-width:160px; padding:12px; border:1px solid var(--divider-color);
-        border-radius:14px; background:var(--secondary-background-color);
-      }
-      .tree-node small,.tree-node span { display:block; color:var(--secondary-text-color); font-size:12px; }
-      .tree-children { display:grid; grid-template-columns:repeat(2,minmax(160px,1fr)); gap:12px; margin-top:12px; }
+      .pedigree-section { overflow:hidden; }
+      .pedigree-wrap { overflow-x:auto; padding:6px 0 18px; min-width:100%; }
+      .pedigree-root { width:360px; margin:0 auto 18px; padding:15px 18px; border:1px solid var(--primary-color); border-radius:15px; background:linear-gradient(135deg,var(--secondary-background-color),var(--card-background-color)); }
+      .pedigree-root strong,.pedigree-root span,.pedigree-root small { display:block; }
+      .pedigree-root span,.pedigree-root small { color:var(--secondary-text-color); margin-top:4px; }
+      .pedigree-row { display:grid; grid-template-columns:105px minmax(1050px,1fr); gap:14px; align-items:stretch; margin-top:10px; }
+      .generation-label { display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:10px; border:1px solid var(--divider-color); border-radius:13px; background:var(--secondary-background-color); }
+      .generation-label span { color:var(--secondary-text-color); font-size:12px; margin-top:3px; }
+      .pedigree-cards { display:grid; gap:9px; }
+      .generation-count-2 { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .generation-count-4 { grid-template-columns:repeat(4,minmax(0,1fr)); }
+      .generation-count-8 { grid-template-columns:repeat(8,minmax(0,1fr)); }
+      .generation-count-16 { grid-template-columns:repeat(16,minmax(0,1fr)); }
+      .pedigree-person { min-width:0; padding:11px 12px; border-radius:12px; border:1px solid var(--divider-color); background:var(--secondary-background-color); overflow:hidden; }
+      .pedigree-person.male { border-color:#3488c8; background:linear-gradient(135deg,rgba(35,112,170,.18),var(--secondary-background-color)); }
+      .pedigree-person.female { border-color:#c84d83; background:linear-gradient(135deg,rgba(180,55,110,.17),var(--secondary-background-color)); }
+      .pedigree-person strong,.pedigree-person span,.pedigree-person small { display:block; overflow-wrap:anywhere; }
+      .pedigree-person strong { font-size:13px; line-height:1.25; }
+      .pedigree-person span,.pedigree-person small,.person-relation { color:var(--secondary-text-color); font-size:11px; margin-top:3px; }
+      .pedigree-person.male .person-relation { color:#54aaf0; }
+      .pedigree-person.female .person-relation { color:#ed72a8; }
+      .empty-person { opacity:.35; display:grid; place-items:center; }
+      .enci-panels { display:grid; grid-template-columns:1.1fr 1fr 1fr; gap:14px; margin-top:18px; }
+      .enci-panel { border:1px solid var(--divider-color); border-radius:15px; padding:15px; background:var(--secondary-background-color); }
+      .enci-panel h4 { margin:0 0 12px; color:var(--primary-color); }
+      .enci-info-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:0 12px; }
+      .enci-field,.document-status { padding:9px 0; border-top:1px solid var(--divider-color); }
+      .enci-field span,.document-status span { display:block; color:var(--secondary-text-color); font-size:11px; margin-bottom:4px; }
+      .enci-field strong,.document-status strong { font-size:12px; overflow-wrap:anywhere; }
+      .enci-event { display:grid; grid-template-columns:78px 1fr; gap:3px 10px; padding:9px 0; border-top:1px solid var(--divider-color); }
+      .enci-event span { color:var(--secondary-text-color); font-size:11px; }
+      .enci-event strong { font-size:12px; }
+      .enci-event small { grid-column:2; color:var(--secondary-text-color); }
+      .enci-note { margin-top:14px; padding:10px 13px; border:1px solid var(--divider-color); border-radius:11px; color:var(--secondary-text-color); font-size:12px; }
       .modal {
         position:fixed; inset:0; z-index:1000; display:grid; place-items:center;
         padding:20px; background:rgba(0,0,0,.58);
@@ -579,7 +679,9 @@ class PawBookPanelV070 extends HTMLElement {
         .pet-photo { width:82px; height:82px; border-radius:18px; }
         .stats { grid-template-columns:1fr 1fr; }
         .topbar { align-items:flex-start; }
-        .tree-children { grid-template-columns:1fr; }
+        .enci-panels { grid-template-columns:1fr; }
+        .enci-info-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+        .pedigree-root { width:min(360px,100%); margin-left:105px; }
         .generation-grid, .ancestor-grid { grid-template-columns:1fr; }
         .record.editable { padding-right:10px; padding-bottom:54px; }
         .record-actions { left:8px; right:auto; top:auto; bottom:8px; transform:none; }
@@ -748,13 +850,11 @@ class PawBookPanelV070 extends HTMLElement {
             <div class="record"><strong>Allevatore</strong><small>${this.esc(p.breeder || "—")}</small></div>
           </article>
 
-          <article class="card wide">
+          <article class="card wide pedigree-section">
             <div class="card-head"><h3>🌳 Albero genealogico</h3><button class="small-btn" id="edit-genealogy">Modifica albero</button></div>
-            <div class="tree">
-              ${book.genealogy && Object.keys(book.genealogy).length
-                ? this.renderGenealogyNode(book.genealogy)
-                : `<div class="empty">Genealogia non importata</div>`}
-            </div>
+            ${book.genealogy && Object.keys(book.genealogy).length
+              ? `${this.renderPedigree(book.genealogy)}${this.renderEnciPanels(book)}`
+              : `<div class="empty">Genealogia non importata</div>`}
           </article>
         </section>
       </div>
