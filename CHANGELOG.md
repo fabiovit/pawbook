@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.7.1
+
+### Correzioni
+
+- Corretta la verifica del certificato HTTPS durante le richieste al servizio ENCI.
+- Aggiunto un contesto SSL dedicato basato sul bundle CA di `certifi`.
+- La verifica SSL e il controllo del nome host restano attivi.
+- Migliorato il messaggio di errore in caso di certificato ENCI non verificabile.
+- Rimossi dal repository i file Python compilati e le cartelle `__pycache__`.
+- Aggiunto `.gitignore` per evitare nuovi file generati nei commit futuri.
+
 ## 0.7.0
 
 - Added ENCI search by ROI/LOI/RSR, registered name and microchip.

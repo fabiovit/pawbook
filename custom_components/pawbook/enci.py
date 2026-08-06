@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import ssl
 from typing import Any
 
-from aiohttp import ClientError, ClientResponseError
+import certifi
+from aiohttp import ClientConnectorCertificateError, ClientError, ClientResponseError
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
@@ -21,6 +23,9 @@ class EnciError(Exception):
 class EnciClient:
     def __init__(self, hass: HomeAssistant) -> None:
         self._session = async_get_clientsession(hass)
+        # Use an up-to-date CA bundle only for ENCI requests. Certificate
+        # verification and hostname checks remain fully enabled.
+        self._ssl_context = ssl.create_default_context(cafile=certifi.where())
 
     async def _request(self, method: str, endpoint: str, **kwargs: Any) -> Any:
         try:
@@ -29,10 +34,17 @@ class EnciClient:
                 f"{ENCI_API_BASE}/{endpoint}",
                 headers=ENCI_HEADERS,
                 timeout=30,
+                ssl=self._ssl_context,
                 **kwargs,
             ) as response:
                 response.raise_for_status()
                 return await response.json(content_type=None)
+        except ClientConnectorCertificateError as err:
+            raise EnciError(
+                "Impossibile verificare il certificato HTTPS del servizio ENCI. "
+                "Aggiorna PawBook/Home Assistant oppure riprova quando ENCI avrà "
+                "ripristinato la catena del certificato."
+            ) from err
         except (ClientError, ClientResponseError, TimeoutError, ValueError) as err:
             raise EnciError(f"Servizio ENCI non disponibile: {err}") from err
 
@@ -121,12 +133,10 @@ def normalize_import(details: dict[str, Any], dog_id: int | str) -> tuple[dict[s
         profile_raw = profile_raw[0] if profile_raw else {}
     if not isinstance(profile_raw, dict):
         profile_raw = {}
-
     registered_name = _pick(profile_raw, "NOME_CANE", "Nome", "NOME")
     registry = _pick(profile_raw, "LOI_CANE", "LOI", "ROI_RSR_ES", "Registro")
     father = _pick(profile_raw, "PADRE", "NomePadre", "NOME_PADRE")
     mother = _pick(profile_raw, "MADRE", "NomeMadre", "NOME_MADRE")
-
     profile = {
         "enci_id": str(dog_id),
         "enci_name": registered_name,
@@ -146,7 +156,6 @@ def normalize_import(details: dict[str, Any], dog_id: int | str) -> tuple[dict[s
         "enci_last_sync": __import__("datetime").datetime.now().isoformat(timespec="seconds"),
     }
     profile = {key: value for key, value in profile.items() if value not in (None, "")}
-
     genealogy = _normalize_pedigree(details.get("pedigree"), profile)
     extras = {
         "events": details.get("events") or [],
