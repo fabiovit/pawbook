@@ -116,7 +116,7 @@ class PawBookPanelV070 extends HTMLElement {
           const row = rows[Number(button.dataset.enciIndex)];
           button.disabled = true; button.textContent = "Importazione…";
           try {
-            await this._hass.callWS({ type: "pawbook/enci_import", entry_id: book.entry_id, enci_dog_id: row.id });
+            await this._hass.callWS({ type: "pawbook/enci_import", entry_id: book.entry_id, enci_dog_id: row.id || "", registry: row.registry || "", microchip: row.microchip || "", search_row: row });
             await this.loadBooks(); dialog.innerHTML = "";
           } catch (err) { button.disabled = false; button.textContent = "Importa"; alert(`Errore ENCI: ${err?.message || err}`); }
         }));

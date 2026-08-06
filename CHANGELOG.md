@@ -138,3 +138,11 @@
 ## 0.1.0
 
 - Prima versione pubblica.
+
+## 0.8.0
+
+- Reworked ENCI detail import with ID, ROI and microchip fallbacks.
+- Added compatible GET/POST request variants for ENCI detail endpoints.
+- Added endpoint-level diagnostics instead of silently discarding errors.
+- Expanded anagraphic and pedigree normalization.
+- Preserved raw ENCI detail responses for future parsing improvements.

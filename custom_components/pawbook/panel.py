@@ -127,7 +127,10 @@ async def websocket_enci_search(hass, connection, msg):
 @websocket_api.websocket_command({
     vol.Required("type"): "pawbook/enci_import",
     vol.Required("entry_id"): str,
-    vol.Required("enci_dog_id"): vol.Any(str, int),
+    vol.Optional("enci_dog_id", default=""): vol.Any(str, int),
+    vol.Optional("registry", default=""): str,
+    vol.Optional("microchip", default=""): str,
+    vol.Optional("search_row", default={}): dict,
 })
 @websocket_api.async_response
 async def websocket_enci_import(hass, connection, msg):
@@ -136,7 +139,12 @@ async def websocket_enci_import(hass, connection, msg):
         connection.send_error(msg["id"], "not_found", "Scheda PawBook non trovata")
         return
     try:
-        details = await EnciClient(hass).dog_details(msg["enci_dog_id"])
+        details = await EnciClient(hass).dog_details(
+            msg["enci_dog_id"],
+            registry=msg["registry"],
+            microchip=msg["microchip"],
+            search_row=msg["search_row"],
+        )
         profile, genealogy, extras = normalize_import(details, msg["enci_dog_id"])
         await coordinator.async_import_enci(profile, genealogy, extras)
     except EnciError as err:
