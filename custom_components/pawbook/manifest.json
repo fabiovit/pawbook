@@ -17,5 +17,5 @@
   "requirements": [
     "certifi==2026.7.22"
   ],
-  "version": "0.7.2"
+  "version": "0.7.3"
 }

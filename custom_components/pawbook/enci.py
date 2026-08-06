@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 import ssl
 from functools import partial
 from typing import Any
@@ -8,6 +9,8 @@ import certifi
 from aiohttp import ClientConnectorCertificateError, ClientError, ClientResponseError
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+
+_LOGGER = logging.getLogger(__name__)
 
 ENCI_API_BASE = "https://lg.enci.it/enciwslg/api/LG"
 ENCI_HEADERS = {
@@ -49,10 +52,25 @@ class EnciClient:
                 response.raise_for_status()
                 return await response.json(content_type=None)
         except ClientConnectorCertificateError as err:
+            certificate_error = getattr(err, "certificate_error", None)
+            verify_code = getattr(certificate_error, "verify_code", None)
+            verify_message = getattr(certificate_error, "verify_message", None)
+            _LOGGER.exception(
+                "ENCI TLS certificate verification failed: host=%s port=%s "
+                "endpoint=%s exception_type=%s verify_code=%s verify_message=%s "
+                "certificate_error=%r",
+                getattr(err, "host", "lg.enci.it"),
+                getattr(err, "port", 443),
+                endpoint,
+                type(certificate_error).__name__ if certificate_error else type(err).__name__,
+                verify_code,
+                verify_message,
+                certificate_error or err,
+            )
             raise EnciError(
                 "Impossibile verificare il certificato HTTPS del servizio ENCI. "
-                "Aggiorna PawBook/Home Assistant oppure riprova quando ENCI avrà "
-                "ripristinato la catena del certificato."
+                "Controlla i registri di Home Assistant cercando “ENCI TLS” e "
+                "comunica il codice e il messaggio di verifica riportati."
             ) from err
         except (ClientError, ClientResponseError, TimeoutError, ValueError) as err:
             raise EnciError(f"Servizio ENCI non disponibile: {err}") from err

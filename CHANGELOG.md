@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.3
+
+- Added detailed diagnostic logging for ENCI TLS certificate verification failures.
+- Logs OpenSSL verification code and message without exposing credentials or search data.
+- Kept certificate and hostname verification enabled.
+
 ## 0.7.2
 
 - Fixed Home Assistant blocking-call warning caused by loading the ENCI CA bundle inside the event loop.
