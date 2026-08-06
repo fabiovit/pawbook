@@ -17,7 +17,7 @@ from .const import DOMAIN
 from .enci import EnciClient, EnciError, normalize_import
 
 PANEL_URL = "pawbook"
-PANEL_ELEMENT = "pawbook-panel-v100"
+PANEL_ELEMENT = "pawbook-panel-v110"
 STATIC_URL = "/pawbook_static"
 
 
@@ -30,8 +30,8 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
     await hass.http.async_register_static_paths(
         [
             StaticPathConfig(
-                f"{STATIC_URL}/pawbook-panel-v100.js",
-                str(frontend_path / "pawbook-panel-v100.js"),
+                f"{STATIC_URL}/pawbook-panel-v110.js",
+                str(frontend_path / "pawbook-panel-v110.js"),
                 False,
             )
         ]
@@ -48,7 +48,7 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
                 "name": PANEL_ELEMENT,
                 "embed_iframe": False,
                 "trust_external": False,
-                "js_url": f"{STATIC_URL}/pawbook-panel-v100.js",
+                "js_url": f"{STATIC_URL}/pawbook-panel-v110.js",
             }
         },
         require_admin=False,
@@ -57,6 +57,7 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, websocket_get_books)
     websocket_api.async_register_command(hass, websocket_enci_search)
     websocket_api.async_register_command(hass, websocket_enci_import)
+    websocket_api.async_register_command(hass, websocket_set_photo)
     hass.data[DOMAIN]["panel_registered"] = True
 
 
@@ -151,3 +152,36 @@ async def websocket_enci_import(hass, connection, msg):
         connection.send_error(msg["id"], "enci_error", str(err))
         return
     connection.send_result(msg["id"], {"profile": profile, "genealogy": genealogy})
+
+
+@websocket_api.websocket_command({
+    vol.Required("type"): "pawbook/set_photo",
+    vol.Required("entry_id"): str,
+    vol.Optional("photo_data", default=""): str,
+})
+@websocket_api.async_response
+async def websocket_set_photo(hass, connection, msg):
+    """Save or remove a resized dog photo in PawBook local storage."""
+    coordinator = hass.data.get(DOMAIN, {}).get(msg["entry_id"])
+    if coordinator is None or not hasattr(coordinator, "async_set_profile"):
+        connection.send_error(msg["id"], "not_found", "Scheda PawBook non trovata")
+        return
+
+    photo_data = msg["photo_data"].strip()
+    if photo_data:
+        allowed_prefixes = (
+            "data:image/jpeg;base64,",
+            "data:image/png;base64,",
+            "data:image/webp;base64,",
+        )
+        if not photo_data.startswith(allowed_prefixes):
+            connection.send_error(msg["id"], "invalid_photo", "Formato immagine non supportato")
+            return
+        # The frontend resizes images before upload. Keep a conservative limit
+        # to protect Home Assistant storage from accidental huge payloads.
+        if len(photo_data) > 1_500_000:
+            connection.send_error(msg["id"], "photo_too_large", "La foto è troppo grande")
+            return
+
+    await coordinator.async_set_profile({"photo_url": photo_data})
+    connection.send_result(msg["id"], {"saved": True, "has_photo": bool(photo_data)})

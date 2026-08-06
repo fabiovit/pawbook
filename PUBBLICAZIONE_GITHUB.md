@@ -1,18 +1,13 @@
-# Pubblicazione di PawBook
+# Pubblicazione GitHub
 
-Carica nella radice del repository `https://github.com/fabiovit/pawbook` tutto il contenuto di questa cartella.
+- Commit: `PawBook v1.0.1 - Improve pedigree readability and Italian dates`
+- Tag: `v1.0.1`
+- Titolo: `PawBook v1.0.1 – Pedigree Readability Fix`
 
-La struttura principale deve essere:
+## v1.1.0
 
-```text
-.github/
-custom_components/pawbook/
-README.md
-hacs.json
-info.md
-LICENSE
-```
+Commit: `PawBook v1.1.0 - Add local dog photo support`
 
-Dopo il commit attendi che **HACS validation** e **Hassfest validation** siano verdi.
+Tag: `v1.1.0`
 
-Per creare la prima release, crea il tag `v0.1.0`. Il workflow allegherà automaticamente `pawbook-v0.1.0.zip`.
+Release title: `PawBook v1.1.0 – Dog Photo Support`

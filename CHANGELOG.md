@@ -1,5 +1,22 @@
 # Changelog
 
+## 1.1.0
+
+- Added local dog photo upload from the PawBook panel.
+- Added automatic centered crop and resize to 640×640 px.
+- Added photo preview, replacement and removal.
+- Added the dog photo to the profile and pedigree header.
+- Added payload validation and size limits for locally stored photos.
+
+
+## 1.0.1
+
+- Migliorata la leggibilità della quarta generazione dell’albero genealogico.
+- Aggiunto scorrimento orizzontale con schede di larghezza sufficiente per evitare nomi spezzati lettera per lettera.
+- Uniformate tutte le date al formato italiano `GG/MM/AAAA`.
+- Corrette anche le date ISO ENCI contenenti l’orario, ad esempio `2023-03-31T00:00:00`.
+- Aggiornato il file frontend per evitare la cache della versione precedente.
+
 ## 1.0.0
 
 - Prima release stabile di PawBook.
