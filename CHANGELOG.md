@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.2
+
+- Fixed the black PawBook panel caused by a mismatch between the registered Home Assistant panel element and the JavaScript custom element.
+- Added a new versioned frontend asset to bypass browser and Home Assistant cache.
+- Preserved the pedigree improvements, ancestor popup, Italian date formatting and dog photo support.
+
 ## 1.0.1
 
 - Migliorata la leggibilità della quarta generazione dell’albero genealogico.
