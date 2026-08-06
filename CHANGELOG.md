@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.7.2
+
+- Fixed Home Assistant blocking-call warning caused by loading the ENCI CA bundle inside the event loop.
+- SSL context creation now runs safely in Home Assistant's executor.
+- HTTPS certificate and hostname verification remain enabled.
+- Retained the dedicated `certifi` CA bundle for ENCI requests.
+
 ## 0.7.1
 
 ### Correzioni

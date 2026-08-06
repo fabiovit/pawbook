@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ssl
+from functools import partial
 from typing import Any
 
 import certifi
@@ -22,19 +23,27 @@ class EnciError(Exception):
 
 class EnciClient:
     def __init__(self, hass: HomeAssistant) -> None:
+        self._hass = hass
         self._session = async_get_clientsession(hass)
-        # Use an up-to-date CA bundle only for ENCI requests. Certificate
-        # verification and hostname checks remain fully enabled.
-        self._ssl_context = ssl.create_default_context(cafile=certifi.where())
+        self._ssl_context: ssl.SSLContext | None = None
+
+    async def _async_get_ssl_context(self) -> ssl.SSLContext:
+        """Create the ENCI SSL context outside Home Assistant's event loop."""
+        if self._ssl_context is None:
+            self._ssl_context = await self._hass.async_add_executor_job(
+                partial(ssl.create_default_context, cafile=certifi.where())
+            )
+        return self._ssl_context
 
     async def _request(self, method: str, endpoint: str, **kwargs: Any) -> Any:
+        ssl_context = await self._async_get_ssl_context()
         try:
             async with self._session.request(
                 method,
                 f"{ENCI_API_BASE}/{endpoint}",
                 headers=ENCI_HEADERS,
                 timeout=30,
-                ssl=self._ssl_context,
+                ssl=ssl_context,
                 **kwargs,
             ) as response:
                 response.raise_for_status()
