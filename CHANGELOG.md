@@ -1,14 +1,5 @@
 # Changelog
 
-## 1.1.0
-
-- Added local dog photo upload from the PawBook panel.
-- Added automatic centered crop and resize to 640×640 px.
-- Added photo preview, replacement and removal.
-- Added the dog photo to the profile and pedigree header.
-- Added payload validation and size limits for locally stored photos.
-
-
 ## 1.0.1
 
 - Migliorata la leggibilità della quarta generazione dell’albero genealogico.
@@ -182,3 +173,13 @@
 - Added endpoint-level diagnostics instead of silently discarding errors.
 - Expanded anagraphic and pedigree normalization.
 - Preserved raw ENCI detail responses for future parsing improvements.
+
+## 1.1.1
+
+- Ripristinato l'indicatore verde accanto allo stato **Vivo**.
+- Compattata la quarta generazione dell'albero genealogico.
+- Ridotti soltanto i caratteri dei trisnonni per mantenere leggibili nomi e dati.
+- Aggiunta l'indicazione Padre/Madre su tutte le schede degli antenati.
+- Tutte le schede dell'albero sono ora cliccabili.
+- Aggiunto popup con nome, ROI/RSR, data di nascita, microchip, ID ENCI, titoli e dati sanitari.
+- Conservato il formato italiano delle date `GG/MM/AAAA`.

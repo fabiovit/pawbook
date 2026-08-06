@@ -180,14 +180,3 @@ Dal pannello PawBook premi **Modifica albero** e compila i campi dedicati per:
 - informazioni sanitarie.
 
 I dati già salvati vengono mostrati automaticamente durante la modifica.
-
-### Foto del cane
-
-Dal pannello PawBook puoi cliccare sulla foto o sull'icona della fotocamera per:
-
-- scegliere una foto da computer o smartphone;
-- visualizzare l'anteprima;
-- salvarla localmente dopo il ritaglio quadrato automatico;
-- sostituirla o rimuoverla in qualsiasi momento.
-
-La foto ridimensionata viene usata sia nel profilo sia nell'intestazione dell'albero genealogico.
