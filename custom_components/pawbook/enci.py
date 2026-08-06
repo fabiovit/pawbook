@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 import ssl
-from functools import partial
+from pathlib import Path
 from typing import Any
 
 import certifi
@@ -13,6 +13,11 @@ from homeassistant.helpers.aiohttp_client import async_get_clientsession
 _LOGGER = logging.getLogger(__name__)
 
 ENCI_API_BASE = "https://lg.enci.it/enciwslg/api/LG"
+ENCI_INTERMEDIATE_CA = (
+    Path(__file__).resolve().parent
+    / "certificates"
+    / "actalis_domain_validation_server_ca_g3.pem"
+)
 ENCI_HEADERS = {
     "Content-Type": "application/json",
     "UserName": "enciwebapiuser",
@@ -30,11 +35,20 @@ class EnciClient:
         self._session = async_get_clientsession(hass)
         self._ssl_context: ssl.SSLContext | None = None
 
+    @staticmethod
+    def _create_ssl_context() -> ssl.SSLContext:
+        """Create a verified TLS context including ENCI's missing intermediate CA."""
+        context = ssl.create_default_context(cafile=certifi.where())
+        context.check_hostname = True
+        context.verify_mode = ssl.CERT_REQUIRED
+        context.load_verify_locations(cafile=str(ENCI_INTERMEDIATE_CA))
+        return context
+
     async def _async_get_ssl_context(self) -> ssl.SSLContext:
         """Create the ENCI SSL context outside Home Assistant's event loop."""
         if self._ssl_context is None:
             self._ssl_context = await self._hass.async_add_executor_job(
-                partial(ssl.create_default_context, cafile=certifi.where())
+                self._create_ssl_context
             )
         return self._ssl_context
 
@@ -68,9 +82,9 @@ class EnciClient:
                 certificate_error or err,
             )
             raise EnciError(
-                "Impossibile verificare il certificato HTTPS del servizio ENCI. "
-                "Controlla i registri di Home Assistant cercando “ENCI TLS” e "
-                "comunica il codice e il messaggio di verifica riportati."
+                "Impossibile verificare il certificato HTTPS del servizio ENCI "
+                "anche con la CA intermedia Actalis inclusa in PawBook. "
+                "Controlla i registri di Home Assistant cercando “ENCI TLS”."
             ) from err
         except (ClientError, ClientResponseError, TimeoutError, ValueError) as err:
             raise EnciError(f"Servizio ENCI non disponibile: {err}") from err

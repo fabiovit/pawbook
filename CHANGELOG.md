@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.7.4
+
+- Included the Actalis Domain Validation Server CA G3 intermediate certificate for ENCI.
+- Fixed TLS verification error 20 (`unable to get local issuer certificate`).
+- Kept SSL certificate and hostname verification enabled.
+
 ## 0.7.3
 
 - Added detailed diagnostic logging for ENCI TLS certificate verification failures.
