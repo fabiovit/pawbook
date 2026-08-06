@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.1.3
+
+- Corrected fourth-generation parent-child alignment.
+- Grouped each trisnonno pair directly below the correct bisnonno.
+- Added visual connectors for all eight fourth-generation pairs.
+- Added a new versioned frontend asset to bypass stale cache.
+
 ## 1.1.2
 
 - Fixed the black PawBook panel caused by a mismatch between the registered Home Assistant panel element and the JavaScript custom element.
