@@ -14,9 +14,10 @@ from homeassistant.components.http import StaticPathConfig
 from homeassistant.core import HomeAssistant, callback
 
 from .const import DOMAIN
+from .enci import EnciClient, EnciError, normalize_import
 
 PANEL_URL = "pawbook"
-PANEL_ELEMENT = "pawbook-panel-v063"
+PANEL_ELEMENT = "pawbook-panel-v070"
 STATIC_URL = "/pawbook_static"
 
 
@@ -29,8 +30,8 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
     await hass.http.async_register_static_paths(
         [
             StaticPathConfig(
-                f"{STATIC_URL}/pawbook-panel-v063.js",
-                str(frontend_path / "pawbook-panel-v063.js"),
+                f"{STATIC_URL}/pawbook-panel-v070.js",
+                str(frontend_path / "pawbook-panel-v070.js"),
                 False,
             )
         ]
@@ -47,13 +48,15 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
                 "name": PANEL_ELEMENT,
                 "embed_iframe": False,
                 "trust_external": False,
-                "js_url": f"{STATIC_URL}/pawbook-panel-v063.js",
+                "js_url": f"{STATIC_URL}/pawbook-panel-v070.js",
             }
         },
         require_admin=False,
     )
 
     websocket_api.async_register_command(hass, websocket_get_books)
+    websocket_api.async_register_command(hass, websocket_enci_search)
+    websocket_api.async_register_command(hass, websocket_enci_import)
     hass.data[DOMAIN]["panel_registered"] = True
 
 
@@ -87,6 +90,7 @@ def websocket_get_books(
                 "treatments": data.treatments,
                 "heat_cycles": data.heat_cycles,
                 "genealogy": data.genealogy,
+                "enci_data": data.enci_data,
             }
         )
 
@@ -99,3 +103,43 @@ def async_unload_panel(hass: HomeAssistant) -> None:
         return
     async_remove_panel(hass, PANEL_URL)
     hass.data[DOMAIN]["panel_registered"] = False
+
+
+@websocket_api.websocket_command({
+    vol.Required("type"): "pawbook/enci_search",
+    vol.Optional("registry", default=""): str,
+    vol.Optional("name", default=""): str,
+    vol.Optional("microchip", default=""): str,
+})
+@websocket_api.async_response
+async def websocket_enci_search(hass, connection, msg):
+    if not any((msg["registry"].strip(), msg["name"].strip(), msg["microchip"].strip())):
+        connection.send_error(msg["id"], "invalid_query", "Inserisci ROI/LOI, nome oppure microchip")
+        return
+    try:
+        rows = await EnciClient(hass).search(registry=msg["registry"], name=msg["name"], microchip=msg["microchip"])
+    except EnciError as err:
+        connection.send_error(msg["id"], "enci_error", str(err))
+        return
+    connection.send_result(msg["id"], rows)
+
+
+@websocket_api.websocket_command({
+    vol.Required("type"): "pawbook/enci_import",
+    vol.Required("entry_id"): str,
+    vol.Required("enci_dog_id"): vol.Any(str, int),
+})
+@websocket_api.async_response
+async def websocket_enci_import(hass, connection, msg):
+    coordinator = hass.data.get(DOMAIN, {}).get(msg["entry_id"])
+    if coordinator is None or not hasattr(coordinator, "async_import_enci"):
+        connection.send_error(msg["id"], "not_found", "Scheda PawBook non trovata")
+        return
+    try:
+        details = await EnciClient(hass).dog_details(msg["enci_dog_id"])
+        profile, genealogy, extras = normalize_import(details, msg["enci_dog_id"])
+        await coordinator.async_import_enci(profile, genealogy, extras)
+    except EnciError as err:
+        connection.send_error(msg["id"], "enci_error", str(err))
+        return
+    connection.send_result(msg["id"], {"profile": profile, "genealogy": genealogy})

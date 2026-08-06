@@ -18,7 +18,7 @@ A complete digital health record for pets in Home Assistant. All data is stored 
 - ENCI data: registered name, ROI/RSR, pedigree number, breeder, parents and official lookup link
 - Sensors and binary sensors for dashboards and automations
 
-> PawBook is not affiliated with ENCI. It does not use private APIs, credentials or scraping. ENCI information is stored locally and the official portal is linked for consultation.
+> PawBook is not affiliated with ENCI. Imported information is stored locally in Home Assistant.
 
 ## Installation with HACS
 
@@ -26,6 +26,10 @@ A complete digital health record for pets in Home Assistant. All data is stored 
 2. Add `https://github.com/fabiovit/pawbook` as **Integration**.
 3. Download PawBook and restart Home Assistant.
 4. Go to **Settings → Devices & services → Add integration** and search for **PawBook**.
+
+## Import from ENCI
+
+Open the PawBook sidebar panel, select the pet and press **Import / update** in the ENCI card. You can search by ROI/LOI/RSR, registered name or microchip, select the matching subject and import the available profile and pedigree data.
 
 ## Actions
 

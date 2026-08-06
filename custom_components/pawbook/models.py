@@ -33,6 +33,7 @@ class PetBookData:
     treatments: list[dict[str, Any]]
     heat_cycles: list[dict[str, Any]]
     genealogy: dict[str, Any]
+    enci_data: dict[str, Any]
 
     @classmethod
     def empty(cls, profile: dict[str, Any]) -> "PetBookData":
@@ -44,6 +45,7 @@ class PetBookData:
             treatments=[],
             heat_cycles=[],
             genealogy={},
+            enci_data={},
         )
 
     @classmethod
@@ -56,6 +58,7 @@ class PetBookData:
             treatments=list(data.get("treatments", [])),
             heat_cycles=list(data.get("heat_cycles", [])),
             genealogy=dict(data.get("genealogy", {})),
+            enci_data=dict(data.get("enci_data", {})),
         )
 
     def as_dict(self) -> dict[str, Any]:
@@ -67,4 +70,5 @@ class PetBookData:
             "treatments": self.treatments,
             "heat_cycles": self.heat_cycles,
             "genealogy": self.genealogy,
+            "enci_data": self.enci_data,
         }

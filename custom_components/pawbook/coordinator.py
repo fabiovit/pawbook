@@ -141,6 +141,12 @@ class PawBookCoordinator(DataUpdateCoordinator[PetBookData]):
         self.data.genealogy = {}
         await self._save()
 
+    async def async_import_enci(self, profile: dict[str, Any], genealogy: dict[str, Any], extras: dict[str, Any]) -> None:
+        self.data.profile.update(profile)
+        self.data.genealogy = genealogy
+        self.data.enci_data = extras
+        await self._save()
+
 
     async def async_update_record(
         self,

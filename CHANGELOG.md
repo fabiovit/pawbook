@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0
+
+- Added ENCI search by ROI/LOI/RSR, registered name and microchip.
+- Added one-click import and update from the PawBook panel.
+- Added automatic import of profile, pedigree and available ENCI datasets.
+- ENCI data remains stored locally in Home Assistant.
+- Existing vaccination, visit, treatment and heat-cycle editing remains unchanged.
+
 ## 0.6.3
 
 - Rinominato il Web Component del pannello per impedire il riuso della vecchia interfaccia in cache.
