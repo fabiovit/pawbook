@@ -307,7 +307,7 @@ def normalize_import(
         "color": _pick(merged, "COLORE", "Colore"),
         "microchip": _pick(merged, "MICROCHIP", "Microchip", "MicroChip", "microchip"),
         "sex": _pick(merged, "SESSO", "Sesso", "sex"),
-        "birth_date": _pick(merged, "DATA_NASCITA", "DataNascita", "DataN", "birth_date"),
+        "birth_date": _format_enci_date(_pick(merged, "DATA_NASCITA_CANE", "DATA_NASCITA", "DataNascita", "DataN", "birth_date")),
         "breeder": _pick(merged, "ALLEVATORE", "Allevatore", "NOME_ALLEVATORE"),
         "father": _pick(merged, "PADRE", "NomePadre", "NOME_PADRE"),
         "mother": _pick(merged, "MADRE", "NomeMadre", "NOME_MADRE"),
@@ -328,88 +328,71 @@ def normalize_import(
     return profile, genealogy, extras
 
 
+def _format_enci_date(value: Any) -> str:
+    """Convert ENCI dates such as YYYYMMDD to ISO YYYY-MM-DD."""
+    text = str(value or "").strip()
+    if len(text) == 8 and text.isdigit():
+        return f"{text[:4]}-{text[4:6]}-{text[6:8]}"
+    return text
+
+
 def _normalize_pedigree(raw: Any, profile: dict[str, Any]) -> dict[str, Any]:
+    """Normalize the flat ENCI pedigree response into PawBook's tree."""
+    data = _unwrap_dict(raw)
     root = {
-        "name": profile.get("enci_name", ""),
-        "roi": profile.get("enci_registry", ""),
+        "enci_id": str(_pick(data, "ID_CANE")),
+        "name": _pick(data, "NOME_CANE") or profile.get("enci_name", ""),
+        "roi": _pick(data, "LOI_CANE") or profile.get("enci_registry", ""),
         "microchip": profile.get("microchip", ""),
+        "birth_date": _format_enci_date(_pick(data, "DATA_NASCITA_CANE")),
     }
-    candidates = raw
-    if isinstance(raw, dict):
-        candidates = raw.get("Dto") or raw.get("Data") or raw.get("Items") or raw
 
-    if isinstance(candidates, dict):
-        root.update(_node_from_dict(candidates))
-        _attach_named_relatives(root, candidates)
-    elif isinstance(candidates, list):
-        _attach_flat_nodes(root, candidates)
-    return {key: value for key, value in root.items() if value not in (None, "", [], {})}
+    # ENCI returns a flat binary tree:
+    # 1/2 = parents, 3/4 = father's parents, 5/6 = mother's parents, etc.
+    father = _enci_ancestor_node(data, 1)
+    mother = _enci_ancestor_node(data, 2)
+    if father:
+        root["father"] = father
+    if mother:
+        root["mother"] = mother
+
+    return {
+        key: value
+        for key, value in root.items()
+        if value not in (None, "", [], {})
+    }
 
 
-def _node_from_dict(data: dict[str, Any]) -> dict[str, Any]:
+def _enci_ancestor_node(data: dict[str, Any], index: int) -> dict[str, Any]:
+    """Build one ENCI ancestor and recursively attach its parents."""
+    if index < 1 or index > 30:
+        return {}
+
+    relation = "PADRE" if index % 2 else "MADRE"
     node = {
-        "name": _pick(data, "NOME_CANE", "Nome", "NOME", "name", "NomeCane"),
-        "roi": _pick(data, "LOI_CANE", "LOI", "ROI", "roi", "Registro"),
-        "microchip": _pick(data, "MICROCHIP", "Microchip", "microchip"),
-        "titles": _pick(data, "TITOLI", "Titoli", "titles"),
+        "enci_id": str(_pick(data, f"ID_{relation}_{index}") or ""),
+        "name": _pick(data, f"NOME_{relation}_{index}"),
+        "roi": _pick(data, f"LOI_{relation}_{index}"),
+        "birth_date": _format_enci_date(
+            _pick(data, f"DATA_NASCITA_{relation}_{index}")
+        ),
     }
-    father = _pick_relation(data, "father", "Padre", "PADRE", "GenitoreMaschio")
-    mother = _pick_relation(data, "mother", "Madre", "MADRE", "GenitoreFemmina")
+
+    father_index = 2 * index + 1
+    mother_index = 2 * index + 2
+    father = _enci_ancestor_node(data, father_index)
+    mother = _enci_ancestor_node(data, mother_index)
     if father:
         node["father"] = father
     if mother:
         node["mother"] = mother
-    return {key: value for key, value in node.items() if value not in (None, "", [], {})}
 
-
-def _pick_relation(data: dict[str, Any], *keys: str) -> dict[str, Any] | None:
-    lowered = {str(key).lower(): value for key, value in data.items()}
-    for key in keys:
-        value = data.get(key, lowered.get(key.lower()))
-        if isinstance(value, dict):
-            return _node_from_dict(value)
-        if isinstance(value, str) and value.strip():
-            return {"name": value.strip()}
-    return None
-
-
-def _attach_named_relatives(root: dict[str, Any], data: dict[str, Any]) -> None:
-    mappings = {
-        "father": ("PADRE", "Padre", "father", "NOME_PADRE"),
-        "mother": ("MADRE", "Madre", "mother", "NOME_MADRE"),
+    meaningful = any(node.get(key) for key in ("enci_id", "name", "roi", "birth_date"))
+    if not meaningful:
+        return {}
+    return {
+        key: value
+        for key, value in node.items()
+        if value not in (None, "", [], {})
     }
-    for target, keys in mappings.items():
-        relation = _pick_relation(data, *keys)
-        if relation:
-            root[target] = relation
 
-
-def _attach_flat_nodes(root: dict[str, Any], rows: list[Any]) -> None:
-    normalized: list[dict[str, Any]] = []
-    for row in rows:
-        if not isinstance(row, dict):
-            continue
-        node = _node_from_dict(row)
-        generation = str(_pick(row, "GENERAZIONE", "Generazione", "Livello", "level"))
-        position = str(_pick(row, "POSIZIONE", "Posizione", "Ruolo", "relationship"))
-        if generation:
-            node["generation"] = generation
-        if position:
-            node["relationship"] = position
-        if node.get("name") or node.get("roi"):
-            normalized.append(node)
-    if not normalized:
-        return
-    root["enci_nodes"] = normalized
-
-    for node in normalized:
-        relation = str(node.get("relationship", "")).lower()
-        if "padre" in relation or relation in {"father", "sire"}:
-            root.setdefault("father", node)
-        elif "madre" in relation or relation in {"mother", "dam"}:
-            root.setdefault("mother", node)
-
-    if "father" not in root and normalized:
-        root["father"] = normalized[0]
-    if "mother" not in root and len(normalized) > 1:
-        root["mother"] = normalized[1]

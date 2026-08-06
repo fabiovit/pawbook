@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.8.1
+
+- Fixed parsing of the real flat ENCI pedigree response.
+- Builds the full family tree from `PADRE_1` / `MADRE_2` through ancestor slot 30.
+- Imports ENCI birth dates and converts `YYYYMMDD` to ISO format.
+- Keeps the verified Actalis TLS certificate-chain workaround.
+
 ## 0.7.4
 
 - Included the Actalis Domain Validation Server CA G3 intermediate certificate for ENCI.
