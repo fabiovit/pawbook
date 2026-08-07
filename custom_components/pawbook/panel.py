@@ -17,7 +17,7 @@ from .const import DOMAIN
 from .enci import EnciClient, EnciError, normalize_import
 
 PANEL_URL = "pawbook"
-PANEL_ELEMENT = "pawbook-panel-v122"
+PANEL_ELEMENT = "pawbook-panel-v200"
 STATIC_URL = "/pawbook_static"
 
 
@@ -30,8 +30,8 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
     await hass.http.async_register_static_paths(
         [
             StaticPathConfig(
-                f"{STATIC_URL}/pawbook-panel-v122.js",
-                str(frontend_path / "pawbook-panel-v122.js"),
+                f"{STATIC_URL}/pawbook-panel-v200.js",
+                str(frontend_path / "pawbook-panel-v200.js"),
                 False,
             )
         ]
@@ -48,7 +48,7 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
                 "name": PANEL_ELEMENT,
                 "embed_iframe": False,
                 "trust_external": False,
-                "js_url": f"{STATIC_URL}/pawbook-panel-v122.js",
+                "js_url": f"{STATIC_URL}/pawbook-panel-v200.js",
             }
         },
         require_admin=False,
@@ -58,6 +58,8 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, websocket_enci_search)
     websocket_api.async_register_command(hass, websocket_enci_import)
     websocket_api.async_register_command(hass, websocket_set_photo)
+    websocket_api.async_register_command(hass, websocket_export_backup)
+    websocket_api.async_register_command(hass, websocket_import_backup)
     hass.data[DOMAIN]["panel_registered"] = True
 
 
@@ -185,3 +187,37 @@ async def websocket_set_photo(hass, connection, msg):
 
     await coordinator.async_set_profile({"photo_url": photo_data})
     connection.send_result(msg["id"], {"saved": True, "has_photo": bool(photo_data)})
+
+
+@websocket_api.websocket_command({
+    vol.Required("type"): "pawbook/export_backup",
+    vol.Required("entry_id"): str,
+})
+@websocket_api.async_response
+async def websocket_export_backup(hass, connection, msg):
+    """Export one pet as a portable PawBook v2 backup."""
+    coordinator = hass.data.get(DOMAIN, {}).get(msg["entry_id"])
+    if coordinator is None or not hasattr(coordinator, "export_backup"):
+        connection.send_error(msg["id"], "not_found", "Scheda PawBook non trovata")
+        return
+    connection.send_result(msg["id"], coordinator.export_backup())
+
+
+@websocket_api.websocket_command({
+    vol.Required("type"): "pawbook/import_backup",
+    vol.Required("entry_id"): str,
+    vol.Required("backup"): dict,
+})
+@websocket_api.async_response
+async def websocket_import_backup(hass, connection, msg):
+    """Restore one pet from a portable PawBook backup."""
+    coordinator = hass.data.get(DOMAIN, {}).get(msg["entry_id"])
+    if coordinator is None or not hasattr(coordinator, "async_restore_backup"):
+        connection.send_error(msg["id"], "not_found", "Scheda PawBook non trovata")
+        return
+    try:
+        await coordinator.async_restore_backup(msg["backup"])
+    except (TypeError, ValueError) as err:
+        connection.send_error(msg["id"], "invalid_backup", str(err))
+        return
+    connection.send_result(msg["id"], {"restored": True})

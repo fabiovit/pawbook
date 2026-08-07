@@ -1,5 +1,10 @@
-# Pubblicazione GitHub
+# PawBook v2.0.0
 
-- Commit: `PawBook v1.0.1 - Improve pedigree readability and Italian dates`
-- Tag: `v1.0.1`
-- Titolo: `PawBook v1.0.1 – Pedigree Readability Fix`
+## Commit
+`PawBook v2.0.0 - Major dashboard and backup release`
+
+## Tag
+`v2.0.0`
+
+## Release title
+`PawBook v2.0.0 – Major Release`

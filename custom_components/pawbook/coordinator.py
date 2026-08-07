@@ -177,3 +177,34 @@ class PawBookCoordinator(DataUpdateCoordinator[PetBookData]):
         if changed:
             await self._save()
         return changed
+
+    def export_backup(self) -> dict[str, Any]:
+        """Return a portable PawBook backup payload for this pet."""
+        return {
+            "format": "pawbook-backup",
+            "version": 2,
+            "entry_title": self.entry.title,
+            "data": self.data.as_dict(),
+        }
+
+    async def async_restore_backup(self, payload: dict[str, Any]) -> None:
+        """Restore PawBook data from a validated portable backup payload."""
+        if payload.get("format") != "pawbook-backup":
+            raise ValueError("Formato backup PawBook non valido")
+        raw = payload.get("data")
+        if not isinstance(raw, dict):
+            raise ValueError("Il backup non contiene dati PawBook validi")
+
+        restored = PetBookData.from_dict(raw, self.data.profile)
+        for category in ("weights", "vaccinations", "visits", "treatments", "heat_cycles"):
+            records = getattr(restored, category)
+            if not isinstance(records, list):
+                raise ValueError(f"Sezione backup non valida: {category}")
+            for item in records:
+                if not isinstance(item, dict):
+                    raise ValueError(f"Record backup non valido: {category}")
+                if not item.get("id"):
+                    item["id"] = new_id()
+
+        self.data = restored
+        await self._save()

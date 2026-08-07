@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.0.0
+
+- Nuova dashboard PawBook 2.0 con navigazione estesa.
+- Timeline sanitaria unificata per peso, vaccini, visite, terapie e calori.
+- Età del cane calcolata automaticamente dalla data di nascita.
+- Nuova sezione statistiche con andamento peso e riepiloghi sanitari.
+- Backup e ripristino completo per singolo cane in formato JSON.
+- Migliorata la gestione multi-cane mantenendo le schede esistenti.
+- Conservate integrazione ENCI, genealogia, HD/ED/DNA e foto locali.
+- Nuovo asset frontend v200 per evitare cache obsolete.
+
 ## 1.2.0
 
 - Added ENCI HD/ED/DNA import for every ancestor in the pedigree.
