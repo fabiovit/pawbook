@@ -204,3 +204,10 @@
 - Tutte le schede dell'albero sono ora cliccabili.
 - Aggiunto popup con nome, ROI/RSR, data di nascita, microchip, ID ENCI, titoli e dati sanitari.
 - Conservato il formato italiano delle date `GG/MM/AAAA`.
+
+## v1.2.1
+
+- Replaced the broken header brand image with an inline PawBook paw SVG.
+- Removed the frontend dependency on Home Assistant's integration brand-image endpoint for the PawBook header.
+- Added a new versioned frontend asset (`pawbook-panel-v121.js`) to bypass stale browser/Home Assistant cache.
+- Preserved all v1.2.0 ENCI pedigree-health features and existing PawBook data.
