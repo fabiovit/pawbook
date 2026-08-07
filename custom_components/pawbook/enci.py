@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 from datetime import datetime
+import asyncio
+import re
 import json
 import logging
 import ssl
@@ -163,12 +165,36 @@ class EnciClient:
                 endpoint, dog_id=dog_id_text
             )
 
+        # ENCI exposes HD/ED, DNA deposits and other official checks through
+        # GetAvvenimentiCane for every individual dog. Fetch the same data for
+        # all ancestors in the imported pedigree, with a conservative
+        # concurrency limit to avoid overloading the public service.
+        pedigree_data = _unwrap_dict(data.get("pedigree"))
+        ancestor_ids = _extract_ancestor_ids(pedigree_data)
+        ancestor_ids.discard(dog_id_text)
+        data["ancestor_events"] = await self._ancestor_events(ancestor_ids)
+
         if not data.get("profile") and not data.get("pedigree"):
             raise EnciError(
                 "ENCI ha trovato il cane, ma non ha restituito anagrafica o pedigree. "
                 "Controlla i registri cercando ‘ENCI endpoint’."
             )
         return data
+
+    async def _ancestor_events(self, dog_ids: set[str]) -> dict[str, list[dict[str, Any]]]:
+        """Fetch official ENCI events for each ancestor with limited concurrency."""
+        semaphore = asyncio.Semaphore(5)
+
+        async def fetch(dog_id: str) -> tuple[str, list[dict[str, Any]]]:
+            async with semaphore:
+                result = await self._detail_request("GetAvvenimentiCane", dog_id=dog_id)
+            events = [item for item in _as_list(result) if isinstance(item, dict)]
+            return dog_id, events
+
+        if not dog_ids:
+            return {}
+        pairs = await asyncio.gather(*(fetch(dog_id) for dog_id in sorted(dog_ids)))
+        return {dog_id: events for dog_id, events in pairs if events}
 
 
 def _has_meaningful_data(value: Any) -> bool:
@@ -284,7 +310,7 @@ def normalize_import(
         "enci_last_sync": datetime.now().isoformat(timespec="seconds"),
     }
     profile = {key: value for key, value in profile.items() if value not in (None, "")}
-    genealogy = _normalize_pedigree(details.get("pedigree"), profile)
+    genealogy = _normalize_pedigree(details.get("pedigree"), profile, details.get("ancestor_events") or {}, details.get("events") or [])
     extras = {
         "events": details.get("events") or [],
         "show_results": details.get("show_results") or [],
@@ -297,6 +323,7 @@ def normalize_import(
         "foreign_titles": details.get("foreign_titles") or [],
         "raw_profile": details.get("profile") or {},
         "raw_pedigree": details.get("pedigree") or {},
+        "ancestor_events": details.get("ancestor_events") or {},
     }
     return profile, genealogy, extras
 
@@ -309,7 +336,7 @@ def _format_enci_date(value: Any) -> str:
     return text
 
 
-def _normalize_pedigree(raw: Any, profile: dict[str, Any]) -> dict[str, Any]:
+def _normalize_pedigree(raw: Any, profile: dict[str, Any], ancestor_events: dict[str, list[dict[str, Any]]], root_events: Any) -> dict[str, Any]:
     """Normalize the flat ENCI pedigree response into PawBook's tree."""
     data = _unwrap_dict(raw)
     root = {
@@ -319,11 +346,12 @@ def _normalize_pedigree(raw: Any, profile: dict[str, Any]) -> dict[str, Any]:
         "microchip": profile.get("microchip", ""),
         "birth_date": _format_enci_date(_pick(data, "DATA_NASCITA_CANE")),
     }
+    _attach_health(root, [item for item in _as_list(root_events) if isinstance(item, dict)])
 
     # ENCI returns a flat binary tree:
     # 1/2 = parents, 3/4 = father's parents, 5/6 = mother's parents, etc.
-    father = _enci_ancestor_node(data, 1)
-    mother = _enci_ancestor_node(data, 2)
+    father = _enci_ancestor_node(data, 1, ancestor_events)
+    mother = _enci_ancestor_node(data, 2, ancestor_events)
     if father:
         root["father"] = father
     if mother:
@@ -336,7 +364,7 @@ def _normalize_pedigree(raw: Any, profile: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _enci_ancestor_node(data: dict[str, Any], index: int) -> dict[str, Any]:
+def _enci_ancestor_node(data: dict[str, Any], index: int, ancestor_events: dict[str, list[dict[str, Any]]]) -> dict[str, Any]:
     """Build one ENCI ancestor and recursively attach its parents."""
     if index < 1 or index > 30:
         return {}
@@ -353,12 +381,16 @@ def _enci_ancestor_node(data: dict[str, Any], index: int) -> dict[str, Any]:
 
     father_index = 2 * index + 1
     mother_index = 2 * index + 2
-    father = _enci_ancestor_node(data, father_index)
-    mother = _enci_ancestor_node(data, mother_index)
+    father = _enci_ancestor_node(data, father_index, ancestor_events)
+    mother = _enci_ancestor_node(data, mother_index, ancestor_events)
     if father:
         node["father"] = father
     if mother:
         node["mother"] = mother
+
+    dog_id = str(node.get("enci_id") or "")
+    if dog_id:
+        _attach_health(node, ancestor_events.get(dog_id, []))
 
     meaningful = any(node.get(key) for key in ("enci_id", "name", "roi", "birth_date"))
     if not meaningful:
@@ -369,3 +401,54 @@ def _enci_ancestor_node(data: dict[str, Any], index: int) -> dict[str, Any]:
         if value not in (None, "", [], {})
     }
 
+
+
+def _extract_ancestor_ids(data: dict[str, Any]) -> set[str]:
+    ids: set[str] = set()
+    root_id = str(_pick(data, "ID_CANE") or "").strip()
+    if root_id:
+        ids.add(root_id)
+    for index in range(1, 31):
+        relation = "PADRE" if index % 2 else "MADRE"
+        dog_id = str(_pick(data, f"ID_{relation}_{index}") or "").strip()
+        if dog_id:
+            ids.add(dog_id)
+    return ids
+
+
+def _attach_health(node: dict[str, Any], events: list[dict[str, Any]]) -> None:
+    """Attach normalized HD/ED/DNA information and raw ENCI events to a tree node."""
+    if not events:
+        return
+    summary: dict[str, Any] = {}
+    labels: list[str] = []
+    normalized_events: list[dict[str, Any]] = []
+
+    for event in events:
+        description = str(_pick(event, "AVVENIMENTO", "Descrizione") or "").strip()
+        event_type = str(_pick(event, "TIPO", "Tipo") or "").strip()
+        date_value = _format_enci_date(_pick(event, "DATA_ISO", "DATA", "DATA_CHAR"))
+        normalized_events.append({
+            "type": event_type,
+            "description": description,
+            "date": date_value,
+            "code": str(_pick(event, "CODICE") or ""),
+        })
+        upper = description.upper()
+        hd_match = re.search(r"\bHD[.\s-]*([A-E])(?:\s*\((\d+)\))?", upper)
+        ed_match = re.search(r"\bED(?:[.\s-]*)?(\d)", upper)
+        if hd_match:
+            grade = hd_match.group(1)
+            summary["hd"] = grade
+            labels.append(f"HD {grade}")
+        if ed_match:
+            grade = ed_match.group(1)
+            summary["ed"] = grade
+            labels.append(f"ED {grade}")
+        if "CAMPIONE BIOLOGICO" in event_type.upper() or "DNA" in upper or "VETOGENE" in upper:
+            summary["dna"] = True
+            labels.append("DNA")
+
+    node["health_summary"] = summary
+    node["health_events"] = normalized_events
+    node["health"] = list(dict.fromkeys(labels))

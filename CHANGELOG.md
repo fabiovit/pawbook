@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.0
+
+- Added ENCI HD/ED/DNA import for every ancestor in the pedigree.
+- Added color-coded health badges to pedigree cards.
+- Added complete ENCI health-event details to ancestor popups.
+- Added concurrency-limited ancestor data retrieval and local persistence.
+- Added a new versioned frontend asset to bypass stale cache.
+
 ## 1.1.3
 
 - Corrected fourth-generation parent-child alignment.
