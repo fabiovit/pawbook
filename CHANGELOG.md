@@ -211,3 +211,12 @@
 - Removed the frontend dependency on Home Assistant's integration brand-image endpoint for the PawBook header.
 - Added a new versioned frontend asset (`pawbook-panel-v121.js`) to bypass stale browser/Home Assistant cache.
 - Preserved all v1.2.0 ENCI pedigree-health features and existing PawBook data.
+
+
+## v1.2.2
+
+- Redesigned the PawBook overview dashboard.
+- Enlarged the dog profile card and photo.
+- Added three prominent health summary tiles.
+- Added section navigation for overview, health, vaccines, visits, genealogy, ENCI and settings.
+- Added a new versioned frontend asset (`pawbook-panel-v122.js`) to prevent stale cache.
