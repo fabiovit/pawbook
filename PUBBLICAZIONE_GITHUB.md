@@ -1,10 +1,13 @@
-# PawBook v2.0.0
+# PawBook v2.0.2
 
 ## Commit
-`PawBook v2.0.0 - Major dashboard and backup release`
+
+PawBook v2.0.2 - Add mobile genealogy drill-down
 
 ## Tag
-`v2.0.0`
+
+v2.0.2
 
 ## Release title
-`PawBook v2.0.0 – Major Release`
+
+PawBook v2.0.2 – Mobile Genealogy Navigation

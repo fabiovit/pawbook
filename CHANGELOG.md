@@ -1,17 +1,5 @@
 # Changelog
 
-## 2.0.1
-
-### Mobile responsive update
-- Added a dedicated smartphone layout for the PawBook dashboard.
-- Converted profile, statistics and insight areas to mobile-first single-column layouts.
-- Added horizontally scrollable touch-friendly navigation.
-- Improved touch targets and iPhone/Android safe-area handling.
-- Added a dedicated horizontally scrollable pedigree presentation for small screens.
-- Made dialogs mobile-friendly with bottom-sheet/full-height behavior and sticky actions.
-- Improved ENCI panels, timeline, record actions, forms and backup controls on narrow displays.
-- Preserved all PawBook 2.0 data, ENCI integration and genealogy features.
-
 ## 2.0.0
 
 - Nuova dashboard PawBook 2.0 con navigazione estesa.
@@ -243,3 +231,13 @@
 - Added three prominent health summary tiles.
 - Added section navigation for overview, health, vaccines, visits, genealogy, ENCI and settings.
 - Added a new versioned frontend asset (`pawbook-panel-v122.js`) to prevent stale cache.
+
+## v2.0.2
+
+- Added a smartphone-only drill-down genealogy view.
+- Desktop pedigree remains unchanged.
+- Mobile genealogy now navigates one ancestor at a time through Father and Mother cards.
+- Added breadcrumb navigation and back-to-root controls on mobile.
+- Added health badges and direct ENCI detail access to the mobile ancestor view.
+- Removed the horizontally compressed desktop pedigree from smartphone layouts.
+- Updated the frontend asset to v202 to avoid stale Home Assistant/browser cache.

@@ -4,201 +4,179 @@
 [![GitHub Release](https://img.shields.io/github/v/release/fabiovit/pawbook)](https://github.com/fabiovit/pawbook/releases)
 [![License](https://img.shields.io/github/license/fabiovit/pawbook)](LICENSE)
 
-**PawBook** is a complete digital health record for dogs and pets designed for Home Assistant.
+A complete digital health record for pets in Home Assistant. All data is stored locally and exposed through native entities and actions.
 
-Manage your pet's health, genealogy, vaccinations, treatments and ENCI pedigree directly from a modern dashboard, with all data stored locally inside Home Assistant.
-
----
-
-# ✨ Features
-
-## 🐶 Pet management
+## Features
 
 - Multiple pets
-- Dog profile with photo
-- Automatic age calculation
-- Breed, sex and microchip
-- Weight history
-- Health timeline
-- Statistics dashboard
-
-## 💉 Health
-
-- Vaccinations
+- Age and weight history
+- Vaccinations and reminders
 - Veterinary visits
-- Treatments
-- Heat cycles
-- Weight history
-- Medication management
+- Treatments and medications
+- Heat cycle history
+- Microchip and breed data
+- ENCI data: registered name, ROI/RSR, pedigree number, breeder, parents and official lookup link
+- Sensors and binary sensors for dashboards and automations
 
-## 🧬 ENCI Integration
+> PawBook is not affiliated with ENCI. Imported information is stored locally in Home Assistant.
 
-PawBook integrates directly with the official ENCI pedigree service.
+## Installation with HACS
 
-Available features:
+1. Open HACS → Custom repositories.
+2. Add `https://github.com/fabiovit/pawbook` as **Integration**.
+3. Download PawBook and restart Home Assistant.
+4. Go to **Settings → Devices & services → Add integration** and search for **PawBook**.
 
-- Search by ROI / LOI / RSR
-- Search by registered name
-- Search by microchip
-- Automatic profile import
-- Automatic pedigree import
-- Up to 4 pedigree generations
-- Official ENCI events
-- HD / ED health information
-- DNA / biological sample information
-- Local pedigree storage
+## Import from ENCI
 
-## 🌳 Interactive pedigree
+Open the PawBook sidebar panel, select the pet and press **Import / update** in the ENCI card. You can search by ROI/LOI/RSR, registered name or microchip, select the matching subject and import the available profile and pedigree data.
 
-- Four-generation pedigree tree
-- Male / female color coding
-- Ancestor popup
-- Health badges
-- HD / ED information
-- DNA information
-- Responsive layout
+## Actions
 
-## 📊 Dashboard
+- `pawbook.add_weight`
+- `pawbook.add_vaccination`
+- `pawbook.add_visit`
+- `pawbook.add_treatment`
+- `pawbook.add_heat_cycle`
+- `pawbook.set_profile`
+- `pawbook.delete_record`
 
-- Modern Home Assistant interface
-- Health summary
-- Next vaccination
-- Latest visit
-- Current weight
-- Responsive design
-- Mobile support
-
-## 💾 Backup
-
-- Export complete pet data
-- Restore from JSON backup
-- Safe validation before importing
-
----
-
-# 📦 Installation
-
-## HACS
-
-1. Open **HACS**
-2. Custom repositories
-3. Add
-
-```
-https://github.com/fabiovit/pawbook
-```
-
-as **Integration**.
-
-Restart Home Assistant and add **PawBook** from **Settings → Devices & Services**.
-
----
-
-# 🧬 Import from ENCI
-
-Open the PawBook panel and select your dog.
-
-Choose **ENCI** → **Import**.
-
-Search using:
-
-- ROI / LOI / RSR
-- Registered name
-- Microchip
-
-PawBook automatically imports:
-
-- dog profile
-- pedigree
-- breeder
-- parents
-- ancestry
-- official ENCI events
-- HD / ED results
-- DNA information (when available)
-
-Imported data is stored locally inside Home Assistant.
-
-> PawBook is **not affiliated with ENCI**.
-
----
-
-# ❤️ Health records
-
-PawBook supports:
-
-- Vaccinations
-- Veterinary visits
-- Treatments
-- Heat cycles
-- Weight records
-
-Everything is displayed inside a unified health timeline.
-
----
-
-# 🌳 Genealogy
-
-The pedigree viewer includes:
-
-- Four generations
-- Interactive ancestor cards
-- Detailed popups
-- Health information
-- ENCI integration
-- Visual editor
-- Local storage
-
-No JSON editing is required.
-
----
-
-# ⚙️ Available actions
-
-- pawbook.add_weight
-- pawbook.add_vaccination
-- pawbook.add_visit
-- pawbook.add_treatment
-- pawbook.add_heat_cycle
-- pawbook.set_profile
-- pawbook.delete_record
-
-Example:
+### Add a weight
 
 ```yaml
 action: pawbook.add_weight
 data:
   dog_id: Evie
-  weight: 15.2
-  date: "2026-08-09"
+  weight: 12.4
+  date: "2026-07-31"
 ```
 
----
+### Add ENCI information
 
-# 🔒 Privacy
+```yaml
+action: pawbook.set_profile
+data:
+  dog_id: Evie
+  enci_name: "Registered name"
+  enci_registry: "ROI 00/000000"
+  pedigree_number: "000000"
+  father: "Father registered name"
+  mother: "Mother registered name"
+  breeder: "Breeder name"
+  enci_url: "https://www.enci.it/libro-genealogico/libro-genealogico-on-line"
+```
 
-All PawBook data is stored locally in Home Assistant.
-
-PawBook does **not** upload your pet information to third-party services.
-
-ENCI credentials, when required for importing, are used only during the active import session and are **never stored** by PawBook.
-
----
-
-# 🚀 Roadmap
-
-Upcoming features:
-
-- Better mobile interface
-- Timeline improvements
-- Health charts
-- Multiple photo gallery
-- PDF export
-- Cloud backup
-- Multi-language support
-
----
-
-# 📄 License
+## License
 
 MIT
+
+
+## Genealogia ENCI
+
+PawBook può memorizzare un albero genealogico completo fino ai trisnonni.
+
+L'importazione avviene tramite l'azione:
+
+```yaml
+action: pawbook.import_genealogy
+data:
+  dog_id: Evie
+  genealogy_json: >
+    {
+      "name": "Nome registrato ENCI",
+      "roi": "ROI 00/00000",
+      "father": {
+        "name": "Padre",
+        "roi": "ROI 00/00001",
+        "father": {
+          "name": "Nonno paterno"
+        },
+        "mother": {
+          "name": "Nonna paterna"
+        }
+      },
+      "mother": {
+        "name": "Madre",
+        "roi": "ROI 00/00002",
+        "father": {
+          "name": "Nonno materno"
+        },
+        "mother": {
+          "name": "Nonna materna"
+        }
+      }
+    }
+```
+
+Ogni soggetto può contenere:
+
+- `name`
+- `roi`
+- `microchip`
+- `breed`
+- `sex`
+- `titles`
+- `health`
+- `father`
+- `mother`
+
+`father` e `mother` possono contenere a loro volta la stessa struttura, così
+l'albero può essere esteso fino a quattro generazioni o oltre.
+
+L'integrazione crea il sensore `Genealogia`, che espone l'intero albero
+nell'attributo `albero`.
+
+PawBook non accede automaticamente all'area riservata ENCI, non salva password
+e non effettua scraping. I dati devono essere copiati dal pedigree o inseriti
+manualmente finché non sarà disponibile un servizio ufficiale documentato.
+
+
+## Pannello PawBook
+
+Dalla versione 0.4.0 PawBook aggiunge automaticamente una voce **PawBook**
+nel menu laterale di Home Assistant.
+
+Dal pannello è possibile:
+
+- consultare tutti gli animali configurati;
+- registrare peso;
+- aggiungere vaccinazioni;
+- registrare visite veterinarie;
+- aggiungere terapie;
+- registrare cicli di calore;
+- consultare i dati ENCI;
+- importare e visualizzare l'albero genealogico;
+- aprire la configurazione del profilo.
+
+Non è necessario aggiungere risorse Lovelace o modificare `configuration.yaml`.
+Il pannello viene distribuito direttamente dall'integrazione.
+
+
+## Modifica ed eliminazione
+
+Nel pannello PawBook clicca su una registrazione di peso, vaccino, visita,
+terapia o calore per aprire il modulo di modifica già compilato.
+
+Dal modulo puoi:
+
+- correggere i dati;
+- salvare le modifiche;
+- eliminare definitivamente la registrazione dopo conferma.
+
+
+## Editor genealogico visuale
+
+La genealogia non richiede più l'inserimento manuale di JSON.
+
+Dal pannello PawBook premi **Modifica albero** e compila i campi dedicati per:
+
+- animale;
+- padre e madre;
+- nonni paterni;
+- nonni materni;
+- ROI/RSR;
+- microchip;
+- titoli;
+- informazioni sanitarie.
+
+I dati già salvati vengono mostrati automaticamente durante la modifica.
