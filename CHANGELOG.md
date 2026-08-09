@@ -252,3 +252,14 @@
 - Added health badges and direct ENCI detail access to the mobile ancestor view.
 - Removed the horizontally compressed desktop pedigree from smartphone layouts.
 - Updated the frontend asset to v202 to avoid stale Home Assistant/browser cache.
+
+## 4.0.0
+
+- Introduced the first PawBook 4.0 dashboard redesign.
+- Added a new Home health overview with direct access to Smart Health, vaccines, visits and genealogy.
+- Rebuilt the Vaccinations section as a complete vaccine dashboard.
+- Vaccinations are now grouped by vaccine name instead of being truncated to the latest five records.
+- Added full expandable vaccination history for every vaccine group.
+- Added status indicators for vaccines that are in order, near expiry or expired.
+- Added vaccination summary counters.
+- Preserved all existing PawBook data, ENCI integration, genealogy, attachments, calendar and Smart Health features.
