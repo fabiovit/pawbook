@@ -1,3 +1,14 @@
+# PawBook Changelog
+
+## 4.1.0
+- Introduced the Vaccination Center dashboard.
+- Added vaccine status overview, latest dose and next recall summaries.
+- Added dose counters and detailed status per vaccine.
+- Added complete dose metadata (veterinarian, batch, recall date and notes) to history.
+- Added one-tap new-dose action prefilled with the selected vaccine name.
+- Preserved the complete vaccination history without filtering older records.
+- Updated frontend asset to v410.
+
 # Changelog
 
 ## 3.3.0 - Smart Health Edition

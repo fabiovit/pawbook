@@ -1,5 +1,3 @@
-PawBook v4.0.0
-
-Commit: PawBook v4.0.0 - Next Generation vaccination dashboard
-Tag: v4.0.0
-Release: PawBook v4.0.0 – Next Generation
+PawBook v4.1.0
+Tag: v4.1.0
+Release title: PawBook v4.1.0 – Vaccination Center
