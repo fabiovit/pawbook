@@ -76,12 +76,6 @@ Available features:
 
 ---
 
-# 📸 Screenshots
-
-(Add screenshots here)
-
----
-
 # 📦 Installation
 
 ## HACS
