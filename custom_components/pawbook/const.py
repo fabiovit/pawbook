@@ -1,5 +1,5 @@
 DOMAIN = "pawbook"
-PLATFORMS = ["sensor", "binary_sensor"]
+PLATFORMS = ["sensor", "binary_sensor", "calendar"]
 
 CONF_DOG_NAME = "dog_name"
 CONF_BIRTH_DATE = "birth_date"

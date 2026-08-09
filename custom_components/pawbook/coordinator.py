@@ -38,6 +38,7 @@ class PawBookCoordinator(DataUpdateCoordinator[PetBookData]):
             "visits",
             "treatments",
             "heat_cycles",
+            "attachments",
         ):
             for item in getattr(data, category):
                 if not item.get("id"):
@@ -178,11 +179,36 @@ class PawBookCoordinator(DataUpdateCoordinator[PetBookData]):
             await self._save()
         return changed
 
+
+    async def async_add_attachment(
+        self, name: str, mime_type: str, data: str, category: str = "general", record_id: str = ""
+    ) -> str:
+        """Store a small local document or image attachment."""
+        attachment_id = new_id()
+        self.data.attachments.append({
+            "id": attachment_id,
+            "name": name,
+            "mime_type": mime_type,
+            "data": data,
+            "category": category or "general",
+            "record_id": record_id or "",
+        })
+        await self._save()
+        return attachment_id
+
+    async def async_delete_attachment(self, attachment_id: str) -> bool:
+        before = len(self.data.attachments)
+        self.data.attachments[:] = [item for item in self.data.attachments if item.get("id") != attachment_id]
+        changed = len(self.data.attachments) != before
+        if changed:
+            await self._save()
+        return changed
+
     def export_backup(self) -> dict[str, Any]:
         """Return a portable PawBook backup payload for this pet."""
         return {
             "format": "pawbook-backup",
-            "version": 2,
+            "version": 3,
             "entry_title": self.entry.title,
             "data": self.data.as_dict(),
         }
@@ -196,7 +222,7 @@ class PawBookCoordinator(DataUpdateCoordinator[PetBookData]):
             raise ValueError("Il backup non contiene dati PawBook validi")
 
         restored = PetBookData.from_dict(raw, self.data.profile)
-        for category in ("weights", "vaccinations", "visits", "treatments", "heat_cycles"):
+        for category in ("weights", "vaccinations", "visits", "treatments", "heat_cycles", "attachments"):
             records = getattr(restored, category)
             if not isinstance(records, list):
                 raise ValueError(f"Sezione backup non valida: {category}")

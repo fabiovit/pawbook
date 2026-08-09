@@ -1,5 +1,16 @@
 # Changelog
 
+## 3.3.0 - Smart Health Edition
+
+- Added Smart Health summary in the PawBook dashboard.
+- Added native Home Assistant health calendar with vaccination reminders and treatment dates.
+- Added Smart Health, days-to-vaccination and days-since-visit sensors.
+- Added visit-overdue and weight-reminder binary sensors for automations and notifications.
+- Added local document/image attachments with backup support.
+- Added weight trend chart.
+- Added printable health report with browser PDF export.
+- Preserved ENCI, pedigree health, mobile genealogy and all existing PawBook data.
+
 ## 2.0.0
 
 - Nuova dashboard PawBook 2.0 con navigazione estesa.

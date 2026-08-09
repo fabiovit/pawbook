@@ -17,7 +17,7 @@ from .const import DOMAIN
 from .enci import EnciClient, EnciError, normalize_import
 
 PANEL_URL = "pawbook"
-PANEL_ELEMENT = "pawbook-panel-v202"
+PANEL_ELEMENT = "pawbook-panel-v330"
 STATIC_URL = "/pawbook_static"
 
 
@@ -30,8 +30,8 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
     await hass.http.async_register_static_paths(
         [
             StaticPathConfig(
-                f"{STATIC_URL}/pawbook-panel-v202.js",
-                str(frontend_path / "pawbook-panel-v202.js"),
+                f"{STATIC_URL}/pawbook-panel-v330.js",
+                str(frontend_path / "pawbook-panel-v330.js"),
                 False,
             )
         ]
@@ -48,7 +48,7 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
                 "name": PANEL_ELEMENT,
                 "embed_iframe": False,
                 "trust_external": False,
-                "js_url": f"{STATIC_URL}/pawbook-panel-v202.js",
+                "js_url": f"{STATIC_URL}/pawbook-panel-v330.js",
             }
         },
         require_admin=False,
@@ -60,6 +60,8 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
     websocket_api.async_register_command(hass, websocket_set_photo)
     websocket_api.async_register_command(hass, websocket_export_backup)
     websocket_api.async_register_command(hass, websocket_import_backup)
+    websocket_api.async_register_command(hass, websocket_add_attachment)
+    websocket_api.async_register_command(hass, websocket_delete_attachment)
     hass.data[DOMAIN]["panel_registered"] = True
 
 
@@ -94,6 +96,7 @@ def websocket_get_books(
                 "heat_cycles": data.heat_cycles,
                 "genealogy": data.genealogy,
                 "enci_data": data.enci_data,
+                "attachments": data.attachments,
             }
         )
 
@@ -221,3 +224,50 @@ async def websocket_import_backup(hass, connection, msg):
         connection.send_error(msg["id"], "invalid_backup", str(err))
         return
     connection.send_result(msg["id"], {"restored": True})
+
+
+@websocket_api.websocket_command({
+    vol.Required("type"): "pawbook/add_attachment",
+    vol.Required("entry_id"): str,
+    vol.Required("name"): str,
+    vol.Required("mime_type"): str,
+    vol.Required("data"): str,
+    vol.Optional("category", default="general"): str,
+    vol.Optional("record_id", default=""): str,
+})
+@websocket_api.async_response
+async def websocket_add_attachment(hass, connection, msg):
+    coordinator = hass.data.get(DOMAIN, {}).get(msg["entry_id"])
+    if coordinator is None or not hasattr(coordinator, "async_add_attachment"):
+        connection.send_error(msg["id"], "not_found", "Scheda PawBook non trovata")
+        return
+    payload = msg["data"]
+    if not payload.startswith("data:") or ";base64," not in payload:
+        connection.send_error(msg["id"], "invalid_attachment", "Allegato non valido")
+        return
+    # About 2.5 MB raw after base64 overhead. Keep storage intentionally conservative.
+    if len(payload) > 3_500_000:
+        connection.send_error(msg["id"], "attachment_too_large", "Allegato troppo grande (max circa 2,5 MB)")
+        return
+    attachment_id = await coordinator.async_add_attachment(
+        msg["name"], msg["mime_type"], payload, msg["category"], msg["record_id"]
+    )
+    connection.send_result(msg["id"], {"id": attachment_id})
+
+
+@websocket_api.websocket_command({
+    vol.Required("type"): "pawbook/delete_attachment",
+    vol.Required("entry_id"): str,
+    vol.Required("attachment_id"): str,
+})
+@websocket_api.async_response
+async def websocket_delete_attachment(hass, connection, msg):
+    coordinator = hass.data.get(DOMAIN, {}).get(msg["entry_id"])
+    if coordinator is None or not hasattr(coordinator, "async_delete_attachment"):
+        connection.send_error(msg["id"], "not_found", "Scheda PawBook non trovata")
+        return
+    changed = await coordinator.async_delete_attachment(msg["attachment_id"])
+    if not changed:
+        connection.send_error(msg["id"], "not_found", "Allegato non trovato")
+        return
+    connection.send_result(msg["id"], {"deleted": True})

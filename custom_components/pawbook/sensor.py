@@ -34,6 +34,9 @@ async def async_setup_entry(
         LastHeatSensor(coordinator),
         ActiveTreatmentsSensor(coordinator),
         HealthSummarySensor(coordinator),
+        SmartHealthSensor(coordinator),
+        DaysToVaccinationSensor(coordinator),
+        DaysSinceVisitSensor(coordinator),
         GenealogySensor(coordinator),
     ])
 
@@ -264,3 +267,85 @@ class GenealogySensor(PawBookEntity, SensorEntity):
             "soggetti_totali": _count_ancestors(tree),
             "fonte": "ENCI/manuale",
         }
+
+
+class SmartHealthSensor(PawBookEntity, SensorEntity):
+    _attr_name = "Smart Health"
+    _attr_icon = "mdi:heart-pulse"
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "smart_health")
+
+    @property
+    def native_value(self):
+        today = date.today()
+        issues = []
+        future_vax = []
+        for item in self.coordinator.data.vaccinations:
+            expiry = parse_date(item.get("expires_on"))
+            if expiry:
+                future_vax.append((expiry, item))
+                if expiry < today:
+                    issues.append("vaccino_scaduto")
+        visits = [parse_date(x.get("date")) for x in self.coordinator.data.visits]
+        visits = [x for x in visits if x]
+        if visits and (today - max(visits)).days > 365:
+            issues.append("visita_oltre_12_mesi")
+        if not visits:
+            issues.append("nessuna_visita")
+        if issues:
+            return "attenzione"
+        if future_vax and min(x[0] for x in future_vax) <= today + __import__('datetime').timedelta(days=30):
+            return "promemoria"
+        return "ok"
+
+    @property
+    def extra_state_attributes(self):
+        today = date.today()
+        vaccinations = []
+        for item in self.coordinator.data.vaccinations:
+            expiry = parse_date(item.get("expires_on"))
+            if expiry:
+                vaccinations.append({"nome": item.get("name"), "data": expiry.isoformat(), "giorni": (expiry - today).days})
+        vaccinations.sort(key=lambda x: x["data"])
+        visits = [parse_date(x.get("date")) for x in self.coordinator.data.visits]
+        visits = [x for x in visits if x]
+        weights = sorted(self.coordinator.data.weights, key=lambda x: x.get("date") or "")
+        return {
+            "prossimo_vaccino": vaccinations[0] if vaccinations else None,
+            "giorni_dall_ultima_visita": (today - max(visits)).days if visits else None,
+            "ultimo_peso": weights[-1].get("weight") if weights else None,
+            "terapie_attive": [x.get("name") for x in self.coordinator.data.treatments if (parse_date(x.get("starts_on")) or today) <= today and (parse_date(x.get("ends_on")) is None or parse_date(x.get("ends_on")) >= today)],
+        }
+
+
+class DaysToVaccinationSensor(PawBookEntity, SensorEntity):
+    _attr_name = "Giorni al prossimo vaccino"
+    _attr_icon = "mdi:calendar-clock"
+    _attr_native_unit_of_measurement = "d"
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "days_to_vaccination")
+
+    @property
+    def native_value(self):
+        today = date.today()
+        dates = [parse_date(x.get("expires_on")) for x in self.coordinator.data.vaccinations]
+        dates = sorted(x for x in dates if x and x >= today)
+        return (dates[0] - today).days if dates else None
+
+
+class DaysSinceVisitSensor(PawBookEntity, SensorEntity):
+    _attr_name = "Giorni dall'ultima visita"
+    _attr_icon = "mdi:doctor"
+    _attr_native_unit_of_measurement = "d"
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "days_since_visit")
+
+    @property
+    def native_value(self):
+        today = date.today()
+        dates = [parse_date(x.get("date")) for x in self.coordinator.data.visits]
+        dates = [x for x in dates if x]
+        return (today - max(dates)).days if dates else None

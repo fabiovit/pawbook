@@ -1,13 +1,9 @@
-# PawBook v2.0.2
+# Pubblicazione PawBook v3.3.0
 
-## Commit
+**Tag:** `v3.3.0`
 
-PawBook v2.0.2 - Add mobile genealogy drill-down
+**Release title:** `PawBook v3.3.0 – Smart Health Edition`
 
-## Tag
+**Commit:** `PawBook v3.3.0 - Smart Health Edition`
 
-v2.0.2
-
-## Release title
-
-PawBook v2.0.2 – Mobile Genealogy Navigation
+Upload the repository contents, commit to `main`, create tag `v3.3.0`, and use `RELEASE-3.3.0.md` as the GitHub release description.
