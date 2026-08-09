@@ -1,5 +1,17 @@
 # Changelog
 
+## 2.0.1
+
+### Mobile responsive update
+- Added a dedicated smartphone layout for the PawBook dashboard.
+- Converted profile, statistics and insight areas to mobile-first single-column layouts.
+- Added horizontally scrollable touch-friendly navigation.
+- Improved touch targets and iPhone/Android safe-area handling.
+- Added a dedicated horizontally scrollable pedigree presentation for small screens.
+- Made dialogs mobile-friendly with bottom-sheet/full-height behavior and sticky actions.
+- Improved ENCI panels, timeline, record actions, forms and backup controls on narrow displays.
+- Preserved all PawBook 2.0 data, ENCI integration and genealogy features.
+
 ## 2.0.0
 
 - Nuova dashboard PawBook 2.0 con navigazione estesa.
