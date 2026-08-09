@@ -1,3 +1,16 @@
+# Changelog
+
+## 4.2.0
+
+- Introduced the new Veterinary Center.
+- Added visit overview with last visit, days since last visit, veterinarian count and visit categories.
+- Added a complete year-grouped veterinary timeline.
+- Added automatic visual categories for controls, exams, diagnostics, specialist visits and surgery.
+- Added full outcome and notes display directly in the visit timeline.
+- Added per-visit PDF/image attachments linked to the veterinary record.
+- Preserved edit/delete support and all existing PawBook records.
+- Added the versioned v420 frontend asset.
+
 # PawBook Changelog
 
 ## 4.1.0
