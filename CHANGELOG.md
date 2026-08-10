@@ -1,3 +1,18 @@
+## 4.7.0 - Smart Dashboard & Health Timeline
+
+- Introduced the new Smart Dashboard with health, vaccination, visit, treatment, weight and heat-cycle summaries.
+- Added the estimated next heat window directly to the dashboard.
+- Redesigned the Health Timeline into a compact, filterable chronology.
+- Added timeline filters for vaccinations, visits, treatments, weight and heat cycles.
+- Limited the initial timeline view to eight events with an optional expand action.
+- Added direct dashboard navigation to Treatments and Heat Cycle Center.
+- Fixed the visible PawBook version badge, which was still showing 4.4.
+- Updated the visible version badge to 4.7.0.
+- Preserved the v4.5.1 frontend registration fix and all v4.6.0 Heat Cycle Center features.
+- Preserved Ko-fi support information.
+- Added the v470 frontend asset.
+- Updated PawBook to version 4.7.0.
+
 ## 4.6.0 - Heat Cycle Center
 
 - Introduced the new Heat Cycle Center.
