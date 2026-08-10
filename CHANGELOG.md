@@ -1,3 +1,16 @@
+## 4.5.0 - ENCI Pro
+
+- Introduced the new ENCI Pro dashboard.
+- Added at-a-glance HD, ED, DNA and pedigree summaries.
+- Added a dedicated official health section for ENCI results.
+- Added ENCI event counters and improved event presentation.
+- Preserved the interactive desktop pedigree and mobile genealogy navigation.
+- Preserved all existing PawBook data and ENCI import behavior.
+- Added responsive ENCI Pro layouts for smartphone.
+- Preserved Ko-fi support information.
+- Added the v450 frontend asset.
+- Updated PawBook to version 4.5.0.
+
 # Changelog
 
 ## 4.4.0
