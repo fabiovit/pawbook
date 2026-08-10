@@ -1,3 +1,10 @@
+## 4.5.1 - ENCI Pro frontend hotfix
+
+- Fixed the PawBook panel custom-element registration mismatch introduced in v4.5.0.
+- Aligned `panel.py` and the frontend custom element on `pawbook-panel-v451`.
+- Added a new versioned frontend asset to bypass stale Home Assistant/browser cache.
+- Preserved all ENCI Pro, genealogy, health and PawBook data features.
+
 ## 4.5.0 - ENCI Pro
 
 - Introduced the new ENCI Pro dashboard.
