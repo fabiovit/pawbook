@@ -1,3 +1,16 @@
+## 6.0.0 - Multi-Pet Hub
+
+- Introduced the new PawBook Family / Multi-Pet Hub.
+- Added a dedicated family overview when more than one pet is configured.
+- Added one card per pet with photo, breed, current weight, next vaccination and reminder count.
+- Added global family reminders aggregated across all configured pets.
+- Added a shared upcoming health agenda across all pets.
+- Added direct navigation from family reminders/events to the correct pet and PawBook section.
+- Added a clearer pet switcher while preserving fully separated data per config entry.
+- Preserved all individual health centers, ENCI data, genealogy, heat forecasts, calendar and reminders.
+- Updated visible version, manifest and frontend asset to 6.0.0 / v600.
+- Preserved Ko-fi support information.
+
 ## 5.0.0 - Health Hub
 
 - Introduced the PawBook 5 Health Hub refinement.

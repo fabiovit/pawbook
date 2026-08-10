@@ -106,6 +106,14 @@ PawBook è progettato con un approccio local-first. Dati del cane, cartella sani
 
 PawBook genera automaticamente i promemoria utilizzando date dei vaccini, terapie, visite veterinarie, pesate e finestra stimata del prossimo calore. Non è necessario inserire manualmente i promemoria.
 
+
+
+## 🐾 Gestione multi-cane
+
+Quando sono configurati più animali, PawBook attiva automaticamente la dashboard **PawBook Family**.
+
+Mostra le schede dei singoli cani, i promemoria di tutta la famiglia e un'agenda sanitaria condivisa, mantenendo però completamente separati i dati di ciascun animale.
+
 ## ☕ Sostieni PawBook
 
 Se PawBook ti è utile e vuoi sostenere lo sviluppo del progetto, puoi offrirmi un caffè su Ko-fi:

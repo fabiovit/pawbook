@@ -1,12 +1,12 @@
-# PawBook v5.0.0 – Pubblicazione GitHub
+# PawBook v6.0.0 – Pubblicazione GitHub
 
 Commit message:
-PawBook v5.0.0 - Health Hub
+PawBook v6.0.0 - Multi-Pet Hub
 
 Tag:
-v5.0.0
+v6.0.0
 
 Release title:
-PawBook v5.0.0 – Health Hub
+PawBook v6.0.0 – Multi-Pet Hub
 
-Use RELEASE-5.0.0.md as the GitHub release description.
+Use RELEASE-6.0.0.md as the GitHub release description.

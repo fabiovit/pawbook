@@ -106,6 +106,14 @@ PawBook is local-first. Pet data, health records, genealogy, photos and attachme
 
 PawBook automatically derives reminders from vaccination dates, treatments, veterinary visits, weight records and the estimated heat-cycle window. No manual reminder entry is required.
 
+
+
+## 🐾 Multi-Pet Hub
+
+When more than one pet is configured, PawBook automatically enables the **PawBook Family** dashboard.
+
+It provides pet cards, family-wide reminders and a shared upcoming health agenda while keeping every pet's data completely separate.
+
 ## ☕ Support PawBook
 
 If you enjoy PawBook and want to support its development, you can buy me a coffee on Ko-fi:
