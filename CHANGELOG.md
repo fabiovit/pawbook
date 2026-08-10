@@ -1,3 +1,18 @@
+## 4.6.0 - Heat Cycle Center
+
+- Introduced the new Heat Cycle Center.
+- Added complete heat-cycle history with duration for completed cycles.
+- Added average cycle duration and median interval statistics.
+- Added an estimated next heat date based on the dog's own recorded history.
+- Added a probable date window that adapts to observed cycle variability.
+- Added an explicit confidence indicator and statistical-estimate disclaimer.
+- Added responsive smartphone layouts.
+- Preserved edit/delete support and all existing heat-cycle data.
+- Preserved the v4.5.1 blank-panel frontend fix.
+- Preserved Ko-fi support information.
+- Added the v460 frontend asset.
+- Updated PawBook to version 4.6.0.
+
 ## 4.5.1 - ENCI Pro frontend hotfix
 
 - Fixed the PawBook panel custom-element registration mismatch introduced in v4.5.0.
