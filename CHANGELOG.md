@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.4.0
+
+### Weight Center
+- Rebuilt the weight section as a complete Weight Center dashboard.
+- Added current weight, last variation and total variation summaries.
+- Added average, minimum and maximum weight statistics.
+- Expanded the weight chart to show a longer history.
+- Added the complete weight history grouped by year.
+- Preserved edit and delete actions for every weight record.
+- Added responsive layouts for desktop, tablet and smartphone.
+
 ## 4.3.0
 
 - Introduced the new Treatments Center.

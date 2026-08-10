@@ -1,24 +1,28 @@
-# Pubblicazione GitHub – PawBook v4.3.0
+# Pubblicazione GitHub – PawBook v4.4.0
 
-## Commit title
+## Commit
 
-PawBook v4.3.0 - Treatments Center
+**Titolo**
 
-## Commit description
+`PawBook v4.4.0 - Weight Center`
 
-- Introduced the new Treatments Center dashboard.
-- Added active, scheduled and completed treatment summaries.
-- Added dosage, frequency and treatment duration information.
-- Added progress indicators for active treatments with start/end dates.
-- Added PDF/image attachments linked directly to treatments.
-- Added responsive mobile treatment cards.
-- Updated English and Italian README documentation.
-- Added Ko-fi support information.
-- Added the v430 frontend asset.
-- Updated PawBook to version 4.3.0.
+**Descrizione**
+
+- Introduced the new Weight Center dashboard.
+- Added current, previous and total weight variation summaries.
+- Added average, minimum and maximum weight statistics.
+- Extended the weight trend chart.
+- Added complete weight history grouped by year.
+- Preserved edit/delete support and all existing PawBook data.
+- Added responsive mobile Weight Center layouts.
+- Preserved Ko-fi support information.
+- Added the v440 frontend asset.
+- Updated PawBook to version 4.4.0.
 
 ## Release
 
-Tag: v4.3.0
+**Tag:** `v4.4.0`
 
-Title: PawBook v4.3.0 – Treatments Center
+**Titolo:** `PawBook v4.4.0 – Weight Center`
+
+Usa `RELEASE-4.4.0.md` come descrizione della release.
