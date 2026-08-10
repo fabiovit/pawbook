@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from typing import Any
 
 from homeassistant.components.sensor import SensorEntity
@@ -22,6 +22,46 @@ def parse_date(value: str | None) -> date | None:
         return None
 
 
+
+def _median(values: list[int]) -> int | None:
+    if not values:
+        return None
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[middle]
+    return round((ordered[middle - 1] + ordered[middle]) / 2)
+
+
+def heat_forecast(heat_cycles: list[dict[str, Any]]) -> dict[str, Any] | None:
+    starts = sorted(
+        parsed for parsed in (parse_date(item.get("starts_on")) for item in heat_cycles)
+        if parsed
+    )
+    if len(starts) < 2:
+        return None
+
+    intervals = [(starts[index] - starts[index - 1]).days for index in range(1, len(starts))]
+    typical = _median(intervals)
+    if not typical:
+        return None
+
+    center = starts[-1] + timedelta(days=typical)
+    deviations = [abs(value - typical) for value in intervals]
+    observed_spread = _median(deviations) or 0
+    half_window = max(21, min(60, observed_spread + 21))
+
+    confidence = "buona" if len(intervals) >= 4 else "indicativa" if len(intervals) >= 2 else "limitata"
+    return {
+        "estimated_date": center,
+        "window_from": center - timedelta(days=half_window),
+        "window_to": center + timedelta(days=half_window),
+        "median_interval_days": typical,
+        "confidence": confidence,
+        "cycles_used": len(starts),
+    }
+
+
 async def async_setup_entry(
     hass: HomeAssistant, entry: ConfigEntry, async_add_entities: AddEntitiesCallback
 ) -> None:
@@ -37,6 +77,8 @@ async def async_setup_entry(
         SmartHealthSensor(coordinator),
         DaysToVaccinationSensor(coordinator),
         DaysSinceVisitSensor(coordinator),
+        NextHeatEstimateSensor(coordinator),
+        DaysToNextHeatSensor(coordinator),
         GenealogySensor(coordinator),
     ])
 
@@ -232,6 +274,49 @@ def _count_ancestors(node):
     count += _count_ancestors(node.get("father"))
     count += _count_ancestors(node.get("mother"))
     return count
+
+
+
+class NextHeatEstimateSensor(PawBookEntity, SensorEntity):
+    _attr_name = "Prossimo calore stimato"
+    _attr_icon = "mdi:flower-pollen"
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "next_heat_estimate")
+
+    @property
+    def native_value(self):
+        forecast = heat_forecast(self.coordinator.data.heat_cycles)
+        return forecast["estimated_date"].isoformat() if forecast else None
+
+    @property
+    def extra_state_attributes(self):
+        forecast = heat_forecast(self.coordinator.data.heat_cycles)
+        if not forecast:
+            return {"disponibile": False}
+        return {
+            "disponibile": True,
+            "finestra_da": forecast["window_from"].isoformat(),
+            "finestra_a": forecast["window_to"].isoformat(),
+            "intervallo_mediano_giorni": forecast["median_interval_days"],
+            "affidabilita": forecast["confidence"],
+            "cicli_usati": forecast["cycles_used"],
+            "nota": "Stima statistica basata sullo storico registrato; non è una previsione veterinaria.",
+        }
+
+
+class DaysToNextHeatSensor(PawBookEntity, SensorEntity):
+    _attr_name = "Giorni al prossimo calore stimato"
+    _attr_icon = "mdi:calendar-heart"
+    _attr_native_unit_of_measurement = "d"
+
+    def __init__(self, coordinator):
+        super().__init__(coordinator, "days_to_next_heat")
+
+    @property
+    def native_value(self):
+        forecast = heat_forecast(self.coordinator.data.heat_cycles)
+        return (forecast["estimated_date"] - date.today()).days if forecast else None
 
 
 class GenealogySensor(PawBookEntity, SensorEntity):

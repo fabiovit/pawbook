@@ -20,6 +20,31 @@ def _parse_date(value: str | None) -> date | None:
         return None
 
 
+
+def _median(values: list[int]) -> int | None:
+    if not values:
+        return None
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[middle]
+    return round((ordered[middle - 1] + ordered[middle]) / 2)
+
+
+def _heat_forecast(heat_cycles):
+    starts = sorted(parsed for parsed in (_parse_date(item.get("starts_on")) for item in heat_cycles) if parsed)
+    if len(starts) < 2:
+        return None
+    intervals = [(starts[index] - starts[index - 1]).days for index in range(1, len(starts))]
+    typical = _median(intervals)
+    if not typical:
+        return None
+    center = starts[-1] + timedelta(days=typical)
+    deviations = [abs(value - typical) for value in intervals]
+    half_window = max(21, min(60, (_median(deviations) or 0) + 21))
+    return center, center - timedelta(days=half_window), center + timedelta(days=half_window)
+
+
 def _events(coordinator: PawBookCoordinator) -> list[CalendarEvent]:
     events: list[CalendarEvent] = []
     dog = coordinator.data.profile.get("dog_name") or coordinator.entry.title
@@ -54,6 +79,18 @@ def _events(coordinator: PawBookCoordinator) -> list[CalendarEvent]:
                 description=item.get("notes") or None,
                 uid=f"pawbook-treatment-end-{item.get('id', '')}",
             ))
+
+
+    heat = _heat_forecast(coordinator.data.heat_cycles)
+    if heat:
+        center, window_from, window_to = heat
+        events.append(CalendarEvent(
+            start=window_from,
+            end=window_to + timedelta(days=1),
+            summary=f"🌸 {dog}: finestra stimata prossimo calore",
+            description=f"Data centrale stimata: {center.isoformat()}. Proiezione statistica basata sullo storico PawBook.",
+            uid=f"pawbook-heat-window-{center.isoformat()}",
+        ))
 
     return sorted(events, key=lambda event: event.start)
 

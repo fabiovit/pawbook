@@ -1,3 +1,22 @@
+## 4.8.0 - Smart Reminders & Health Calendar
+
+- Introduced the new in-panel Health Calendar.
+- Added monthly navigation and upcoming health events.
+- Added vaccination recall events.
+- Added treatment start/end events.
+- Added the estimated next heat date to the Health Calendar.
+- Extended the native Home Assistant PawBook calendar with the estimated heat window.
+- Added `sensor.prossimo_calore_stimato`-style PawBook entity for each configured pet.
+- Added a days-to-next-heat sensor.
+- Added a binary sensor that activates during the estimated heat window.
+- Added a treatment-ending reminder binary sensor for therapies ending within three days.
+- Added a Smart Reminder strip to the Smart Dashboard.
+- Preserved the compact filterable Health Timeline.
+- Updated the visible PawBook version badge to 4.8.0.
+- Preserved Ko-fi support information.
+- Added the v480 frontend asset.
+- Updated PawBook to version 4.8.0.
+
 ## 4.7.0 - Smart Dashboard & Health Timeline
 
 - Introduced the new Smart Dashboard with health, vaccination, visit, treatment, weight and heat-cycle summaries.

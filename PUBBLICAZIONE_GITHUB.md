@@ -1,12 +1,12 @@
-# PawBook v4.7.0 – Pubblicazione GitHub
+# PawBook v4.8.0 – Pubblicazione GitHub
 
 Commit message:
-PawBook v4.7.0 - Smart Dashboard and Health Timeline
+PawBook v4.8.0 - Smart Reminders and Health Calendar
 
 Tag:
-v4.7.0
+v4.8.0
 
 Release title:
-PawBook v4.7.0 – Smart Dashboard & Health Timeline
+PawBook v4.8.0 – Smart Reminders & Health Calendar
 
-Use RELEASE-4.7.0.md as the GitHub release description.
+Use RELEASE-4.8.0.md as the GitHub release description.
