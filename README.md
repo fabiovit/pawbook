@@ -100,6 +100,12 @@ data:
 
 PawBook is local-first. Pet data, health records, genealogy, photos and attachments are stored inside your Home Assistant installation. PawBook does not require a PawBook cloud account.
 
+
+
+## 🔔 Automatic reminders
+
+PawBook automatically derives reminders from vaccination dates, treatments, veterinary visits, weight records and the estimated heat-cycle window. No manual reminder entry is required.
+
 ## ☕ Support PawBook
 
 If you enjoy PawBook and want to support its development, you can buy me a coffee on Ko-fi:

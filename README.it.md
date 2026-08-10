@@ -100,6 +100,12 @@ data:
 
 PawBook è progettato con un approccio local-first. Dati del cane, cartella sanitaria, genealogia, fotografie e allegati vengono salvati all'interno della tua installazione di Home Assistant. Non è richiesto alcun account cloud PawBook.
 
+
+
+## 🔔 Promemoria automatici
+
+PawBook genera automaticamente i promemoria utilizzando date dei vaccini, terapie, visite veterinarie, pesate e finestra stimata del prossimo calore. Non è necessario inserire manualmente i promemoria.
+
 ## ☕ Sostieni PawBook
 
 Se PawBook ti è utile e vuoi sostenere lo sviluppo del progetto, puoi offrirmi un caffè su Ko-fi:

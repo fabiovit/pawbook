@@ -1,3 +1,20 @@
+## 5.0.0 - Health Hub
+
+- Introduced the PawBook 5 Health Hub refinement.
+- Added a dedicated Automatic Reminders Center.
+- Made it explicit that reminders are generated automatically from PawBook records and require no manual entry.
+- Added automatic reminder rules for vaccination deadlines, treatment endings, annual veterinary visits, weight updates and the estimated heat window.
+- Made the Smart Dashboard reminder strip fully clickable and linked it to the new Reminders Center.
+- Fixed Heat Cycle Center edit/delete controls being positioned outside their rows.
+- Added direct click-to-edit support on heat-cycle rows.
+- Added robust record ID matching for heat-cycle editing.
+- Added the selected heat-cycle dates to the edit dialog title and context panel.
+- Added a specific deletion confirmation including the selected heat-cycle start date.
+- Fixed stray Modify/Delete buttons appearing over unrelated dashboard cards.
+- Preserved Health Calendar, Smart Dashboard, compact Health Timeline, ENCI Pro and genealogy.
+- Preserved Ko-fi support information.
+- Updated visible version, manifest and frontend asset to 5.0.0 / v500.
+
 ## 4.8.0 - Smart Reminders & Health Calendar
 
 - Introduced the new in-panel Health Calendar.

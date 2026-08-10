@@ -1,12 +1,12 @@
-# PawBook v4.8.0 – Pubblicazione GitHub
+# PawBook v5.0.0 – Pubblicazione GitHub
 
 Commit message:
-PawBook v4.8.0 - Smart Reminders and Health Calendar
+PawBook v5.0.0 - Health Hub
 
 Tag:
-v4.8.0
+v5.0.0
 
 Release title:
-PawBook v4.8.0 – Smart Reminders & Health Calendar
+PawBook v5.0.0 – Health Hub
 
-Use RELEASE-4.8.0.md as the GitHub release description.
+Use RELEASE-5.0.0.md as the GitHub release description.
