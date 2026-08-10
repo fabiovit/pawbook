@@ -6,200 +6,77 @@
 [![GitHub Release](https://img.shields.io/github/v/release/fabiovit/pawbook)](https://github.com/fabiovit/pawbook/releases)
 [![License](https://img.shields.io/github/license/fabiovit/pawbook)](LICENSE)
 
-**PawBook** è un moderno libretto sanitario digitale per cani, progettato esclusivamente per **Home Assistant**.
+**PawBook** è un moderno libretto sanitario digitale per cani progettato per **Home Assistant**.
 
-Riunisce in un'unica interfaccia elegante la gestione sanitaria, la genealogia, l'integrazione ENCI, le funzionalità Smart Health e l'integrazione nativa con Home Assistant.
+Riunisce cartella sanitaria, vaccinazioni, terapie, andamento del peso, Smart Health, integrazione ENCI e genealogia in un'unica interfaccia, con archiviazione locale dei dati.
 
-Tutti i dati vengono salvati esclusivamente all'interno della tua installazione di Home Assistant.
+> PawBook non è affiliato ad ENCI. Le informazioni importate vengono salvate localmente in Home Assistant.
 
----
+## ✨ Funzionalità
 
-# ✨ Funzionalità
-
-## 🐶 Gestione del cane
-
-- Gestione di più cani
-- Profilo completo con fotografia
+### 🐶 Gestione del cane
+- Gestione di più animali
+- Foto del profilo
 - Calcolo automatico dell'età
-- Razza e sesso
-- Microchip
-- Storico del peso
-- Cronologia sanitaria
-- Archiviazione locale dei dati
+- Razza, sesso e microchip
+- Storico del peso e timeline sanitaria
 
----
+### 💉 Centro Vaccinazioni
+- Vaccinazioni raggruppate per tipologia
+- Cronologia completa delle dosi
+- Ultima dose e prossimo richiamo
+- Indicatori di stato
+- Veterinario, lotto, note e scadenza/richiamo
 
-## ❤️ Cartella sanitaria
+### 🩺 Centro Veterinario
+- Timeline completa delle visite raggruppata per anno
+- Categorie delle visite
+- Veterinario, esito e note
+- Allegati PDF/immagini associati alla singola visita
 
-Gestisci tutta la storia clinica del tuo cane.
+### 💊 Centro Terapie
+- Terapie in corso, programmate e terminate
+- Dosaggio e frequenza
+- Durata e avanzamento della terapia
+- Allegati PDF/immagini associati alla singola terapia
 
-- Vaccinazioni
-- Visite veterinarie
-- Terapie
-- Farmaci
-- Cicli di calore
-- Controllo del peso
-- Allegati (PDF e immagini)
-- Report sanitario stampabile
-
----
-
-## 🧬 Integrazione ENCI
-
-Importa automaticamente i dati ufficiali del Libro Genealogico ENCI.
-
-Sono disponibili:
-
-- Anagrafica del cane
-- Nome registrato
-- ROI / LOI / RSR
-- Allevatore
-- Padre e madre
-- Pedigree fino a quattro generazioni
-- Avvenimenti ufficiali ENCI
-- Displasia dell'anca (HD)
-- Displasia del gomito (ED)
-- Informazioni DNA e deposito biologico
-
-Tutti i dati importati vengono memorizzati localmente all'interno di Home Assistant.
-
-> PawBook **non è affiliato ad ENCI**.
-
----
-
-# 🌳 Genealogia interattiva
-
-Visualizza il pedigree in modo moderno e intuitivo.
-
-Caratteristiche:
-
-- Albero genealogico fino a quattro generazioni
-- Schede interattive degli antenati
-- Badge sanitari
-- Informazioni HD / ED
-- Informazioni DNA
-- Popup con i dettagli dell'antenato
-- Layout dedicato per desktop
-- Navigazione ottimizzata per smartphone
-
----
-
-# ❤️ Smart Health
-
-PawBook riassume automaticamente lo stato sanitario del cane.
-
-Ad esempio:
-
+### ❤️ Smart Health
+- Riepilogo dello stato sanitario
 - Prossimo vaccino
 - Ultima visita veterinaria
 - Terapie attive
-- Peso attuale
-- Promemoria intelligenti
-- Riepilogo sanitario
+- Promemoria peso e statistiche
 
----
+### 🧬 ENCI e genealogia
+- Ricerca per ROI / LOI / RSR, nome registrato o microchip
+- Importazione anagrafica e pedigree
+- Genealogia fino a quattro generazioni
+- Informazioni HD / ED / DNA quando disponibili
+- Avvenimenti ufficiali ENCI
+- Albero desktop e navigazione genealogica dedicata su smartphone
 
-# 🏠 Integrazione nativa con Home Assistant
-
-PawBook si integra completamente con Home Assistant.
-
-Include:
-
+### 🏠 Home Assistant
 - Pannello laterale dedicato
-- Sensori
-- Binary Sensor
-- Entità Calendario
-- Azioni
-- Supporto per dashboard
+- Sensori e binary sensor
+- Entità calendario
+- Azioni per automazioni
+- Backup e ripristino locale in JSON
+- Report sanitario stampabile
 
-Perfetto per creare automazioni e plance personalizzate.
+## 📦 Installazione tramite HACS
 
----
+1. Apri **HACS → Repository personalizzati**.
+2. Aggiungi `https://github.com/fabiovit/pawbook` come **Integrazione**.
+3. Scarica PawBook e riavvia Home Assistant.
+4. Vai in **Impostazioni → Dispositivi e servizi → Aggiungi integrazione** e cerca **PawBook**.
 
-# 📊 Statistiche
+Non è necessario aggiungere risorse Lovelace o modificare `configuration.yaml`.
 
-Monitora facilmente lo stato di salute nel tempo.
+## 🧬 Importazione ENCI
 
-Disponibili:
+Apri PawBook dal menu laterale, seleziona il cane e apri la sezione **ENCI**. Puoi cercare per ROI/LOI/RSR, nome registrato o microchip e importare l'anagrafica, il pedigree e le informazioni sanitarie ufficiali disponibili.
 
-- Andamento del peso
-- Storico delle vaccinazioni
-- Storico delle visite
-- Riepilogo delle terapie
-- Timeline sanitaria
-
----
-
-# 📎 Allegati
-
-Ogni evento sanitario può contenere documentazione.
-
-Supporta:
-
-- PDF
-- Immagini
-- Referti veterinari
-- Esami di laboratorio
-- Radiografie
-
----
-
-# 💾 Backup e Ripristino
-
-Proteggi facilmente tutti i tuoi dati.
-
-Funzionalità disponibili:
-
-- Esportazione completa in JSON
-- Ripristino da backup
-- Supporto agli allegati
-- Protezione dei dati esistenti
-
----
-
-# 📦 Installazione
-
-## Tramite HACS
-
-1. Apri **HACS**
-2. Seleziona **Repository personalizzati**
-3. Aggiungi
-
-```
-https://github.com/fabiovit/pawbook
-```
-
-come **Integrazione**.
-
-Riavvia Home Assistant.
-
-Vai in:
-
-**Impostazioni → Dispositivi e Servizi → Aggiungi Integrazione**
-
-e cerca **PawBook**.
-
----
-
-# 🧬 Importazione ENCI
-
-Apri il pannello laterale di PawBook.
-
-Seleziona il cane.
-
-Apri la sezione **ENCI** e premi **Importa**.
-
-Puoi cercare utilizzando:
-
-- ROI / LOI / RSR
-- Nome registrato
-- Microchip
-
-PawBook importerà automaticamente tutte le informazioni ufficiali disponibili.
-
----
-
-# ⚙️ Azioni disponibili
+## ⚙️ Azioni disponibili
 
 - `pawbook.add_weight`
 - `pawbook.add_vaccination`
@@ -216,35 +93,19 @@ action: pawbook.add_weight
 data:
   dog_id: Evie
   weight: 15.2
-  date: "2026-08-09"
+  date: "2026-08-10"
 ```
 
----
+## 🔒 Privacy
 
-# 🔒 Privacy
+PawBook è progettato con un approccio local-first. Dati del cane, cartella sanitaria, genealogia, fotografie e allegati vengono salvati all'interno della tua installazione di Home Assistant. Non è richiesto alcun account cloud PawBook.
 
-I tuoi dati rimangono sempre sotto il tuo controllo.
+## ☕ Sostieni PawBook
 
-- Salvataggio esclusivamente locale
-- Nessun servizio cloud obbligatorio
-- Nessun tracciamento esterno
-- Le credenziali ENCI vengono utilizzate esclusivamente durante l'importazione e non vengono mai memorizzate
+Se PawBook ti è utile e vuoi sostenere lo sviluppo del progetto, puoi offrirmi un caffè su Ko-fi:
 
----
+**https://ko-fi.com/fabvittori**
 
-# 🚀 Roadmap
+## 📄 Licenza
 
-Le prossime evoluzioni previste includono:
-
-- Timeline sanitaria in stile Apple Health
-- Nuove statistiche
-- Report PDF avanzati
-- Backup cloud opzionale
-- Interfaccia multilingua
-- Analisi genealogiche avanzate
-
----
-
-# 📄 Licenza
-
-Distribuito con licenza **MIT**.
+MIT

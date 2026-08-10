@@ -1,5 +1,16 @@
 # Changelog
 
+## 4.3.0
+
+- Introduced the new Treatments Center.
+- Added active, scheduled and completed treatment summaries.
+- Added dosage and frequency information directly to treatment cards.
+- Added treatment duration progress for active therapies with start/end dates.
+- Added PDF/image attachments linked directly to individual treatments.
+- Added a responsive mobile layout for the Treatments Center.
+- Added Ko-fi support information to the English and Italian README and release notes.
+- Added the versioned v430 frontend asset.
+
 ## 4.2.0
 
 - Introduced the new Veterinary Center.

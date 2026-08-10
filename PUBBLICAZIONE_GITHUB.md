@@ -1,24 +1,24 @@
-# Pubblicazione GitHub – PawBook v4.2.0
+# Pubblicazione GitHub – PawBook v4.3.0
 
 ## Commit title
 
-PawBook v4.2.0 - Veterinary Center
+PawBook v4.3.0 - Treatments Center
 
 ## Commit description
 
-- Introduced the new Veterinary Center dashboard.
-- Added last-visit and days-since-last-visit overview.
-- Added total visit, veterinarian, category and attachment counters.
-- Added complete year-grouped veterinary timeline.
-- Added automatic visual visit categories.
-- Added full outcome and notes display.
-- Added PDF/image attachments linked directly to veterinary visits.
-- Preserved edit/delete support and all existing PawBook data.
-- Added the v420 frontend asset.
-- Updated PawBook to version 4.2.0.
+- Introduced the new Treatments Center dashboard.
+- Added active, scheduled and completed treatment summaries.
+- Added dosage, frequency and treatment duration information.
+- Added progress indicators for active treatments with start/end dates.
+- Added PDF/image attachments linked directly to treatments.
+- Added responsive mobile treatment cards.
+- Updated English and Italian README documentation.
+- Added Ko-fi support information.
+- Added the v430 frontend asset.
+- Updated PawBook to version 4.3.0.
 
 ## Release
 
-Tag: v4.2.0
+Tag: v4.3.0
 
-Title: PawBook v4.2.0 – Veterinary Center
+Title: PawBook v4.3.0 – Treatments Center
