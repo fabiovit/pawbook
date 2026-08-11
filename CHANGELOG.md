@@ -1,6 +1,7 @@
 ## 6.0.1 - Mobile sidebar hotfix
 
 - Added a Home Assistant menu button to the PawBook mobile header.
+- Added a Support the project button to the top-right header with Ko-fi integration.
 - The hamburger button opens the native Home Assistant sidebar.
 - The button is only shown on narrow/mobile layouts.
 - Preserved the PawBook Family Multi-Pet Hub and all v6.0.0 features.

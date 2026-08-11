@@ -2056,6 +2056,11 @@ class PawBookPanelV420 extends HTMLElement {
         .topbar{display:flex;align-items:center;gap:8px}
         .ha-mobile-menu{display:flex}
       }
+
+      .topbar-actions{margin-left:auto;display:flex;align-items:center;gap:8px}
+      .support-project-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 14px;border:1px solid var(--divider-color);border-radius:12px;background:var(--card-background-color);color:var(--primary-text-color);font-size:13px;font-weight:600;box-shadow:none;cursor:pointer;white-space:nowrap}
+      .support-project-btn:hover{border-color:var(--primary-color);background:var(--secondary-background-color)}
+      @media(max-width:900px){.topbar-actions{margin-left:auto}.support-project-btn{width:44px;height:44px;min-height:44px;padding:0;border-radius:12px;font-size:20px}.support-project-label{display:none}}
 </style>
       <div class="page">
         <div class="topbar">
@@ -2073,6 +2078,11 @@ class PawBookPanelV420 extends HTMLElement {
               </svg>
             </div>
             <div><h1>PawBook <span class="v2-badge">6.0.1</span></h1><div class="muted">Libretto sanitario digitale</div></div>
+          </div>
+          <div class="topbar-actions">
+            <button type="button" class="support-project-btn" id="support-project" title="Supporta PawBook su Ko-fi">
+              <span aria-hidden="true">☕</span><span class="support-project-label">Supporta il progetto</span>
+            </button>
           </div>
         </div>
 
@@ -2490,6 +2500,10 @@ class PawBookPanelV420 extends HTMLElement {
       </div>
       <div id="dialog"></div>
     `;
+
+    this.shadowRoot.querySelector("#support-project")?.addEventListener("click", () => {
+      window.open("https://ko-fi.com/fabvittori", "_blank", "noopener,noreferrer");
+    });
 
     this.shadowRoot.querySelector("#ha-mobile-menu")?.addEventListener("click", (event) => {
       event.stopPropagation();
