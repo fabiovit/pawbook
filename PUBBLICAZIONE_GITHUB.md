@@ -1,12 +1,12 @@
-# PawBook v6.0.0 – Pubblicazione GitHub
+# PawBook v6.0.1 – Pubblicazione GitHub
 
 Commit message:
-PawBook v6.0.0 - Multi-Pet Hub
+PawBook v6.0.1 - Mobile sidebar hotfix
 
 Tag:
-v6.0.0
+v6.0.1
 
 Release title:
-PawBook v6.0.0 – Multi-Pet Hub
+PawBook v6.0.1 – Mobile Sidebar Hotfix
 
-Use RELEASE-6.0.0.md as the GitHub release description.
+Use RELEASE-6.0.1.md as the GitHub release description.

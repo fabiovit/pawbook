@@ -1,3 +1,11 @@
+## 6.0.1 - Mobile sidebar hotfix
+
+- Added a Home Assistant menu button to the PawBook mobile header.
+- The hamburger button opens the native Home Assistant sidebar.
+- The button is only shown on narrow/mobile layouts.
+- Preserved the PawBook Family Multi-Pet Hub and all v6.0.0 features.
+- Updated the visible version, manifest and frontend asset to 6.0.1 / v601.
+
 ## 6.0.0 - Multi-Pet Hub
 
 - Introduced the new PawBook Family / Multi-Pet Hub.
