@@ -2061,6 +2061,128 @@ class PawBookPanelV420 extends HTMLElement {
       .support-project-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:42px;padding:0 14px;border:1px solid var(--divider-color);border-radius:12px;background:var(--card-background-color);color:var(--primary-text-color);font-size:13px;font-weight:600;box-shadow:none;cursor:pointer;white-space:nowrap}
       .support-project-btn:hover{border-color:var(--primary-color);background:var(--secondary-background-color)}
       @media(max-width:900px){.topbar-actions{margin-left:auto}.support-project-btn{width:44px;height:44px;min-height:44px;padding:0;border-radius:12px;font-size:20px}.support-project-label{display:none}}
+
+      /* PawBook 6.0.1 definitive mobile header */
+      .topbar{
+        display:flex !important;
+        align-items:center !important;
+        justify-content:flex-start !important;
+        gap:12px !important;
+        width:100%;
+      }
+      .topbar .brand{
+        display:flex !important;
+        align-items:center !important;
+        gap:14px !important;
+        margin:0 !important;
+        min-width:0;
+      }
+      .topbar-actions{
+        margin-left:auto !important;
+        display:flex !important;
+        align-items:center !important;
+        justify-content:flex-end !important;
+        flex:0 0 auto;
+      }
+      .ha-mobile-menu{
+        order:0;
+        flex:0 0 auto;
+      }
+      .topbar .brand{
+        order:1;
+      }
+      .topbar-actions{
+        order:2;
+      }
+      .support-project-btn{
+        display:inline-flex !important;
+        align-items:center;
+        justify-content:center;
+        gap:7px;
+        min-height:42px;
+        padding:0 14px;
+        border:1px solid var(--divider-color);
+        border-radius:12px;
+        background:var(--card-background-color);
+        color:var(--primary-text-color);
+        font-size:13px;
+        font-weight:600;
+        box-shadow:none;
+        cursor:pointer;
+        white-space:nowrap;
+      }
+      @media(max-width:900px){
+        .topbar{
+          gap:8px !important;
+        }
+        .ha-mobile-menu{
+          display:flex !important;
+          width:44px;
+          height:44px;
+          padding:0;
+          border-radius:12px;
+        }
+        .topbar .brand{
+          flex:1 1 auto;
+          min-width:0;
+          justify-content:flex-start !important;
+        }
+        .topbar .brand-mark{
+          width:48px !important;
+          height:48px !important;
+          border-radius:14px !important;
+        }
+        .topbar .brand-mark svg{
+          width:30px !important;
+          height:30px !important;
+        }
+        .topbar h1{
+          font-size:28px !important;
+          margin-bottom:2px !important;
+          white-space:nowrap;
+        }
+        .topbar .muted{
+          font-size:14px !important;
+          white-space:nowrap;
+        }
+        .support-project-btn{
+          display:flex !important;
+          width:44px;
+          height:44px;
+          min-height:44px;
+          padding:0;
+          border-radius:12px;
+          font-size:20px;
+        }
+        .support-project-label{
+          display:none !important;
+        }
+      }
+      @media(max-width:430px){
+        .topbar{
+          gap:6px !important;
+        }
+        .topbar .brand{
+          gap:9px !important;
+        }
+        .topbar h1{
+          font-size:25px !important;
+        }
+        .topbar .muted{
+          font-size:12px !important;
+        }
+        .v2-badge{
+          font-size:10px !important;
+          padding:4px 7px !important;
+          margin-left:5px !important;
+        }
+        .ha-mobile-menu,
+        .support-project-btn{
+          width:40px !important;
+          height:40px !important;
+          min-height:40px !important;
+        }
+      }
 </style>
       <div class="page">
         <div class="topbar">

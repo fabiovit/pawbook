@@ -4,6 +4,7 @@ This maintenance release restores quick access to the Home Assistant sidebar fro
 
 ## Fixed
 
+- Refined the mobile header: Home Assistant menu on the left, PawBook branding aligned left, Ko-fi support button on the right.
 - Added a hamburger menu button to the PawBook mobile header.
 - Added a **Support the project** button in the top-right header, linked to PawBook's Ko-fi page.
 - Tapping it opens the native Home Assistant sidebar.
