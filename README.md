@@ -2,9 +2,12 @@
 
 🇬🇧 English | 🇮🇹 [Italiano](README.it.md)
 
-[![HACS Validation](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml/badge.svg)](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml)
-[![GitHub Release](https://img.shields.io/github/v/release/fabiovit/pawbook)](https://github.com/fabiovit/pawbook/releases)
-[![License](https://img.shields.io/github/license/fabiovit/pawbook)](LICENSE)
+[![release](https://img.shields.io/github/v/release/fabiovit/pawbook?label=release)](https://github.com/fabiovit/pawbook/releases)
+![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)
+[![Validate](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml/badge.svg)](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml)
+[![Hassfest](https://github.com/fabiovit/pawbook/actions/workflows/hassfest.yml/badge.svg)](https://github.com/fabiovit/pawbook/actions/workflows/hassfest.yml)
+[![license](https://img.shields.io/github/license/fabiovit/pawbook?label=license)](LICENSE)
+
 
 **PawBook** is a modern digital health record for dogs built for **Home Assistant**.
 
@@ -101,11 +104,9 @@ data:
 PawBook is local-first. Pet data, health records, genealogy, photos and attachments are stored inside your Home Assistant installation. PawBook does not require a PawBook cloud account.
 
 
-
 ## 🔔 Automatic reminders
 
 PawBook automatically derives reminders from vaccination dates, treatments, veterinary visits, weight records and the estimated heat-cycle window. No manual reminder entry is required.
-
 
 
 ## 🐾 Multi-Pet Hub

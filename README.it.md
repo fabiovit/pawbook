@@ -1,10 +1,13 @@
 # 🐾 PawBook
 
+[![release](https://img.shields.io/github/v/release/fabiovit/pawbook?label=release)](https://github.com/fabiovit/pawbook/releases)
+![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)
+[![Validate](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml/badge.svg)](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml)
+[![Hassfest](https://github.com/fabiovit/pawbook/actions/workflows/hassfest.yml/badge.svg)](https://github.com/fabiovit/pawbook/actions/workflows/hassfest.yml)
+[![license](https://img.shields.io/github/license/fabiovit/pawbook?label=license)](LICENSE)
+
 🇬🇧 [English](README.md) | 🇮🇹 Italiano
 
-[![HACS Validation](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml/badge.svg)](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml)
-[![GitHub Release](https://img.shields.io/github/v/release/fabiovit/pawbook)](https://github.com/fabiovit/pawbook/releases)
-[![License](https://img.shields.io/github/license/fabiovit/pawbook)](LICENSE)
 
 **PawBook** è un moderno libretto sanitario digitale per cani progettato per **Home Assistant**.
 
@@ -101,11 +104,9 @@ data:
 PawBook è progettato con un approccio local-first. Dati del cane, cartella sanitaria, genealogia, fotografie e allegati vengono salvati all'interno della tua installazione di Home Assistant. Non è richiesto alcun account cloud PawBook.
 
 
-
 ## 🔔 Promemoria automatici
 
 PawBook genera automaticamente i promemoria utilizzando date dei vaccini, terapie, visite veterinarie, pesate e finestra stimata del prossimo calore. Non è necessario inserire manualmente i promemoria.
-
 
 
 ## 🐾 Gestione multi-cane

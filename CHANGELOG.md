@@ -1,3 +1,16 @@
+## 6.1.0 - DOMOTICA shell & repository quality
+
+- Rebuilt the PawBook top shell using the Inverter Dashboard navigation geometry.
+- Added a sticky translucent header with Home Assistant menu, PawBook icon/name/version and Ko-fi support action.
+- Moved the internal section navigation into the top header.
+- Replaced the large mobile navigation cards with compact icon + text tabs.
+- Added native horizontal touch scrolling and stable mobile menu behavior.
+- Aligned desktop/mobile margins and card geometry with the DOMOTICA dashboard family.
+- Added HACS validation GitHub Action.
+- Added Hassfest GitHub Action.
+- Rebuilt README badges to match the quality/status row used by CBBO.
+- Updated PawBook to version 6.1.0 and frontend asset v610.
+
 ## 6.0.1 - Mobile sidebar hotfix
 
 - Refined the mobile header alignment: menu left, PawBook brand left, support button right.
