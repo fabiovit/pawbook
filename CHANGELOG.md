@@ -1,3 +1,15 @@
+## 6.3.0 - Structural Visual Redesign
+
+- Rebuilt the PawBook home structure instead of applying cosmetic CSS only.
+- Moved the main KPIs inside the pet profile hero.
+- Replaced standalone action buttons with a compact profile toolbar.
+- Reworked the main content into a two-column application dashboard on desktop.
+- Rebuilt Smart Dashboard as a single status matrix.
+- Reduced nested card-on-card layouts across health sections.
+- Simplified mobile hierarchy while keeping full feature access.
+- Preserved the DOMOTICA/Inverter header and navigation.
+- Updated PawBook to version 6.3.0 and frontend asset v630.
+
 ## 6.2.0 - Visual Redesign
 
 - Reworked the PawBook interior UI to reduce the Lovelace/Mushroom-card appearance.
