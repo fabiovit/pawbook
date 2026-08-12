@@ -1,18 +1,12 @@
-# PawBook v6.1.0 – Pubblicazione GitHub
+# PawBook v6.2.0 – Pubblicazione GitHub
 
 Commit message:
-PawBook v6.1.0 - DOMOTICA UI and repository quality
+PawBook v6.2.0 - Visual Redesign
 
 Tag:
-v6.1.0
+v6.2.0
 
 Release title:
-PawBook v6.1.0 – DOMOTICA UI & Repository Quality
+PawBook v6.2.0 – Visual Redesign
 
-Before publishing the release, open the GitHub Actions tab and verify that both:
-- Validate
-- Hassfest
-
-finish successfully.
-
-Then create the v6.1.0 release using RELEASE-6.1.0.md as the description.
+Use RELEASE-6.2.0.md as the release description.

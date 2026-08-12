@@ -1,3 +1,16 @@
+## 6.2.0 - Visual Redesign
+
+- Reworked the PawBook interior UI to reduce the Lovelace/Mushroom-card appearance.
+- Added a stronger application-style profile hero.
+- Rebuilt the four main statistics as a unified telemetry rail.
+- Flattened section containers and removed excessive shadows and pill geometry.
+- Rebuilt the Smart Dashboard as a single data grid.
+- Simplified reminder, timeline, visit, treatment, vaccine and heat-cycle rows.
+- Reduced nested card styling across ENCI, Multi-Pet and health sections.
+- Preserved the Inverter/DOMOTICA sticky header and menu introduced in v6.1.0.
+- Preserved all PawBook health, ENCI, genealogy and Multi-Pet logic.
+- Updated PawBook to version 6.2.0 and frontend asset v620.
+
 ## 6.1.0 - DOMOTICA shell & repository quality
 
 - Rebuilt the PawBook top shell using the Inverter Dashboard navigation geometry.
