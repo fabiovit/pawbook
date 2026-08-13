@@ -1,0 +1,51 @@
+# PawBook frontend patch segment
+ht:55px!important;
++  display:grid!important;
++  grid-template-columns:30px minmax(0,1fr) auto!important;
++  gap:9px!important;
++  align-items:center!important;
++  margin-top:12px!important;
++  padding:8px 10px!important;
++  text-align:left!important;
++  color:var(--primary-text-color)!important;
++  border:1px solid color-mix(in srgb,var(--primary-color) 20%,var(--pb-line))!important;
++  border-radius:13px!important;
++  background:var(--pb-accent-soft)!important;
++}
++.pb-agenda-health-btn>span:first-child{
++  width:30px;height:30px;
++  display:grid;place-items:center;
++  border-radius:9px;
++  background:color-mix(in srgb,var(--primary-color) 14%,transparent);
++  color:var(--primary-color);
++}
++.pb-agenda-health-btn strong,
++.pb-agenda-health-btn small{
++  display:block;
++}
++.pb-agenda-health-btn strong{font-size:11px}
++.pb-agenda-health-btn small{margin-top:2px;color:var(--secondary-text-color);font-size:9px}
++.pb-agenda-health-btn>b{font-size:20px;color:var(--primary-color)}
++
++@media(max-width:900px){
++  .pb-agenda-layout{grid-template-columns:1fr}
++  .pb-agenda-side{
++    border-left:0;
++    border-top:1px solid var(--pb-line);
++  }
++  .pb-upcoming-list{
++    grid-template-columns:1fr 1fr;
++  }
++}
++
++@media(max-width:760px){
++  .pb-domotica-header{
++    top:6px!important;
++    border-radius:17px!important;
++  }
++  .pb-domotica-top{
++    min-height:58px!important;
++    padding:7px 9px!important;
++  }
++  .pb-brand-icon{
++    width:35px!important;height:35px!important;border-
