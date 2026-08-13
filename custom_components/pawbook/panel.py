@@ -17,7 +17,7 @@ from .const import DOMAIN
 from .enci import EnciClient, EnciError, normalize_import
 
 PANEL_URL = "pawbook"
-PANEL_ELEMENT = "pawbook-panel-v640"
+PANEL_ELEMENT = "pawbook-panel-v650"
 STATIC_URL = "/pawbook_static"
 
 
@@ -33,7 +33,12 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
                 f"{STATIC_URL}/pawbook-panel-v640.js",
                 str(frontend_path / "pawbook-panel-v640.js"),
                 False,
-            )
+            ),
+            StaticPathConfig(
+                f"{STATIC_URL}/pawbook-panel-v650.js",
+                str(frontend_path / "pawbook-panel-v650.js"),
+                False,
+            ),
         ]
     )
 
@@ -48,7 +53,7 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
                 "name": PANEL_ELEMENT,
                 "embed_iframe": False,
                 "trust_external": False,
-                "js_url": f"{STATIC_URL}/pawbook-panel-v640.js",
+                "js_url": f"{STATIC_URL}/pawbook-panel-v650.js",
             }
         },
         require_admin=False,
