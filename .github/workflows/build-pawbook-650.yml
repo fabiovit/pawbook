@@ -1,0 +1,37 @@
+name: Build PawBook 6.5
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - pawbook-6.5-navigation-polish
+    paths:
+      - scripts/build_pawbook650.py
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: pawbook-6.5-navigation-polish
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Generate PawBook 6.5.0
+        run: python scripts/build_pawbook650.py
+      - name: Check JavaScript
+        run: node --check custom_components/pawbook/frontend/pawbook-panel-v650.js
+      - name: Commit generated release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add custom_components/pawbook/frontend/pawbook-panel-v650.js custom_components/pawbook/panel.py custom_components/pawbook/manifest.json CHANGELOG.md RELEASE-6.5.0.md PUBBLICAZIONE_GITHUB.md
+          git commit -m "PawBook v6.5.0 - Navigation and Layout Polish" || exit 0
+          git push origin pawbook-6.5-navigation-polish
