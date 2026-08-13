@@ -1,0 +1,608 @@
+--- a/custom_components/pawbook/frontend/pawbook-panel-v630.js
++++ b/custom_components/pawbook/frontend/pawbook-panel-v630.js
+@@ -9,6 +9,7 @@
+     this._error = "";
+     this._mobileGenealogyPath = [];
+     this._calendarOffset = 0;
++    this._activeView = "overview";
+   }
+ 
+   set hass(value) {
+@@ -1365,6 +1366,78 @@
+     w.document.close();
+   }
+ 
++
++  applyPageView() {
++    const root = this.shadowRoot;
++    if (!root) return;
++
++    const view = this._activeView || "overview";
++    const overview = root.querySelector("#overview");
++    const grid = root.querySelector(".grid");
++    const articles = [...root.querySelectorAll(".grid > article[id]")];
++
++    const managementIds = [
++      "health-section",
++      "vaccines-section",
++      "visits-section",
++      "treatments-section",
++      "heat-section"
++    ];
++
++    const diagnosticsIds = [
++      "statistics-section",
++      "documents-section",
++      "report-section",
++      "backup-section"
++    ];
++
++    if (overview) overview.style.display = view === "overview" ? "" : "none";
++    if (grid) grid.style.display = view === "overview" ? "none" : "grid";
++
++    articles.forEach((article) => {
++      let show = false;
++
++      if (view === "management-section") {
++        show = article.id === "management-intro";
++      } else if (view === "diagnostics-section") {
++        show = article.id === "diagnostics-intro" || diagnosticsIds.includes(article.id);
++      } else {
++        show = article.id === view;
++      }
++
++      article.style.setProperty("display", show ? "" : "none", show ? "" : "important");
++      article.classList.toggle("pb-page-active", show);
++      article.classList.toggle("pb-management-card", view === "management-section" && show);
++      article.classList.toggle("pb-diagnostics-card", view === "diagnostics-section" && show);
++    });
++
++    const managementIntro = root.querySelector("#management-intro");
++    if (managementIntro) {
++      managementIntro.style.setProperty(
++        "display",
++        view === "management-section" ? "block" : "none",
++        "important"
++      );
++    }
++
++    const diagnosticsIntro = root.querySelector("#diagnostics-intro");
++    if (diagnosticsIntro) {
++      diagnosticsIntro.style.setProperty(
++        "display",
++        view === "diagnostics-section" ? "block" : "none",
++        "important"
++      );
++    }
++
++    root.querySelectorAll(".dashboard-nav button[data-nav-target]").forEach((button) => {
++      button.classList.toggle("active", button.dataset.navTarget === view);
++    });
++
++    root.querySelector(".page")?.classList.toggle("pb-subpage-mode", view !== "overview");
++    root.querySelector(".page")?.classList.toggle("pb-management-mode", view === "management-section");
++    root.querySelector(".page")?.classList.toggle("pb-diagnostics-mode", view === "diagnostics-section");
++  }
++
+   render() {
+     if (!this.shadowRoot) return;
+ 
+@@ -2062,7 +2135,7 @@
+       .support-project-btn:hover{border-color:var(--primary-color);background:var(--secondary-background-color)}
+       @media(max-width:900px){.topbar-actions{margin-left:auto}.support-project-btn{width:44px;height:44px;min-height:44px;padding:0;border-radius:12px;font-size:20px}.support-project-label{display:none}}
+ 
+-      /* PawBook 6.3.0 definitive mobile header */
++      /* PawBook 6.10.3 definitive mobile header */
+       .topbar{
+         display:flex !important;
+         align-items:center !important;
+@@ -2184,7 +2257,7 @@
+         }
+       }
+ 
+-      /* PawBook 6.3.0 · DOMOTICA / Inverter shell */
++      /* PawBook 6.10.3 · DOMOTICA / Inverter shell */
+       :host{
+         --paw-accent:var(--primary-color);
+         --paw-green:#48d58b;
+@@ -2389,7 +2462,7 @@
+         .version-badge{font-size:9px !important;padding:3px 6px !important}
+       }
+ 
+-      /* PawBook 6.3.0 · Visual Redesign */
++      /* PawBook 6.10.3 · Visual Redesign */
+       :host{
+         --paw-surface:color-mix(in srgb,var(--card-background-color) 96%,var(--primary-background-color));
+         --paw-line:color-mix(in srgb,var(--divider-color) 78%,transparent);
+@@ -2535,7 +2608,7 @@
+         }
+       }
+ 
+-      /* PawBook 6.3.0 — true structural redesign */
++      /* PawBook 6.10.3 — true structural redesign */
+       .page{
+         padding:16px 20px 56px !important;
+       }
+@@ -2752,15 +2825,3160 @@
+           border-right:0 !important;
+         }
+       }
++
++/* PawBook 6.10.3 Recovery UI Polish */
++:host {
++  --pb-radius-lg: 24px;
++  --pb-radius-md: 16px;
++  --pb-border: color-mix(in srgb, var(--divider-color) 82%, transparent);
++  --pb-elev: 0 18px 48px rgba(0,0,0,.08);
++}
++
++.page {
++  max-width: 1440px !important;
++  margin: 0 auto !important;
++  padding: 18px 24px 56px !important;
++}
++
++.topbar {
++  border-radius: 22px !important;
++  border: 1px solid var(--pb-border) !important;
++  box-shadow: var(--pb-elev) !important;
++  backdrop-filter: blur(18px);
++  -webkit-backdrop-filter: blur(18px);
++}
++
++.dashboard-nav {
++  display: flex !important;
++  align-items: center !important;
++  gap: 6px !important;
++  overflow-x: auto !important;
++  scrollbar-width: none;
++  padding: 6px 2px 10px !important;
++  margin: 12px 0 22px !important;
++}
++.dashboard-nav::-webkit-scrollbar { display:none; }
++
++.dashboard-nav button {
++  min-height: 40px !important;
++  display: inline-flex !important;
++  align-items: center !important;
++  gap: 7px !important;
++  padding: 0 13px !important;
++  border-radius: 12px !important;
++  border: 1px solid transparent !important;
++  background: transparent !important;
++  color: var(--secondary-text-color) !important;
++  font-weight: 750 !important;
++  white-space: nowrap !important;
++  transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
++}
++
++.dashboard-nav button:hover {
++  background: var(--secondary-background-color) !important;
++  color: var(--primary-text-color) !important;
++}
++
++.dashboard-nav button.active {
++  color: var(--primary-color) !important;
++  background: color-mix(in srgb, var(--primary-color) 10%, transparent) !important;
++  border-color: color-mix(in srgb, var(--primary-color) 20%, transparent) !important;
++}
++
++.grid > article,
++.card,
++.health-calendar-card,
++.health-timeline-card,
++.reminders-center,
++.heat-center {
++  border-radius: var(--pb-radius-lg) !important;
++}
++
++.grid > article {
++  border: 1px solid var(--pb-border) !important;
++  box-shadow: 0 12px 34px rgba(0,0,0,.055) !important;
++  padding: 24px 26px 34px !important;
++}
++
++.grid > article > .card-head,
++.scene-heading {
++  padding-bottom: 16px !important;
++  margin-bottom: 20px !important;
++  border-bottom: 1px solid var(--pb-border) !important;
++}
++
++.grid > article > .card-head h3,
++.scene-heading h2 {
++  font-size: clamp(24px, 2vw, 30px) !important;
++  line-height: 1.08 !important;
++  letter-spacing: -.02em;
++}
++
++@media (max-width: 760px) {
++  .page {
++    padding: 10px 12px 42px !important;
++  }
++
++  .topbar {
++    border-radius: 18px !important;
++  }
++
++  .dashboard-nav {
++    gap: 4px !important;
++    margin: 8px 0 16px !important;
++    padding-bottom: 8px !important;
++  }
++
++  .dashboard-nav button {
++    min-height: 38px !important;
++    padding: 0 11px !important;
++    font-size: 11px !important;
++    flex: 0 0 auto !important;
++  }
++
++  .grid > article {
++    padding: 18px 14px 28px !important;
++    border-radius: 18px !important;
++  }
++
++  .grid > article > .card-head,
++  .scene-heading {
++    margin-bottom: 16px !important;
++    padding-bottom: 14px !important;
++  }
++}
++
++
++/* PawBook 6.10.3 DOMOTICA Rebuild */
++:host {
++  --pb-gap: 18px;
++  --pb-radius-xl: 28px;
++  --pb-radius-lg: 20px;
++  --pb-radius-md: 14px;
++  --pb-border: color-mix(in srgb, var(--divider-color) 78%, transparent);
++  --pb-soft: color-mix(in srgb, var(--secondary-background-color) 88%, transparent);
++  --pb-accent-soft: color-mix(in srgb, var(--primary-color) 12%, transparent);
++  --pb-shadow: 0 18px 60px rgba(0,0,0,.08);
++}
++
++.page {
++  max-width: 1480px !important;
++  margin: 0 auto !important;
++  padding: 18px 24px 64px !important;
++}
++
++.topbar {
++  position: sticky !important;
++  top: 10px !important;
++  z-index: 40 !important;
++  border-radius: var(--pb-radius-xl) !important;
++  border: 1px solid var(--pb-border) !important;
++  background: color-mix(in srgb, var(--card-background-color) 88%, transparent) !important;
++  box-shadow: var(--pb-shadow) !important;
++  backdrop-filter: blur(22px) saturate(1.15);
++  -webkit-backdrop-filter: blur(22px) saturate(1.15);
++  overflow: hidden !important;
++}
++
++.topbar::after {
++  content: "";
++  display: block;
++  height: 1px;
++  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--primary-color) 45%, transparent), transparent);
++  opacity: .55;
++}
++
++.dashboard-nav {
++  display: flex !important;
++  align-items: center !important;
++  gap: 6px !important;
++  overflow-x: auto !important;
++  scrollbar-width: none;
++  padding: 8px 10px 10px !important;
++  margin: 0 !important;
++  border-top: 1px solid var(--pb-border) !important;
++  background: transparent !important;
++}
++.dashboard-nav::-webkit-scrollbar { display: none; }
++
++.dashboard-nav button {
++  appearance: none;
++  min-height: 42px !important;
++  display: inline-flex !important;
++  align-items: center !important;
++  justify-content: center !important;
++  gap: 7px !important;
++  padding: 0 14px !important;
++  border-radius: 13px !important;
++  border: 1px solid transparent !important;
++  background: transparent !important;
++  color: var(--secondary-text-color) !important;
++  font-size: 12px !important;
++  font-weight: 760 !important;
++  letter-spacing: .01em;
++  white-space: nowrap !important;
++  transition: .18s ease;
++}
++
++.dashboard-nav button:hover {
++  color: var(--primary-text-color) !important;
++  background: var(--pb-soft) !important;
++}
++
++.dashboard-nav button.active {
++  color: var(--primary-color) !important;
++  background: var(--pb-accent-soft) !important;
++  border-color: color-mix(in srgb, var(--primary-color) 26%, transparent) !important;
++  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary-color) 6%, transparent);
++}
++
++.grid {
++  gap: var(--pb-gap) !important;
++}
++
++.grid > article,
++.card,
++.health-calendar-card,
++.health-timeline-card,
++.reminders-center,
++.heat-center {
++  border-radius: var(--pb-radius-xl) !important;
++  border: 1px solid var(--pb-border) !important;
++  background: var(--card-background-color) !important;
++  box-shadow: 0 14px 44px rgba(0,0,0,.055) !important;
++}
++
++.grid > article {
++  padding: 26px 28px 34px !important;
++  overflow: hidden !important;
++}
++
++.grid > article::before,
++.card::before,
++.health-calendar-card::before,
++.health-timeline-card::before,
++.reminders-center::before,
++.heat-center::before {
++  display: none !important;
++  content: none !important;
++}
++
++.grid > article > .card-head,
++.scene-heading {
++  display: flex !important;
++  align-items: flex-end !important;
++  justify-content: space-between !important;
++  gap: 14px !important;
++  padding: 0 0 18px !important;
++  margin: 0 0 22px !important;
++  border-bottom: 1px solid var(--pb-border) !important;
++}
++
++.grid > article > .card-head h3,
++.scene-heading h2 {
++  margin: 0 !important;
++  font-size: clamp(25px, 2.2vw, 32px) !important;
++  line-height: 1.03 !important;
++  letter-spacing: -.025em !important;
++}
++
++.grid > article > .card-head p,
++.scene-heading p,
++.muted,
++.secondary {
++  color: var(--secondary-text-color) !important;
++}
++
++.kpi-grid,
++.summary-grid,
++.stats-grid,
++.health-grid {
++  gap: 12px !important;
++}
++
++.kpi,
++.stat,
++.summary-item,
++.metric {
++  border-radius: var(--pb-radius-lg) !important;
++  border: 1px solid var(--pb-border) !important;
++  background: var(--pb-soft) !important;
++  box-shadow: none !important;
++}
++
++button,
++.action-button,
++.primary-action,
++.secondary-action {
++  border-radius: 13px !important;
++}
++
++#smart-section .smart-list {
++  display: grid !important;
++  gap: 10px !important;
++}
++
++#smart-section .smart-item {
++  border: 1px solid var(--pb-border) !important;
++  border-left: 0 !important;
++  border-radius: 16px !important;
++  background: var(--pb-soft) !important;
++  padding: 16px 18px !important;
++}
++
++#calendar-section .health-calendar-card,
++.health-calendar-card {
++  overflow: hidden !important;
++}
++
++.calendar-grid {
++  gap: 6px !important;
++}
++
++.calendar-day {
++  border-radius: 12px !important;
++  border: 1px solid transparent !important;
++  min-height: 76px !important;
++}
++
++.calendar-day:hover {
++  background: var(--pb-soft) !important;
++  border-color: var(--pb-border) !important;
++}
++
++.timeline-item {
++  border-radius: 16px !important;
++  border: 1px solid var(--pb-border) !important;
++  background: var(--pb-soft) !important;
++}
++
++input,
++select,
++textarea {
++  border-radius: 12px !important;
++}
++
++@media (min-width: 980px) {
++  .dashboard-nav {
++    justify-content: center !important;
++  }
++}
++
++@media (max-width: 760px) {
++  .page {
++    padding: 10px 10px 44px !important;
++  }
++
++  .topbar {
++    top: 6px !important;
++    border-radius: 20px !important;
++  }
++
++  .dashboard-nav {
++    justify-content: flex-start !important;
++    padding: 7px 8px 9px !important;
++    gap: 4px !important;
++  }
++
++  .dashboard-nav button {
++    min-height: 40px !important;
++    padding: 0 11px !important;
++    font-size: 11px !important;
++    flex: 0 0 auto !important;
++  }
++
++  .grid {
++    gap: 12px !important;
++  }
++
++  .grid > article,
++  .card,
++  .health-calendar-card,
++  .health-timeline-card,
++  .reminders-center,
++  .heat-center {
++    border-radius: 19px !important;
++  }
++
++  .grid > article {
++    padding: 18px 14px 26px !important;
++  }
++
++  .grid > article > .card-head,
++  .scene-heading {
++    align-items: flex-start !important;
++    flex-direction: column !important;
++    padding-bottom: 14px !important;
++    margin-bottom: 16px !important;
++  }
++
++  .grid > article > .card-head h3,
++  .scene-heading h2 {
++    font-size: 25px !important;
++  }
++
++  .kpi-grid,
++  .summary-grid,
++  .stats-grid,
++  .health-grid {
++    grid-template-columns: 1fr !important;
++  }
++
++  .calendar-day {
++    min-height: 58px !important;
++    padding: 7px !important;
++  }
++}
++
++
++/* PawBook 6.10.3 New UI */
++:host{
++  --pb-surface:color-mix(in srgb,var(--card-background-color) 94%,transparent);
++  --pb-soft:color-mix(in srgb,var(--secondary-background-color) 86%,transparent);
++  --pb-line:color-mix(in srgb,var(--divider-color) 72%,transparent);
++  --pb-accent-soft:color-mix(in srgb,var(--primary-color) 12%,transparent);
++  --pb-shadow:0 24px 80px rgba(0,0,0,.10);
++}
++.pb-main-nav{
++  justify-content:center!important;
++  gap:5px!important;
++}
++.pb-main-nav>button{
++  min-width:auto!important;
++  padding:0 14px!important;
++}
++.pb-command{
++  display:grid;
++  gap:16px;
++  margin-bottom:20px;
++}
++.pb-command-hero{
++  position:relative;
++  display:grid;
++  grid-template-columns:minmax(0,1fr) auto;
++  gap:22px;
++  align-items:center;
++  min-height:245px;
++  padding:30px;
++  overflow:hidden;
++  border:1px solid var(--pb-line);
++  border-radius:30px;
++  background:
++    radial-gradient(circle at 86% 10%,color-mix(in srgb,var(--primary-color) 16%,transparent),transparent 36%),
++    linear-gradient(145deg,var(--pb-surface),color-mix(in srgb,var(--secondary-background-color) 72%,var(--card-background-color)));
++  box-shadow:var(--pb-shadow);
++}
++.pb-command-hero::after{
++  content:"";
++  position:absolute;
++  width:280px;height:280px;
++  right:-110px;bottom:-160px;
++  border-radius:50%;
++  border:44px solid color-mix(in srgb,var(--primary-color) 5%,transparent);
++  pointer-events:none;
++}
++.pb-pet-visual{display:flex;align-items:center;gap:24px;min-width:0;z-index:1}
++.pb-photo{flex:0 0 auto}
++.pb-photo .pet-photo,.pb-photo .placeholder{width:170px!important;height:170px!important;border-radius:34px!important}
++.pb-pet-copy{min-width:0}
++.pb-eyebrow{display:block;font-size:10px;font-weight:900;letter-spacing:.16em;color:var(--primary-color);margin-bottom:8px}
++.pb-pet-copy h2{font-size:clamp(34px,4vw,54px)!important;letter-spacing:-.045em!important;line-height:.98!important;margin:0 0 14px!important}
++.pb-pet-meta{display:flex;flex-wrap:wrap;gap:8px}
++.pb-pet-meta span{padding:7px 10px;border:1px solid var(--pb-line);border-radius:999px;background:color-mix(in srgb,var(--card-background-color) 72%,transparent);font-size:12px;color:var(--secondary-text-color)}
++.pb-health-orbit{z-index:1}
++.pb-health-score{
++  width:188px;height:188px;border-radius:50%;
++  display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
++  border:1px solid var(--pb-line);
++  background:color-mix(in srgb,var(--card-background-color) 78%,transparent);
++  box-shadow:inset 0 0 0 12px color-mix(in srgb,var(--secondary-background-color) 50%,transparent),0 18px 50px rgba(0,0,0,.08);
++}
++.pb-health-score.ok{box-shadow:inset 0 0 0 12px color-mix(in srgb,#43d17d 12%,transparent),0 18px 50px rgba(0,0,0,.08)}
++.pb-health-score.warn{box-shadow:inset 0 0 0 12px color-mix(in srgb,#ffb74d 14%,transparent),0 18px 50px rgba(0,0,0,.08)}
++.pb-health-score.danger{box-shadow:inset 0 0 0 12px color-mix(in srgb,var(--error-color) 13%,transparent),0 18px 50px rgba(0,0,0,.08)}
++.pb-health-dot{width:9px;height:9px;border-radius:50%;background:#43d17d;margin-bottom:8px;box-shadow:0 0 0 6px color-mix(in srgb,#43d17d 15%,transparent)}
++.pb-health-score.warn .pb-health-dot{background:#ffb74d;box-shadow:0 0 0 6px color-mix(in srgb,#ffb74d 15%,transparent)}
++.pb-health-score.danger .pb-health-dot{background:var(--error-color);box-shadow:0 0 0 6px color-mix(in srgb,var(--error-color) 15%,transparent)}
++.pb-health-score small,.pb-health-score em{color:var(--secondary-text-color);font-style:normal;font-size:11px}
++.pb-health-score strong{font-size:18px;margin:5px 0;max-width:135px}
++.pb-vitals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
++.pb-vital{
++  min-height:112px!important;
