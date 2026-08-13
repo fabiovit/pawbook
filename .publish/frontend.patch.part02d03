@@ -1,0 +1,71 @@
+# PawBook frontend patch segment
+px;
++  background:var(--pb-soft);
++}
++.pb-upcoming-date strong{
++  font-size:17px;line-height:1;
++}
++.pb-upcoming-date small{
++  margin-top:3px;
++  font-size:8px;
++  color:var(--secondary-text-color);
++}
++.pb-upcoming-icon{
++  width:30px;height:30px;
++  display:grid;place-items:center;
++  border-radius:9px;
++  background:var(--pb-soft);
++  font-size:16px;
++}
++.pb-upcoming-copy{
++  min-width:0;
++}
++.pb-upcoming-copy strong,
++.pb-upcoming-copy small{
++  display:block;
++  overflow:hidden;
++  text-overflow:ellipsis;
++  white-space:nowrap;
++}
++.pb-upcoming-copy strong{
++  font-size:11px;
++}
++.pb-upcoming-copy small{
++  margin-top:3px;
++  color:var(--secondary-text-color);
++  font-size:9px;
++}
++.pb-estimate{
++  padding:4px 6px;
++  border-radius:7px;
++  background:color-mix(in srgb,#ff6f91 12%,transparent);
++  color:#d74d70;
++  font-size:7px;
++  font-weight:900;
++  letter-spacing:.08em;
++}
++.pb-agenda-empty{
++  min-height:170px;
++  display:flex;
++  flex-direction:column;
++  align-items:center;
++  justify-content:center;
++  text-align:center;
++  padding:20px;
++  color:var(--secondary-text-color);
++}
++.pb-agenda-empty>span{
++  width:42px;height:42px;
++  display:grid;place-items:center;
++  margin-bottom:10px;
++  border-radius:13px;
++  background:color-mix(in srgb,#43d17d 12%,transparent);
++  color:#36a966;
++  font-size:20px;
++}
++.pb-agenda-empty strong{color:var(--primary-text-color)}
++.pb-agenda-empty small{margin-top:4px}
++
++.pb-agenda-health-btn{
++  width:100%!important;
++  min-heig
