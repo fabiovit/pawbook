@@ -1,0 +1,59 @@
+# PawBook frontend patch segment
+ff}
++.pb-calendar-legend i.heat,.pb-event-dots i.heat{background:#ff6f91}
++.pb-calendar-legend i.other,.pb-event-dots i.other{background:#6dc99b}
++
++.pb-weekdays{
++  margin-bottom:5px;
++}
++.pb-weekdays span{
++  padding:7px 4px!important;
++  font-size:9px!important;
++  letter-spacing:.08em;
++  text-transform:uppercase;
++}
++
++.pb-calendar-grid{
++  gap:5px!important;
++  background:transparent!important;
++}
++.pb-calendar-day{
++  min-height:76px!important;
++  padding:8px!important;
++  border:1px solid transparent!important;
++  border-radius:12px!important;
++  background:transparent!important;
++  transition:.16s ease;
++}
++.pb-calendar-day:hover{
++  border-color:var(--pb-line)!important;
++  background:var(--pb-soft)!important;
++}
++.pb-calendar-day.has-events{
++  background:color-mix(in srgb,var(--secondary-background-color) 45%,transparent)!important;
++}
++.pb-calendar-day.outside{
++  opacity:.30!important;
++}
++.pb-day-top{
++  display:flex;
++  align-items:center;
++  justify-content:space-between;
++  gap:4px;
++}
++.pb-calendar-day .calendar-day-number{
++  width:27px!important;height:27px!important;
++  font-size:11px!important;
++  border-radius:9px!important;
++}
++.pb-calendar-day.today .calendar-day-number{
++  background:var(--primary-color)!important;
++  color:#fff!important;
++  box-shadow:0 5px 14px color-mix(in srgb,var(--primary-color) 30%,transparent);
++}
++.pb-event-count{
++  min-width:18px;height:18px;
++  display:grid;place-items:center;
++  padding:0 4px;
++  border-radius:999px;
++
