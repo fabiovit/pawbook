@@ -1,3 +1,15 @@
+## 6.4.0 - Health OS Redesign
+
+- Rebuilt PawBook as an app-style multi-view interface instead of one long card stack.
+- Navigation now switches full views instead of scrolling through every section.
+- Redesigned the pet overview as a Health Command Center inspired by the Inverter Dashboard.
+- Added a dedicated health-status stage and next-action focus.
+- Replaced the old Smart Dashboard cards with a Care Focus stage and compact care ribbon.
+- Completely rebuilt the Health Calendar as a mini-month plus agenda stream.
+- Replaced menu emojis with native Home Assistant MDI icons.
+- Preserved all health, ENCI, genealogy, Multi-Pet, reminder and backup features.
+- Updated PawBook to version 6.4.0 and frontend asset v640.
+
 ## 6.3.0 - Structural Visual Redesign
 
 - Rebuilt the PawBook home structure instead of applying cosmetic CSS only.
