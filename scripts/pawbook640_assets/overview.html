@@ -1,0 +1,29 @@
+        <section class="overview-dashboard" aria-label="PawBook Care Deck">
+          <div class="care-focus">
+            <div class="care-focus-copy">
+              <span class="scene-kicker">CARE FOCUS</span>
+              <h3>${reminders[0] ? this.esc(reminders[0].title) : "Nessuna urgenza"}</h3>
+              <p>${reminders[0] ? this.esc(reminders[0].detail) : `La situazione sanitaria di ${this.esc(p.dog_name || book.title)} non presenta promemoria urgenti.`}</p>
+              <button data-nav-target="${reminders[0]?.target || "calendar-section"}" class="care-focus-action">
+                <span>${reminders[0] ? "Apri dettaglio" : "Apri agenda"}</span><ha-icon icon="mdi:arrow-top-right"></ha-icon>
+              </button>
+            </div>
+            <div class="care-focus-mark ${reminders[0]?.level || "good"}"><ha-icon icon="${reminders[0]?.level === "danger" ? "mdi:alert-circle" : reminders[0]?.level === "warn" ? "mdi:alert" : "mdi:check-circle"}"></ha-icon></div>
+          </div>
+          <div class="care-ribbon">
+            <button data-nav-target="vaccines-section"><ha-icon icon="mdi:needle"></ha-icon><span><small>PROSSIMO VACCINO</small><strong>${nextVax ? this.formatDate(nextVax.expires_on) : "Nessuna scadenza"}</strong><em>${vaccineStatusCounts.expired ? `${vaccineStatusCounts.expired} scaduti` : vaccineStatusCounts.warning ? `${vaccineStatusCounts.warning} in scadenza` : "Regolare"}</em></span></button>
+            <button data-nav-target="treatments-section"><ha-icon icon="mdi:pill"></ha-icon><span><small>TERAPIE</small><strong>${treatments.length ? `${treatments.length} attive` : "Nessuna"}</strong><em>${treatments.length ? this.esc(treatments[0].name || "Terapia in corso") : "Nessuna terapia in corso"}</em></span></button>
+            <button data-nav-target="health-section"><ha-icon icon="mdi:scale-bathroom"></ha-icon><span><small>PESO</small><strong>${lastWeight ? `${this.esc(lastWeight.weight)} kg` : "—"}</strong><em>${weightStats.delta == null ? "Storico insufficiente" : `${weightStats.delta > 0 ? "+" : ""}${weightStats.delta} kg ultima variazione`}</em></span></button>
+            <button data-nav-target="heat-section"><ha-icon icon="mdi:flower-pollen"></ha-icon><span><small>PROSSIMO CALORE</small><strong>${heatStats.forecast ? this.formatDate(heatStats.forecast.center) : "—"}</strong><em>${heatStats.forecast ? `${this.formatDate(heatStats.forecast.from)} – ${this.formatDate(heatStats.forecast.to)}` : "Dati insufficienti"}</em></span></button>
+          </div>
+          <div class="overview-lower">
+            <button class="overview-timeline-preview" data-nav-target="timeline-section">
+              <span class="scene-kicker">ULTIMO EVENTO SALUTE</span>
+              ${timeline[0] ? `<div><b>${timeline[0].icon}</b><span><strong>${this.esc(timeline[0].title)}</strong><small>${this.formatDate(timeline[0].date)} · ${this.esc(timeline[0].type)}</small></span><ha-icon icon="mdi:chevron-right"></ha-icon></div>` : `<div><b>♡</b><span><strong>Nessun evento registrato</strong><small>La timeline è ancora vuota</small></span></div>`}
+            </button>
+            <button class="overview-agenda-preview" data-nav-target="calendar-section">
+              <span class="scene-kicker">AGENDA</span>
+              ${healthCalendar.upcoming[0] ? `<div><b>${healthCalendar.upcoming[0].icon}</b><span><strong>${this.esc(healthCalendar.upcoming[0].title)}</strong><small>${this.formatDate(healthCalendar.upcoming[0].date)}</small></span><ha-icon icon="mdi:calendar-arrow-right"></ha-icon></div>` : `<div><b>📅</b><span><strong>Nessun evento futuro</strong><small>Agenda libera</small></span></div>`}
+            </button>
+          </div>
+        </section>
