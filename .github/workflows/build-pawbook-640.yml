@@ -1,0 +1,46 @@
+name: Build PawBook 6.4
+
+on:
+  push:
+    branches:
+      - pawbook-6.4-health-os
+    paths:
+      - scripts/build_pawbook640.py
+      - scripts/pawbook640_assets/**
+      - .github/workflows/build-pawbook-640.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: pawbook-6.4-health-os
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Generate PawBook 6.4.0
+        run: python scripts/build_pawbook640.py
+
+      - name: Commit generated release
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add custom_components/pawbook/frontend/pawbook-panel-v640.js \
+                  custom_components/pawbook/panel.py \
+                  custom_components/pawbook/manifest.json \
+                  CHANGELOG.md PUBBLICAZIONE_GITHUB.md RELEASE-6.4.0.md
+          if git diff --cached --quiet; then
+            echo "No generated changes"
+            exit 0
+          fi
+          git commit -m "PawBook v6.4.0 - Health OS Redesign"
+          git push origin HEAD:pawbook-6.4-health-os
