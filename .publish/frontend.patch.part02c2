@@ -1,0 +1,62 @@
+# PawBook frontend patch segment 02c2
+ant;
++}
++
++.pb-agenda-layout{
++  display:grid;
++  grid-template-columns:minmax(0,1.65fr) minmax(300px,.65fr);
++  min-height:560px;
++}
++.pb-calendar-panel{
++  min-width:0;
++  padding:20px 22px 18px;
++}
++.pb-agenda-side{
++  min-width:0;
++  padding:20px;
++  border-left:1px solid var(--pb-line);
++  background:color-mix(in srgb,var(--secondary-background-color) 42%,var(--card-background-color));
++}
++
++.pb-calendar-title-row{
++  display:flex;
++  align-items:flex-end;
++  justify-content:space-between;
++  gap:16px;
++  margin-bottom:14px;
++}
++.pb-calendar-title-row>div:first-child{
++  display:flex;flex-direction:column;gap:2px;
++}
++.pb-calendar-title-row small,
++.pb-agenda-side-head small{
++  font-size:9px;
++  font-weight:900;
++  letter-spacing:.13em;
++  color:var(--secondary-text-color);
++}
++.pb-calendar-title-row .calendar-month-title{
++  margin:0!important;
++  font-size:26px!important;
++  line-height:1!important;
++  text-transform:capitalize;
++}
++.pb-calendar-legend{
++  display:flex;
++  flex-wrap:wrap;
++  justify-content:flex-end;
++  gap:8px 10px;
++}
++.pb-calendar-legend span{
++  display:inline-flex;
++  align-items:center;
++  gap:5px;
++  font-size:9px;
++  color:var(--secondary-text-color);
++}
++.pb-calendar-legend i,
++.pb-event-dots i{
++  width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--primary-color);
++}
++.pb-calendar-legend i.vaccine,.pb-event-dots i.vaccine{background:#4da3ff}
++.pb-calendar-legend i.treatment,.pb-event-dots i.treatment{background:#a976
