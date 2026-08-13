@@ -1,0 +1,62 @@
+name: Build PawBook 6.6.1 Test ZIP
+
+on:
+  push:
+    branches: [pawbook-661-standalone-test]
+    paths:
+      - '.github/workflows/build-661-test.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Build standalone frontend and package
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json, re, shutil
+
+          root = Path('custom_components/pawbook')
+          base = (root/'frontend/pawbook-panel-v640.js').read_text()
+          patch = (root/'frontend/pawbook-panel-v650.js').read_text()
+
+          start = patch.index('    class PawBookPanelV650 extends Base {')
+          end = patch.index('    customElements.define("pawbook-panel-v650", PawBookPanelV650);')
+          cls = patch[start:end]
+          cls = cls.replace('class PawBookPanelV650 extends Base', 'class PawBookPanelV661 extends Base')
+          cls = cls.replace('PawBookPanelV650', 'PawBookPanelV661')
+          standalone = base + '\n\n/* PawBook 6.6.1 standalone shell */\n(() => {\n  const Base = customElements.get("pawbook-panel-v640");\n  if (!Base) throw new Error("PawBook 6.6.1: base class missing");\n' + cls + '\n  if (!customElements.get("pawbook-panel-v661")) customElements.define("pawbook-panel-v661", PawBookPanelV661);\n})();\n'
+          standalone = standalone.replace('6.4.0', '6.6.1-test')
+          (root/'frontend/pawbook-panel-v661.js').write_text(standalone)
+
+          panel = (root/'panel.py').read_text()
+          panel = re.sub(r'PANEL_ELEMENT = "[^"]+"', 'PANEL_ELEMENT = "pawbook-panel-v661"', panel)
+          panel = panel.replace('''        [\n            StaticPathConfig(\n                f"{STATIC_URL}/pawbook-panel-v640.js",\n                str(frontend_path / "pawbook-panel-v640.js"),\n                False,\n            ),\n            StaticPathConfig(\n                f"{STATIC_URL}/pawbook-panel-v650.js",\n                str(frontend_path / "pawbook-panel-v650.js"),\n                False,\n            ),\n        ]''','''        [\n            StaticPathConfig(\n                f"{STATIC_URL}/pawbook-panel-v661.js",\n                str(frontend_path / "pawbook-panel-v661.js"),\n                False,\n            ),\n        ]''')
+          panel = panel.replace('f"{STATIC_URL}/pawbook-panel-v650.js"', 'f"{STATIC_URL}/pawbook-panel-v661.js"')
+          (root/'panel.py').write_text(panel)
+
+          manifest = json.loads((root/'manifest.json').read_text())
+          manifest['version'] = '6.6.1'
+          (root/'manifest.json').write_text(json.dumps(manifest, indent=2, ensure_ascii=False)+'\n')
+
+          for cache in root.rglob('__pycache__'):
+              shutil.rmtree(cache, ignore_errors=True)
+          PY
+          git add custom_components/pawbook/frontend/pawbook-panel-v661.js custom_components/pawbook/panel.py custom_components/pawbook/manifest.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Build PawBook 6.6.1 standalone frontend test"
+          git push
+          cd custom_components
+          zip -r ../../pawbook-v6.6.1-standalone-test.zip pawbook -x 'pawbook/__pycache__/*'
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pawbook-v6.6.1-standalone-test
+          path: pawbook-v6.6.1-standalone-test.zip
