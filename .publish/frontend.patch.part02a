@@ -1,0 +1,37 @@
+# PawBook v6.10.3 frontend CSS patch continuation — generated from approved build
++  display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;gap:12px!important;align-items:center!important;
++  padding:16px!important;text-align:left!important;
++  color:var(--primary-text-color)!important;background:var(--pb-surface)!important;border:1px solid var(--pb-line)!important;border-radius:18px!important;
++  box-shadow:none!important;
++}
++.pb-vital:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--primary-color) 32%,var(--pb-line))!important}
++.pb-vital-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--pb-soft);font-size:21px}
++.pb-vital small,.pb-vital strong,.pb-vital em{display:block}
++.pb-vital small{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--secondary-text-color)}
++.pb-vital strong{font-size:18px;margin:4px 0}
++.pb-vital em{font-size:11px;font-style:normal;color:var(--secondary-text-color);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
++.pb-command-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.6fr);gap:12px}
++.pb-focus,.pb-forecast,.pb-launcher{
++  border:1px solid var(--pb-line);border-radius:22px;background:var(--pb-surface);padding:22px;
++}
++.pb-focus{background:linear-gradient(145deg,var(--pb-accent-soft),var(--pb-surface))}
++.pb-section-label{font-size:10px;font-weight:900;letter-spacing:.13em;color:var(--primary-color);margin-bottom:12px}
++.pb-focus h3{font-size:25px;margin:0 0 7px}.pb-focus p,.pb-forecast p{color:var(--secondary-text-color);margin:0}
++.pb-focus-actions{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
++.pb-forecast strong{display:block;font-size:29px;letter-spacing:-.025em;margin:4px 0 8px}
++.pb-link{padding:0!important;margin-top:16px!important;background:transparent!important;color:var(--primary-color)!important}
++.pb-launcher{padding:22px}
++.pb-launcher-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:14px}
++.pb-launcher-head h3{font-size:23px;margin:0}
++.pb-profile-button{flex:0 0 auto}
++.pb-launcher-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
++.pb-launcher-grid>button{
++  min-height:118px!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-end!important;
++  padding:15px!important;border:1px solid var(--pb-line)!important;border-radius:16px!important;background:var(--pb-soft)!important;color:var(--primary-text-color)!important;text-align:left!important;
++}
++.pb-launcher-grid>button>span{font-size:24px;margin-bottom:auto}
++.pb-launcher-grid>button strong{font-size:15px;margin:8px 0 2px}
++.pb-launcher-grid>button small{font-size:10px;color:var(--secondary-text-color)}
++.pb-utilities{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
++.pb-utilities button{min-height:48px!important;background:transparent!important;color:var(--secondary-text-color)!important;border:1px solid var(--pb-line)!important}
++.pb-utili
