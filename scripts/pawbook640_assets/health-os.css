@@ -1,0 +1,78 @@
+
+      /* PawBook 6.4.0 — Health OS */
+      .grid{display:block !important}
+      .grid[hidden], [hidden]{display:none !important}
+      .grid>article{width:100% !important;max-width:none !important;margin:0 !important}
+      .grid>article.card,.grid>article.app-panel,.grid>article.weight-dashboard,.grid>article.health-agenda-scene{
+        border:0 !important;background:transparent !important;box-shadow:none !important;padding:0 !important;border-radius:0 !important;
+      }
+      .grid>article>.card-head,.scene-heading{
+        padding:0 0 18px !important;margin:0 0 18px !important;border-bottom:1px solid var(--divider-color) !important;
+      }
+      .grid>article>.card-head h3,.scene-heading h2{font-size:30px !important;letter-spacing:-.035em;margin:3px 0 4px !important}
+      .scene-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}
+      .scene-heading p{max-width:620px;color:var(--secondary-text-color);font-size:13px;margin:0}
+      .scene-kicker,.stage-kicker,.month-agenda-head span,.next-events-title span{
+        font-size:9px;font-weight:900;letter-spacing:.18em;color:var(--primary-color);text-transform:uppercase;
+      }
+
+      /* Command hero */
+      .app-hero{
+        grid-template-columns:minmax(0,1.15fr) minmax(330px,.85fr) !important;
+        grid-template-areas:"profile stage" "kpis kpis" "tools tools" !important;
+        min-height:390px !important;padding:34px !important;border-radius:30px !important;
+        background:
+          radial-gradient(circle at 88% 12%,color-mix(in srgb,var(--primary-color) 20%,transparent),transparent 32%),
+          radial-gradient(circle at 8% 92%,color-mix(in srgb,#ff6b9c 10%,transparent),transparent 30%),
+          linear-gradient(145deg,color-mix(in srgb,var(--card-background-color) 97%,var(--primary-color) 3%),var(--card-background-color)) !important;
+        border:1px solid color-mix(in srgb,var(--divider-color) 75%,transparent) !important;
+        box-shadow:0 24px 80px rgba(0,0,0,.10) !important;
+      }
+      .app-hero::before{display:none !important}
+      .app-hero .profile{grid-area:profile !important;align-self:center}
+      .hero-health-stage{grid-area:stage;align-self:center;padding:24px;border-radius:24px;background:color-mix(in srgb,var(--primary-background-color) 46%,transparent);border:1px solid color-mix(in srgb,var(--divider-color) 65%,transparent);backdrop-filter:blur(12px)}
+      .health-orbit{display:flex;align-items:center;gap:16px;margin:14px 0 18px}
+      .health-orbit-core{width:78px;height:78px;border-radius:50%;display:grid;place-items:center;background:color-mix(in srgb,var(--primary-color) 12%,transparent);border:1px solid color-mix(in srgb,var(--primary-color) 22%,transparent);box-shadow:0 0 40px color-mix(in srgb,var(--primary-color) 18%,transparent)}
+      .health-orbit-core ha-icon{--mdc-icon-size:34px;color:var(--primary-color)}
+      .health-orbit.good .health-orbit-core{background:rgba(72,213,139,.10);border-color:rgba(72,213,139,.28);box-shadow:0 0 40px rgba(72,213,139,.13)}
+      .health-orbit.good .health-orbit-core ha-icon{color:#48d58b}.health-orbit.warn .health-orbit-core ha-icon{color:#ffb74d}.health-orbit.danger .health-orbit-core ha-icon{color:#ff6b6b}
+      .health-orbit-copy strong,.health-orbit-copy small{display:block}.health-orbit-copy strong{font-size:24px;letter-spacing:-.03em}.health-orbit-copy small{font-size:11px;color:var(--secondary-text-color);margin-top:5px}
+      .next-care{width:100%;display:grid !important;grid-template-columns:1fr auto;gap:2px 10px;text-align:left !important;padding:13px 14px !important;background:transparent !important;border:1px solid var(--divider-color) !important;color:var(--primary-text-color) !important}
+      .next-care>span{font-size:8px;letter-spacing:.15em;color:var(--secondary-text-color)}.next-care>strong{font-size:12px}.next-care ha-icon{grid-column:2;grid-row:1/3;align-self:center;color:var(--primary-color);--mdc-icon-size:20px}
+      .hero-kpi-rail{grid-area:kpis !important}.hero-tools{grid-area:tools !important;justify-content:flex-start !important;border-top:1px solid var(--divider-color);padding-top:14px}
+      .hero-tools button ha-icon{--mdc-icon-size:18px}
+
+      /* Overview care deck */
+      .overview-dashboard{display:grid;gap:14px;margin-top:16px}
+      .care-focus{display:grid;grid-template-columns:minmax(0,1fr) 160px;min-height:240px;overflow:hidden;border-radius:28px;border:1px solid var(--divider-color);background:linear-gradient(135deg,color-mix(in srgb,var(--primary-color) 8%,var(--card-background-color)),var(--card-background-color));position:relative}
+      .care-focus-copy{padding:30px;align-self:center}.care-focus-copy h3{font-size:34px;letter-spacing:-.04em;margin:8px 0}.care-focus-copy p{max-width:640px;color:var(--secondary-text-color);font-size:13px}.care-focus-action{display:inline-flex !important;align-items:center;gap:7px;margin-top:8px;padding:10px 12px !important;background:transparent !important;border:1px solid var(--divider-color) !important;color:var(--primary-text-color) !important}.care-focus-action ha-icon{--mdc-icon-size:18px}
+      .care-focus-mark{display:grid;place-items:center;position:relative;overflow:hidden}.care-focus-mark:before{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:radial-gradient(circle,currentColor,transparent 68%);opacity:.13}.care-focus-mark ha-icon{--mdc-icon-size:72px;position:relative}.care-focus-mark.good{color:#48d58b}.care-focus-mark.warn{color:#ffb74d}.care-focus-mark.danger{color:#ff6b6b}
+      .care-ribbon{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--divider-color);border-radius:22px;overflow:hidden;background:var(--card-background-color)}
+      .care-ribbon>button{display:grid !important;grid-template-columns:38px 1fr;gap:10px;text-align:left !important;padding:18px !important;border:0 !important;border-right:1px solid var(--divider-color) !important;border-radius:0 !important;background:transparent !important;color:var(--primary-text-color) !important}.care-ribbon>button:last-child{border-right:0 !important}.care-ribbon ha-icon{--mdc-icon-size:23px;color:var(--primary-color);margin-top:2px}.care-ribbon small,.care-ribbon strong,.care-ribbon em{display:block}.care-ribbon small{font-size:8px;letter-spacing:.12em;color:var(--secondary-text-color)}.care-ribbon strong{font-size:16px;margin:4px 0}.care-ribbon em{font-style:normal;font-size:10px;color:var(--secondary-text-color)}
+      .overview-lower{display:grid;grid-template-columns:1fr 1fr;gap:14px}.overview-lower>button{min-height:100px;padding:18px !important;text-align:left !important;border:1px solid var(--divider-color) !important;background:var(--card-background-color) !important;color:var(--primary-text-color) !important;border-radius:20px !important}.overview-lower>button>div{display:grid;grid-template-columns:36px 1fr auto;gap:10px;align-items:center;margin-top:10px}.overview-lower b{font-size:22px}.overview-lower strong,.overview-lower small{display:block}.overview-lower small{font-size:10px;color:var(--secondary-text-color);margin-top:3px}.overview-lower ha-icon{color:var(--primary-color)}
+
+      /* Section scenes */
+      #smart-section,#health-section,#vaccines-section,#visits-section,#treatments-section,#heat-section,#timeline-section,#genealogy-section,#enci-section,#statistics-section,#documents-section,#report-section,#backup-section,#reminders-section{padding:4px 0 30px !important}
+      .vaccine-dashboard,.visit-dashboard,.treatment-dashboard,.weight-dashboard,.heat-center{background:transparent !important}
+      .vaccine-summary,.visit-summary,.treatment-summary,.weight-summary,.heat-summary,.insight-grid{border-radius:20px !important;overflow:hidden !important}
+
+      /* Health Agenda */
+      .health-agenda-scene{padding:4px 0 30px !important}
+      .agenda-controls{display:flex;align-items:center;gap:6px}.icon-control,.today-control{height:38px !important;min-width:38px !important;padding:0 10px !important;border:1px solid var(--divider-color) !important;background:var(--card-background-color) !important;color:var(--primary-text-color) !important}.icon-control{width:38px;padding:0 !important}.icon-control ha-icon{--mdc-icon-size:19px}.today-control{font-size:11px !important}
+      .agenda-layout{display:grid;grid-template-columns:minmax(320px,.72fr) minmax(0,1.28fr);gap:14px}
+      .mini-month-stage,.month-agenda-stage,.next-events-rail{border:1px solid var(--divider-color);border-radius:24px;background:var(--card-background-color);overflow:hidden}
+      .mini-month-stage{padding:22px}.mini-month-title{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;text-transform:capitalize}.mini-month-title strong{font-size:22px}.mini-month-title small{font-size:10px;color:var(--secondary-text-color)}
+      .mini-weekdays,.mini-month-grid{display:grid;grid-template-columns:repeat(7,1fr)}.mini-weekdays span{text-align:center;font-size:8px;font-weight:900;color:var(--secondary-text-color);padding:6px}.mini-day{position:relative;aspect-ratio:1;min-height:38px;display:grid;place-items:center;border-radius:12px;font-size:11px;color:var(--primary-text-color)}.mini-day.outside{opacity:.25}.mini-day.today{background:var(--primary-color);color:var(--text-primary-color,#fff);font-weight:900}.mini-day.has-events:not(.today){background:color-mix(in srgb,var(--primary-color) 6%,transparent)}.event-dots{position:absolute;bottom:5px;display:flex;gap:2px}.dot{width:5px;height:5px;border-radius:50%;display:inline-block;background:var(--primary-color)}.dot.vaccination{background:#48d58b}.dot.treatment{background:#55d6e8}.dot.heat{background:#ff6b9c}.agenda-legend{display:flex;gap:12px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--divider-color)}.agenda-legend span{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--secondary-text-color)}
+      .month-agenda-head{padding:22px 22px 14px;border-bottom:1px solid var(--divider-color)}.month-agenda-head strong{display:block;font-size:20px;text-transform:capitalize;margin-top:5px}.agenda-stream{display:grid}.agenda-event{display:grid;grid-template-columns:48px 38px 1fr;gap:12px;align-items:center;padding:15px 20px;border-bottom:1px solid var(--divider-color)}.agenda-event:last-child{border-bottom:0}.agenda-date{text-align:center}.agenda-date strong,.agenda-date small{display:block}.agenda-date strong{font-size:22px;line-height:1}.agenda-date small{text-transform:uppercase;font-size:9px;color:var(--secondary-text-color);margin-top:3px}.agenda-icon{width:36px;height:36px;border-radius:11px;display:grid;place-items:center;background:var(--secondary-background-color);font-size:18px}.agenda-copy span,.agenda-copy strong,.agenda-copy small{display:block}.agenda-copy span{font-size:8px;font-weight:900;letter-spacing:.13em;color:var(--secondary-text-color)}.agenda-copy strong{font-size:13px;margin-top:3px}.agenda-copy small{font-size:9px;color:var(--secondary-text-color);margin-top:3px}.agenda-event.vaccination{box-shadow:inset 3px 0 #48d58b}.agenda-event.treatment{box-shadow:inset 3px 0 #55d6e8}.agenda-event.heat{box-shadow:inset 3px 0 #ff6b9c}
+      .agenda-empty{min-height:220px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--secondary-text-color)}.agenda-empty ha-icon{--mdc-icon-size:42px;margin-bottom:12px;opacity:.7}.agenda-empty strong{color:var(--primary-text-color);font-size:14px}.agenda-empty small{font-size:10px;margin-top:5px}.agenda-empty.compact{min-height:auto;padding:18px}
+      .next-events-rail{display:grid;grid-template-columns:220px 1fr;margin-top:14px}.next-events-title{padding:22px;border-right:1px solid var(--divider-color)}.next-events-title strong{display:block;font-size:18px;margin-top:5px}.next-events-list{display:grid}.next-event-row{display:grid;grid-template-columns:30px 96px 1fr auto;gap:9px;align-items:center;padding:11px 16px;border-bottom:1px solid var(--divider-color)}.next-event-row:last-child{border-bottom:0}.next-event-row em{font-style:normal;font-size:11px}.next-event-row strong{font-size:11px}.next-event-row small{font-size:8px;text-transform:uppercase;color:var(--primary-color)}
+
+      /* Tabs closer to Inverter */
+      .dashboard-nav.tabs ha-icon{--mdc-icon-size:17px !important;line-height:1 !important}
+
+      @media(max-width:980px){
+        .app-hero{grid-template-columns:1fr !important;grid-template-areas:"profile" "stage" "kpis" "tools" !important;min-height:auto !important}.hero-health-stage{max-width:none}.care-ribbon{grid-template-columns:1fr 1fr}.care-ribbon>button:nth-child(2){border-right:0 !important}.care-ribbon>button:nth-child(-n+2){border-bottom:1px solid var(--divider-color) !important}.agenda-layout{grid-template-columns:1fr}.next-events-rail{grid-template-columns:1fr}.next-events-title{border-right:0;border-bottom:1px solid var(--divider-color)}
+      }
+      @media(max-width:620px){
+        .page{padding:10px 10px 40px !important}.app-hero{padding:22px 18px !important;border-radius:24px !important}.app-hero .profile{flex-direction:row !important;text-align:left !important;align-items:center !important}.app-hero .photo-button,.app-hero .pet-photo,.app-hero .photo-button .placeholder{width:96px !important;height:96px !important;border-radius:20px !important}.app-hero .identity-grid{justify-content:flex-start !important}.app-hero .identity h2{font-size:29px !important}.hero-health-stage{padding:18px}.health-orbit-core{width:60px;height:60px}.health-orbit-core ha-icon{--mdc-icon-size:28px}.health-orbit-copy strong{font-size:20px}.hero-kpi-rail{grid-template-columns:1fr 1fr !important}.hero-kpi-rail .stat:nth-child(2){border-right:0 !important}.hero-kpi-rail .stat:nth-child(-n+2){border-bottom:1px solid var(--divider-color) !important}.hero-tools button span{display:none}.hero-tools button{width:40px;height:40px;justify-content:center;padding:0 !important}.care-focus{grid-template-columns:1fr;min-height:auto}.care-focus-copy{padding:22px}.care-focus-copy h3{font-size:28px}.care-focus-mark{min-height:110px}.care-focus-mark ha-icon{--mdc-icon-size:50px}.care-ribbon{grid-template-columns:1fr}.care-ribbon>button{border-right:0 !important;border-bottom:1px solid var(--divider-color) !important}.care-ribbon>button:last-child{border-bottom:0 !important}.overview-lower{grid-template-columns:1fr}.scene-heading{align-items:flex-start;flex-direction:column}.grid>article>.card-head h3,.scene-heading h2{font-size:26px !important}.mini-month-stage{padding:16px}.mini-day{min-height:34px;border-radius:9px}.agenda-event{grid-template-columns:40px 34px 1fr;padding:13px 12px}.next-event-row{grid-template-columns:28px 82px 1fr}.next-event-row small{display:none}.next-events-title{padding:18px}.month-agenda-head{padding:18px 16px}
+      }
