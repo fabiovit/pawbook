@@ -1,12 +1,12 @@
-# PawBook v6.3.0 – Pubblicazione GitHub
+# PawBook v6.4.0 – Pubblicazione GitHub
 
 Commit message:
-PawBook v6.3.0 - Structural Visual Redesign
+PawBook v6.4.0 - Health OS Redesign
 
 Tag:
-v6.3.0
+v6.4.0
 
 Release title:
-PawBook v6.3.0 – Structural Visual Redesign
+PawBook v6.4.0 – Health OS Redesign
 
-Use RELEASE-6.3.0.md as the release description.
+Use RELEASE-6.4.0.md as the release description.
