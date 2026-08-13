@@ -261,7 +261,6 @@ class HealthSummarySensor(PawBookEntity, SensorEntity):
             "registro_enci": profile.get("enci_registry") or profile.get("roi"),
             "numero_pedigree": profile.get("pedigree_number"),
             "enci_url": profile.get("enci_url"),
-            "foto": profile.get("photo_url"),
             "numero_visite": len(self.coordinator.data.visits),
             "numero_vaccinazioni": len(self.coordinator.data.vaccinations),
         }
@@ -337,7 +336,6 @@ class GenealogySensor(PawBookEntity, SensorEntity):
     def extra_state_attributes(self):
         tree = self.coordinator.data.genealogy
         return {
-            "albero": tree,
             "nome": tree.get("name") if isinstance(tree, dict) else None,
             "padre": (
                 tree.get("father", {}).get("name")
