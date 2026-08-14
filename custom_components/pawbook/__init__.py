@@ -11,7 +11,7 @@ from homeassistant.helpers import config_validation as cv
 
 from .const import *
 from .coordinator import PawBookCoordinator
-from .panel_v650 import async_setup_panel, async_unload_panel
+from .panel import async_setup_panel, async_unload_panel
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
 

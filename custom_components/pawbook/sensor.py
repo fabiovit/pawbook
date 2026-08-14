@@ -339,14 +339,14 @@ class GenealogySensor(PawBookEntity, SensorEntity):
             "nome": tree.get("name") if isinstance(tree, dict) else None,
             "padre": (
                 tree.get("father", {}).get("name")
-                if isinstance(tree.get("father"), dict)
+                if isinstance(tree, dict) and isinstance(tree.get("father"), dict)
                 else None
-            ) if isinstance(tree, dict) else None,
+            ),
             "madre": (
                 tree.get("mother", {}).get("name")
-                if isinstance(tree.get("mother"), dict)
+                if isinstance(tree, dict) and isinstance(tree.get("mother"), dict)
                 else None
-            ) if isinstance(tree, dict) else None,
+            ),
             "soggetti_totali": _count_ancestors(tree),
             "fonte": "ENCI/manuale",
         }

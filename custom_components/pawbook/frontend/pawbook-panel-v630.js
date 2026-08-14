@@ -9,6 +9,7 @@ class PawBookPanelV420 extends HTMLElement {
     this._error = "";
     this._mobileGenealogyPath = [];
     this._calendarOffset = 0;
+    this._activeView = "overview";
   }
 
   set hass(value) {
@@ -1365,6 +1366,78 @@ class PawBookPanelV420 extends HTMLElement {
     w.document.close();
   }
 
+
+  applyPageView() {
+    const root = this.shadowRoot;
+    if (!root) return;
+
+    const view = this._activeView || "overview";
+    const overview = root.querySelector("#overview");
+    const grid = root.querySelector(".grid");
+    const articles = [...root.querySelectorAll(".grid > article[id]")];
+
+    const managementIds = [
+      "health-section",
+      "vaccines-section",
+      "visits-section",
+      "treatments-section",
+      "heat-section"
+    ];
+
+    const diagnosticsIds = [
+      "statistics-section",
+      "documents-section",
+      "report-section",
+      "backup-section"
+    ];
+
+    if (overview) overview.style.display = view === "overview" ? "" : "none";
+    if (grid) grid.style.display = view === "overview" ? "none" : "grid";
+
+    articles.forEach((article) => {
+      let show = false;
+
+      if (view === "management-section") {
+        show = article.id === "management-intro";
+      } else if (view === "diagnostics-section") {
+        show = article.id === "diagnostics-intro" || diagnosticsIds.includes(article.id);
+      } else {
+        show = article.id === view;
+      }
+
+      article.style.setProperty("display", show ? "" : "none", show ? "" : "important");
+      article.classList.toggle("pb-page-active", show);
+      article.classList.toggle("pb-management-card", view === "management-section" && show);
+      article.classList.toggle("pb-diagnostics-card", view === "diagnostics-section" && show);
+    });
+
+    const managementIntro = root.querySelector("#management-intro");
+    if (managementIntro) {
+      managementIntro.style.setProperty(
+        "display",
+        view === "management-section" ? "block" : "none",
+        "important"
+      );
+    }
+
+    const diagnosticsIntro = root.querySelector("#diagnostics-intro");
+    if (diagnosticsIntro) {
+      diagnosticsIntro.style.setProperty(
+        "display",
+        view === "diagnostics-section" ? "block" : "none",
+        "important"
+      );
+    }
+
+    root.querySelectorAll(".dashboard-nav button[data-nav-target]").forEach((button) => {
+      button.classList.toggle("active", button.dataset.navTarget === view);
+    });
+
+    root.querySelector(".page")?.classList.toggle("pb-subpage-mode", view !== "overview");
+    root.querySelector(".page")?.classList.toggle("pb-management-mode", view === "management-section");
+    root.querySelector(".page")?.classList.toggle("pb-diagnostics-mode", view === "diagnostics-section");
+  }
+
   render() {
     if (!this.shadowRoot) return;
 
@@ -2062,7 +2135,7 @@ class PawBookPanelV420 extends HTMLElement {
       .support-project-btn:hover{border-color:var(--primary-color);background:var(--secondary-background-color)}
       @media(max-width:900px){.topbar-actions{margin-left:auto}.support-project-btn{width:44px;height:44px;min-height:44px;padding:0;border-radius:12px;font-size:20px}.support-project-label{display:none}}
 
-      /* PawBook 6.3.0 definitive mobile header */
+      /* PawBook 6.10.3 definitive mobile header */
       .topbar{
         display:flex !important;
         align-items:center !important;
@@ -2184,7 +2257,7 @@ class PawBookPanelV420 extends HTMLElement {
         }
       }
 
-      /* PawBook 6.3.0 · DOMOTICA / Inverter shell */
+      /* PawBook 6.10.3 · DOMOTICA / Inverter shell */
       :host{
         --paw-accent:var(--primary-color);
         --paw-green:#48d58b;
@@ -2389,7 +2462,7 @@ class PawBookPanelV420 extends HTMLElement {
         .version-badge{font-size:9px !important;padding:3px 6px !important}
       }
 
-      /* PawBook 6.3.0 · Visual Redesign */
+      /* PawBook 6.10.3 · Visual Redesign */
       :host{
         --paw-surface:color-mix(in srgb,var(--card-background-color) 96%,var(--primary-background-color));
         --paw-line:color-mix(in srgb,var(--divider-color) 78%,transparent);
@@ -2535,7 +2608,7 @@ class PawBookPanelV420 extends HTMLElement {
         }
       }
 
-      /* PawBook 6.3.0 — true structural redesign */
+      /* PawBook 6.10.3 — true structural redesign */
       .page{
         padding:16px 20px 56px !important;
       }
@@ -2752,15 +2825,3160 @@ class PawBookPanelV420 extends HTMLElement {
           border-right:0 !important;
         }
       }
+
+/* PawBook 6.10.3 Recovery UI Polish */
+:host {
+  --pb-radius-lg: 24px;
+  --pb-radius-md: 16px;
+  --pb-border: color-mix(in srgb, var(--divider-color) 82%, transparent);
+  --pb-elev: 0 18px 48px rgba(0,0,0,.08);
+}
+
+.page {
+  max-width: 1440px !important;
+  margin: 0 auto !important;
+  padding: 18px 24px 56px !important;
+}
+
+.topbar {
+  border-radius: 22px !important;
+  border: 1px solid var(--pb-border) !important;
+  box-shadow: var(--pb-elev) !important;
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+.dashboard-nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  overflow-x: auto !important;
+  scrollbar-width: none;
+  padding: 6px 2px 10px !important;
+  margin: 12px 0 22px !important;
+}
+.dashboard-nav::-webkit-scrollbar { display:none; }
+
+.dashboard-nav button {
+  min-height: 40px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  padding: 0 13px !important;
+  border-radius: 12px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: var(--secondary-text-color) !important;
+  font-weight: 750 !important;
+  white-space: nowrap !important;
+  transition: background .18s ease, color .18s ease, border-color .18s ease, transform .18s ease;
+}
+
+.dashboard-nav button:hover {
+  background: var(--secondary-background-color) !important;
+  color: var(--primary-text-color) !important;
+}
+
+.dashboard-nav button.active {
+  color: var(--primary-color) !important;
+  background: color-mix(in srgb, var(--primary-color) 10%, transparent) !important;
+  border-color: color-mix(in srgb, var(--primary-color) 20%, transparent) !important;
+}
+
+.grid > article,
+.card,
+.health-calendar-card,
+.health-timeline-card,
+.reminders-center,
+.heat-center {
+  border-radius: var(--pb-radius-lg) !important;
+}
+
+.grid > article {
+  border: 1px solid var(--pb-border) !important;
+  box-shadow: 0 12px 34px rgba(0,0,0,.055) !important;
+  padding: 24px 26px 34px !important;
+}
+
+.grid > article > .card-head,
+.scene-heading {
+  padding-bottom: 16px !important;
+  margin-bottom: 20px !important;
+  border-bottom: 1px solid var(--pb-border) !important;
+}
+
+.grid > article > .card-head h3,
+.scene-heading h2 {
+  font-size: clamp(24px, 2vw, 30px) !important;
+  line-height: 1.08 !important;
+  letter-spacing: -.02em;
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 10px 12px 42px !important;
+  }
+
+  .topbar {
+    border-radius: 18px !important;
+  }
+
+  .dashboard-nav {
+    gap: 4px !important;
+    margin: 8px 0 16px !important;
+    padding-bottom: 8px !important;
+  }
+
+  .dashboard-nav button {
+    min-height: 38px !important;
+    padding: 0 11px !important;
+    font-size: 11px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .grid > article {
+    padding: 18px 14px 28px !important;
+    border-radius: 18px !important;
+  }
+
+  .grid > article > .card-head,
+  .scene-heading {
+    margin-bottom: 16px !important;
+    padding-bottom: 14px !important;
+  }
+}
+
+
+/* PawBook 6.10.3 DOMOTICA Rebuild */
+:host {
+  --pb-gap: 18px;
+  --pb-radius-xl: 28px;
+  --pb-radius-lg: 20px;
+  --pb-radius-md: 14px;
+  --pb-border: color-mix(in srgb, var(--divider-color) 78%, transparent);
+  --pb-soft: color-mix(in srgb, var(--secondary-background-color) 88%, transparent);
+  --pb-accent-soft: color-mix(in srgb, var(--primary-color) 12%, transparent);
+  --pb-shadow: 0 18px 60px rgba(0,0,0,.08);
+}
+
+.page {
+  max-width: 1480px !important;
+  margin: 0 auto !important;
+  padding: 18px 24px 64px !important;
+}
+
+.topbar {
+  position: sticky !important;
+  top: 10px !important;
+  z-index: 40 !important;
+  border-radius: var(--pb-radius-xl) !important;
+  border: 1px solid var(--pb-border) !important;
+  background: color-mix(in srgb, var(--card-background-color) 88%, transparent) !important;
+  box-shadow: var(--pb-shadow) !important;
+  backdrop-filter: blur(22px) saturate(1.15);
+  -webkit-backdrop-filter: blur(22px) saturate(1.15);
+  overflow: hidden !important;
+}
+
+.topbar::after {
+  content: "";
+  display: block;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--primary-color) 45%, transparent), transparent);
+  opacity: .55;
+}
+
+.dashboard-nav {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  overflow-x: auto !important;
+  scrollbar-width: none;
+  padding: 8px 10px 10px !important;
+  margin: 0 !important;
+  border-top: 1px solid var(--pb-border) !important;
+  background: transparent !important;
+}
+.dashboard-nav::-webkit-scrollbar { display: none; }
+
+.dashboard-nav button {
+  appearance: none;
+  min-height: 42px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 7px !important;
+  padding: 0 14px !important;
+  border-radius: 13px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: var(--secondary-text-color) !important;
+  font-size: 12px !important;
+  font-weight: 760 !important;
+  letter-spacing: .01em;
+  white-space: nowrap !important;
+  transition: .18s ease;
+}
+
+.dashboard-nav button:hover {
+  color: var(--primary-text-color) !important;
+  background: var(--pb-soft) !important;
+}
+
+.dashboard-nav button.active {
+  color: var(--primary-color) !important;
+  background: var(--pb-accent-soft) !important;
+  border-color: color-mix(in srgb, var(--primary-color) 26%, transparent) !important;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary-color) 6%, transparent);
+}
+
+.grid {
+  gap: var(--pb-gap) !important;
+}
+
+.grid > article,
+.card,
+.health-calendar-card,
+.health-timeline-card,
+.reminders-center,
+.heat-center {
+  border-radius: var(--pb-radius-xl) !important;
+  border: 1px solid var(--pb-border) !important;
+  background: var(--card-background-color) !important;
+  box-shadow: 0 14px 44px rgba(0,0,0,.055) !important;
+}
+
+.grid > article {
+  padding: 26px 28px 34px !important;
+  overflow: hidden !important;
+}
+
+.grid > article::before,
+.card::before,
+.health-calendar-card::before,
+.health-timeline-card::before,
+.reminders-center::before,
+.heat-center::before {
+  display: none !important;
+  content: none !important;
+}
+
+.grid > article > .card-head,
+.scene-heading {
+  display: flex !important;
+  align-items: flex-end !important;
+  justify-content: space-between !important;
+  gap: 14px !important;
+  padding: 0 0 18px !important;
+  margin: 0 0 22px !important;
+  border-bottom: 1px solid var(--pb-border) !important;
+}
+
+.grid > article > .card-head h3,
+.scene-heading h2 {
+  margin: 0 !important;
+  font-size: clamp(25px, 2.2vw, 32px) !important;
+  line-height: 1.03 !important;
+  letter-spacing: -.025em !important;
+}
+
+.grid > article > .card-head p,
+.scene-heading p,
+.muted,
+.secondary {
+  color: var(--secondary-text-color) !important;
+}
+
+.kpi-grid,
+.summary-grid,
+.stats-grid,
+.health-grid {
+  gap: 12px !important;
+}
+
+.kpi,
+.stat,
+.summary-item,
+.metric {
+  border-radius: var(--pb-radius-lg) !important;
+  border: 1px solid var(--pb-border) !important;
+  background: var(--pb-soft) !important;
+  box-shadow: none !important;
+}
+
+button,
+.action-button,
+.primary-action,
+.secondary-action {
+  border-radius: 13px !important;
+}
+
+#smart-section .smart-list {
+  display: grid !important;
+  gap: 10px !important;
+}
+
+#smart-section .smart-item {
+  border: 1px solid var(--pb-border) !important;
+  border-left: 0 !important;
+  border-radius: 16px !important;
+  background: var(--pb-soft) !important;
+  padding: 16px 18px !important;
+}
+
+#calendar-section .health-calendar-card,
+.health-calendar-card {
+  overflow: hidden !important;
+}
+
+.calendar-grid {
+  gap: 6px !important;
+}
+
+.calendar-day {
+  border-radius: 12px !important;
+  border: 1px solid transparent !important;
+  min-height: 76px !important;
+}
+
+.calendar-day:hover {
+  background: var(--pb-soft) !important;
+  border-color: var(--pb-border) !important;
+}
+
+.timeline-item {
+  border-radius: 16px !important;
+  border: 1px solid var(--pb-border) !important;
+  background: var(--pb-soft) !important;
+}
+
+input,
+select,
+textarea {
+  border-radius: 12px !important;
+}
+
+@media (min-width: 980px) {
+  .dashboard-nav {
+    justify-content: center !important;
+  }
+}
+
+@media (max-width: 760px) {
+  .page {
+    padding: 10px 10px 44px !important;
+  }
+
+  .topbar {
+    top: 6px !important;
+    border-radius: 20px !important;
+  }
+
+  .dashboard-nav {
+    justify-content: flex-start !important;
+    padding: 7px 8px 9px !important;
+    gap: 4px !important;
+  }
+
+  .dashboard-nav button {
+    min-height: 40px !important;
+    padding: 0 11px !important;
+    font-size: 11px !important;
+    flex: 0 0 auto !important;
+  }
+
+  .grid {
+    gap: 12px !important;
+  }
+
+  .grid > article,
+  .card,
+  .health-calendar-card,
+  .health-timeline-card,
+  .reminders-center,
+  .heat-center {
+    border-radius: 19px !important;
+  }
+
+  .grid > article {
+    padding: 18px 14px 26px !important;
+  }
+
+  .grid > article > .card-head,
+  .scene-heading {
+    align-items: flex-start !important;
+    flex-direction: column !important;
+    padding-bottom: 14px !important;
+    margin-bottom: 16px !important;
+  }
+
+  .grid > article > .card-head h3,
+  .scene-heading h2 {
+    font-size: 25px !important;
+  }
+
+  .kpi-grid,
+  .summary-grid,
+  .stats-grid,
+  .health-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .calendar-day {
+    min-height: 58px !important;
+    padding: 7px !important;
+  }
+}
+
+
+/* PawBook 6.10.3 New UI */
+:host{
+  --pb-surface:color-mix(in srgb,var(--card-background-color) 94%,transparent);
+  --pb-soft:color-mix(in srgb,var(--secondary-background-color) 86%,transparent);
+  --pb-line:color-mix(in srgb,var(--divider-color) 72%,transparent);
+  --pb-accent-soft:color-mix(in srgb,var(--primary-color) 12%,transparent);
+  --pb-shadow:0 24px 80px rgba(0,0,0,.10);
+}
+.pb-main-nav{
+  justify-content:center!important;
+  gap:5px!important;
+}
+.pb-main-nav>button{
+  min-width:auto!important;
+  padding:0 14px!important;
+}
+.pb-command{
+  display:grid;
+  gap:16px;
+  margin-bottom:20px;
+}
+.pb-command-hero{
+  position:relative;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) auto;
+  gap:22px;
+  align-items:center;
+  min-height:245px;
+  padding:30px;
+  overflow:hidden;
+  border:1px solid var(--pb-line);
+  border-radius:30px;
+  background:
+    radial-gradient(circle at 86% 10%,color-mix(in srgb,var(--primary-color) 16%,transparent),transparent 36%),
+    linear-gradient(145deg,var(--pb-surface),color-mix(in srgb,var(--secondary-background-color) 72%,var(--card-background-color)));
+  box-shadow:var(--pb-shadow);
+}
+.pb-command-hero::after{
+  content:"";
+  position:absolute;
+  width:280px;height:280px;
+  right:-110px;bottom:-160px;
+  border-radius:50%;
+  border:44px solid color-mix(in srgb,var(--primary-color) 5%,transparent);
+  pointer-events:none;
+}
+.pb-pet-visual{display:flex;align-items:center;gap:24px;min-width:0;z-index:1}
+.pb-photo{flex:0 0 auto}
+.pb-photo .pet-photo,.pb-photo .placeholder{width:170px!important;height:170px!important;border-radius:34px!important}
+.pb-pet-copy{min-width:0}
+.pb-eyebrow{display:block;font-size:10px;font-weight:900;letter-spacing:.16em;color:var(--primary-color);margin-bottom:8px}
+.pb-pet-copy h2{font-size:clamp(34px,4vw,54px)!important;letter-spacing:-.045em!important;line-height:.98!important;margin:0 0 14px!important}
+.pb-pet-meta{display:flex;flex-wrap:wrap;gap:8px}
+.pb-pet-meta span{padding:7px 10px;border:1px solid var(--pb-line);border-radius:999px;background:color-mix(in srgb,var(--card-background-color) 72%,transparent);font-size:12px;color:var(--secondary-text-color)}
+.pb-health-orbit{z-index:1}
+.pb-health-score{
+  width:188px;height:188px;border-radius:50%;
+  display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;
+  border:1px solid var(--pb-line);
+  background:color-mix(in srgb,var(--card-background-color) 78%,transparent);
+  box-shadow:inset 0 0 0 12px color-mix(in srgb,var(--secondary-background-color) 50%,transparent),0 18px 50px rgba(0,0,0,.08);
+}
+.pb-health-score.ok{box-shadow:inset 0 0 0 12px color-mix(in srgb,#43d17d 12%,transparent),0 18px 50px rgba(0,0,0,.08)}
+.pb-health-score.warn{box-shadow:inset 0 0 0 12px color-mix(in srgb,#ffb74d 14%,transparent),0 18px 50px rgba(0,0,0,.08)}
+.pb-health-score.danger{box-shadow:inset 0 0 0 12px color-mix(in srgb,var(--error-color) 13%,transparent),0 18px 50px rgba(0,0,0,.08)}
+.pb-health-dot{width:9px;height:9px;border-radius:50%;background:#43d17d;margin-bottom:8px;box-shadow:0 0 0 6px color-mix(in srgb,#43d17d 15%,transparent)}
+.pb-health-score.warn .pb-health-dot{background:#ffb74d;box-shadow:0 0 0 6px color-mix(in srgb,#ffb74d 15%,transparent)}
+.pb-health-score.danger .pb-health-dot{background:var(--error-color);box-shadow:0 0 0 6px color-mix(in srgb,var(--error-color) 15%,transparent)}
+.pb-health-score small,.pb-health-score em{color:var(--secondary-text-color);font-style:normal;font-size:11px}
+.pb-health-score strong{font-size:18px;margin:5px 0;max-width:135px}
+.pb-vitals{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.pb-vital{
+  min-height:112px!important;
+  display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;gap:12px!important;align-items:center!important;
+  padding:16px!important;text-align:left!important;
+  color:var(--primary-text-color)!important;background:var(--pb-surface)!important;border:1px solid var(--pb-line)!important;border-radius:18px!important;
+  box-shadow:none!important;
+}
+.pb-vital:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--primary-color) 32%,var(--pb-line))!important}
+.pb-vital-icon{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--pb-soft);font-size:21px}
+.pb-vital small,.pb-vital strong,.pb-vital em{display:block}
+.pb-vital small{font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:var(--secondary-text-color)}
+.pb-vital strong{font-size:18px;margin:4px 0}
+.pb-vital em{font-size:11px;font-style:normal;color:var(--secondary-text-color);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pb-command-grid{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(280px,.6fr);gap:12px}
+.pb-focus,.pb-forecast,.pb-launcher{
+  border:1px solid var(--pb-line);border-radius:22px;background:var(--pb-surface);padding:22px;
+}
+.pb-focus{background:linear-gradient(145deg,var(--pb-accent-soft),var(--pb-surface))}
+.pb-section-label{font-size:10px;font-weight:900;letter-spacing:.13em;color:var(--primary-color);margin-bottom:12px}
+.pb-focus h3{font-size:25px;margin:0 0 7px}.pb-focus p,.pb-forecast p{color:var(--secondary-text-color);margin:0}
+.pb-focus-actions{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.pb-forecast strong{display:block;font-size:29px;letter-spacing:-.025em;margin:4px 0 8px}
+.pb-link{padding:0!important;margin-top:16px!important;background:transparent!important;color:var(--primary-color)!important}
+.pb-launcher{padding:22px}
+.pb-launcher-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:14px}
+.pb-launcher-head h3{font-size:23px;margin:0}
+.pb-profile-button{flex:0 0 auto}
+.pb-launcher-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.pb-launcher-grid>button{
+  min-height:118px!important;display:flex!important;flex-direction:column!important;align-items:flex-start!important;justify-content:flex-end!important;
+  padding:15px!important;border:1px solid var(--pb-line)!important;border-radius:16px!important;background:var(--pb-soft)!important;color:var(--primary-text-color)!important;text-align:left!important;
+}
+.pb-launcher-grid>button>span{font-size:24px;margin-bottom:auto}
+.pb-launcher-grid>button strong{font-size:15px;margin:8px 0 2px}
+.pb-launcher-grid>button small{font-size:10px;color:var(--secondary-text-color)}
+.pb-utilities{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.pb-utilities button{min-height:48px!important;background:transparent!important;color:var(--secondary-text-color)!important;border:1px solid var(--pb-line)!important}
+.pb-utilities button:hover{background:var(--pb-soft)!important;color:var(--primary-text-color)!important}
+.pb-quick-add{display:flex;align-items:center;justify-content:flex-end;gap:7px;flex-wrap:wrap}
+.pb-quick-add>span{margin-right:auto;color:var(--secondary-text-color);font-size:12px;font-weight:800}
+.pb-quick-add button{min-height:38px!important;padding:0 12px!important;border-radius:11px!important}
+#smart-section .smart-item{border-left:0!important;box-shadow:none!important}
+
+@media(max-width:980px){
+  .pb-vitals{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pb-command-grid{grid-template-columns:1fr}
+  .pb-launcher-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:760px){
+  .pb-main-nav{justify-content:flex-start!important}
+  .pb-main-nav>button{padding:0 12px!important}
+  .pb-command{gap:10px}
+  .pb-command-hero{grid-template-columns:1fr;padding:18px;min-height:0;border-radius:22px}
+  .pb-pet-visual{gap:14px;align-items:flex-start}
+  .pb-photo .pet-photo,.pb-photo .placeholder{width:92px!important;height:92px!important;border-radius:22px!important}
+  .pb-photo::after{width:28px!important;height:28px!important;font-size:13px!important}
+  .pb-pet-copy h2{font-size:32px!important;margin-bottom:10px!important}
+  .pb-pet-meta{gap:5px}.pb-pet-meta span{font-size:10px;padding:5px 7px}
+  .pb-health-orbit{display:none}
+  .pb-vitals{grid-template-columns:1fr 1fr;gap:7px}
+  .pb-vital{min-height:88px!important;grid-template-columns:34px minmax(0,1fr)!important;gap:8px!important;padding:12px!important;border-radius:15px!important}
+  .pb-vital-icon{width:34px;height:34px;border-radius:10px;font-size:17px}
+  .pb-vital strong{font-size:15px}.pb-vital em{display:none}
+  .pb-focus,.pb-forecast,.pb-launcher{padding:16px;border-radius:18px}
+  .pb-focus h3{font-size:21px}
+  .pb-forecast strong{font-size:24px}
+  .pb-launcher-head{align-items:flex-start}.pb-launcher-head h3{font-size:20px}
+  .pb-profile-button{font-size:11px!important;padding:0 10px!important}
+  .pb-launcher-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+  .pb-launcher-grid>button{min-height:98px!important;padding:12px!important}
+  .pb-launcher-grid>button:last-child{grid-column:1/-1;min-height:82px!important}
+  .pb-utilities{grid-template-columns:1fr 1fr}
+  .pb-quick-add{justify-content:flex-start}.pb-quick-add>span{width:100%;margin:0}
+}
+
+
+/* PawBook 6.10.3 DOMOTICA shell + Agenda */
+.pb-domotica-header{
+  position:sticky!important;
+  top:10px!important;
+  z-index:60!important;
+  overflow:hidden!important;
+  border:1px solid var(--pb-line)!important;
+  border-radius:22px!important;
+  background:color-mix(in srgb,var(--card-background-color) 91%,transparent)!important;
+  box-shadow:0 16px 48px rgba(0,0,0,.10)!important;
+  backdrop-filter:blur(20px) saturate(1.15)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(1.15)!important;
+}
+
+.pb-domotica-top{
+  min-height:70px!important;
+  padding:10px 14px!important;
+}
+
+.pb-brand-icon{
+  width:42px!important;
+  height:42px!important;
+  border-radius:13px!important;
+  display:grid!important;
+  place-items:center!important;
+  background:var(--pb-accent-soft)!important;
+  border:1px solid color-mix(in srgb,var(--primary-color) 20%,transparent)!important;
+}
+.pb-brand-icon svg{width:26px!important;height:26px!important}
+
+.pb-header-actions{gap:8px!important}
+.pb-header-status{
+  min-height:38px!important;
+  display:inline-flex!important;
+  align-items:center!important;
+  gap:8px!important;
+  padding:0 12px!important;
+  color:var(--primary-text-color)!important;
+  background:var(--pb-soft)!important;
+  border:1px solid var(--pb-line)!important;
+  border-radius:11px!important;
+  font-size:11px!important;
+  font-weight:800!important;
+}
+.pb-status-led{
+  width:8px;height:8px;border-radius:50%;display:inline-block;background:#43d17d;
+  box-shadow:0 0 0 5px color-mix(in srgb,#43d17d 14%,transparent);
+}
+.pb-status-led.warn{
+  background:#ffb74d;
+  box-shadow:0 0 0 5px color-mix(in srgb,#ffb74d 14%,transparent);
+}
+
+.pb-domotica-nav{
+  border-top:1px solid var(--pb-line)!important;
+  padding:6px 9px 8px!important;
+  background:color-mix(in srgb,var(--secondary-background-color) 36%,transparent)!important;
+}
+.pb-domotica-nav>button{
+  min-height:38px!important;
+  border-radius:10px!important;
+  font-size:11px!important;
+  font-weight:800!important;
+}
+.pb-domotica-nav>button.active{
+  background:var(--pb-accent-soft)!important;
+  border-color:color-mix(in srgb,var(--primary-color) 22%,transparent)!important;
+}
+
+/* Main command card: flatter, closer to Inverter/CBBO */
+.pb-command-hero{
+  min-height:215px!important;
+  padding:26px!important;
+  border-radius:22px!important;
+  box-shadow:0 14px 40px rgba(0,0,0,.065)!important;
+}
+.pb-photo .pet-photo,.pb-photo .placeholder{
+  width:150px!important;
+  height:150px!important;
+  border-radius:26px!important;
+}
+.pb-health-score{
+  width:166px!important;height:166px!important;
+}
+.pb-vital{
+  min-height:100px!important;
+  border-radius:15px!important;
+}
+.pb-focus,.pb-forecast,.pb-launcher{
+  border-radius:18px!important;
+}
+.pb-launcher-grid>button{
+  border-radius:14px!important;
+}
+
+/* Agenda */
+.pb-agenda{
+  padding:0!important;
+  overflow:hidden!important;
+  border-radius:22px!important;
+  border:1px solid var(--pb-line)!important;
+  background:var(--pb-surface)!important;
+  box-shadow:0 14px 42px rgba(0,0,0,.055)!important;
+}
+.pb-agenda::before{display:none!important}
+
+.pb-agenda-head{
+  min-height:88px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:18px;
+  padding:18px 22px;
+  border-bottom:1px solid var(--pb-line);
+  background:
+    linear-gradient(100deg,color-mix(in srgb,var(--primary-color) 7%,transparent),transparent 48%),
+    var(--pb-surface);
+}
+.pb-agenda-kicker{
+  display:block;
+  margin-bottom:4px;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.16em;
+  color:var(--primary-color);
+}
+.pb-agenda-head h3{
+  margin:0!important;
+  font-size:25px!important;
+  letter-spacing:-.025em!important;
+}
+.pb-agenda-head p{
+  margin:4px 0 0;
+  color:var(--secondary-text-color);
+  font-size:12px;
+}
+.pb-calendar-controls button{
+  width:38px!important;
+  height:38px!important;
+  padding:0!important;
+  border-radius:10px!important;
+}
+.pb-calendar-controls .pb-today-btn{
+  width:auto!important;
+  padding:0 13px!important;
+}
+
+.pb-agenda-layout{
+  display:grid;
+  grid-template-columns:minmax(0,1.65fr) minmax(300px,.65fr);
+  min-height:560px;
+}
+.pb-calendar-panel{
+  min-width:0;
+  padding:20px 22px 18px;
+}
+.pb-agenda-side{
+  min-width:0;
+  padding:20px;
+  border-left:1px solid var(--pb-line);
+  background:color-mix(in srgb,var(--secondary-background-color) 42%,var(--card-background-color));
+}
+
+.pb-calendar-title-row{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:16px;
+  margin-bottom:14px;
+}
+.pb-calendar-title-row>div:first-child{
+  display:flex;flex-direction:column;gap:2px;
+}
+.pb-calendar-title-row small,
+.pb-agenda-side-head small{
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.13em;
+  color:var(--secondary-text-color);
+}
+.pb-calendar-title-row .calendar-month-title{
+  margin:0!important;
+  font-size:26px!important;
+  line-height:1!important;
+  text-transform:capitalize;
+}
+.pb-calendar-legend{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px 10px;
+}
+.pb-calendar-legend span{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  font-size:9px;
+  color:var(--secondary-text-color);
+}
+.pb-calendar-legend i,
+.pb-event-dots i{
+  width:7px;height:7px;border-radius:50%;display:inline-block;background:var(--primary-color);
+}
+.pb-calendar-legend i.vaccine,.pb-event-dots i.vaccine{background:#4da3ff}
+.pb-calendar-legend i.treatment,.pb-event-dots i.treatment{background:#a976ff}
+.pb-calendar-legend i.heat,.pb-event-dots i.heat{background:#ff6f91}
+.pb-calendar-legend i.other,.pb-event-dots i.other{background:#6dc99b}
+
+.pb-weekdays{
+  margin-bottom:5px;
+}
+.pb-weekdays span{
+  padding:7px 4px!important;
+  font-size:9px!important;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+.pb-calendar-grid{
+  gap:5px!important;
+  background:transparent!important;
+}
+.pb-calendar-day{
+  min-height:76px!important;
+  padding:8px!important;
+  border:1px solid transparent!important;
+  border-radius:12px!important;
+  background:transparent!important;
+  transition:.16s ease;
+}
+.pb-calendar-day:hover{
+  border-color:var(--pb-line)!important;
+  background:var(--pb-soft)!important;
+}
+.pb-calendar-day.has-events{
+  background:color-mix(in srgb,var(--secondary-background-color) 45%,transparent)!important;
+}
+.pb-calendar-day.outside{
+  opacity:.30!important;
+}
+.pb-day-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:4px;
+}
+.pb-calendar-day .calendar-day-number{
+  width:27px!important;height:27px!important;
+  font-size:11px!important;
+  border-radius:9px!important;
+}
+.pb-calendar-day.today .calendar-day-number{
+  background:var(--primary-color)!important;
+  color:#fff!important;
+  box-shadow:0 5px 14px color-mix(in srgb,var(--primary-color) 30%,transparent);
+}
+.pb-event-count{
+  min-width:18px;height:18px;
+  display:grid;place-items:center;
+  padding:0 4px;
+  border-radius:999px;
+  background:var(--pb-accent-soft);
+  color:var(--primary-color);
+  font-size:8px;
+  font-weight:900;
+}
+.pb-event-dots{
+  min-height:18px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+  margin-top:15px;
+}
+.pb-event-dots i{
+  width:8px;height:8px;
+}
+.pb-event-dots b{
+  font-size:8px;color:var(--secondary-text-color);
+}
+
+.pb-calendar-foot{
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  margin-top:13px;
+  padding-top:12px;
+  border-top:1px solid var(--pb-line);
+  color:var(--secondary-text-color);
+  font-size:10px;
+}
+
+.pb-agenda-side-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:10px;
+  margin-bottom:14px;
+}
+.pb-agenda-side-head h4{
+  margin:3px 0 0;
+  font-size:20px;
+}
+.pb-event-total{
+  min-width:28px;height:28px;
+  display:grid;place-items:center;
+  border-radius:9px;
+  background:var(--pb-accent-soft);
+  color:var(--primary-color);
+  font-size:11px;
+  font-weight:900;
+}
+
+.pb-upcoming-list{
+  display:grid;
+  gap:7px;
+}
+.pb-upcoming-item{
+  position:relative;
+  display:grid;
+  grid-template-columns:42px 32px minmax(0,1fr) auto;
+  gap:9px;
+  align-items:center;
+  min-height:62px;
+  padding:8px 9px;
+  border:1px solid var(--pb-line);
+  border-radius:13px;
+  background:var(--card-background-color);
+}
+.pb-upcoming-date{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:42px;
+  border-radius:10px;
+  background:var(--pb-soft);
+}
+.pb-upcoming-date strong{
+  font-size:17px;line-height:1;
+}
+.pb-upcoming-date small{
+  margin-top:3px;
+  font-size:8px;
+  color:var(--secondary-text-color);
+}
+.pb-upcoming-icon{
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:9px;
+  background:var(--pb-soft);
+  font-size:16px;
+}
+.pb-upcoming-copy{
+  min-width:0;
+}
+.pb-upcoming-copy strong,
+.pb-upcoming-copy small{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.pb-upcoming-copy strong{
+  font-size:11px;
+}
+.pb-upcoming-copy small{
+  margin-top:3px;
+  color:var(--secondary-text-color);
+  font-size:9px;
+}
+.pb-estimate{
+  padding:4px 6px;
+  border-radius:7px;
+  background:color-mix(in srgb,#ff6f91 12%,transparent);
+  color:#d74d70;
+  font-size:7px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.pb-agenda-empty{
+  min-height:170px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+  color:var(--secondary-text-color);
+}
+.pb-agenda-empty>span{
+  width:42px;height:42px;
+  display:grid;place-items:center;
+  margin-bottom:10px;
+  border-radius:13px;
+  background:color-mix(in srgb,#43d17d 12%,transparent);
+  color:#36a966;
+  font-size:20px;
+}
+.pb-agenda-empty strong{color:var(--primary-text-color)}
+.pb-agenda-empty small{margin-top:4px}
+
+.pb-agenda-health-btn{
+  width:100%!important;
+  min-height:55px!important;
+  display:grid!important;
+  grid-template-columns:30px minmax(0,1fr) auto!important;
+  gap:9px!important;
+  align-items:center!important;
+  margin-top:12px!important;
+  padding:8px 10px!important;
+  text-align:left!important;
+  color:var(--primary-text-color)!important;
+  border:1px solid color-mix(in srgb,var(--primary-color) 20%,var(--pb-line))!important;
+  border-radius:13px!important;
+  background:var(--pb-accent-soft)!important;
+}
+.pb-agenda-health-btn>span:first-child{
+  width:30px;height:30px;
+  display:grid;place-items:center;
+  border-radius:9px;
+  background:color-mix(in srgb,var(--primary-color) 14%,transparent);
+  color:var(--primary-color);
+}
+.pb-agenda-health-btn strong,
+.pb-agenda-health-btn small{
+  display:block;
+}
+.pb-agenda-health-btn strong{font-size:11px}
+.pb-agenda-health-btn small{margin-top:2px;color:var(--secondary-text-color);font-size:9px}
+.pb-agenda-health-btn>b{font-size:20px;color:var(--primary-color)}
+
+@media(max-width:900px){
+  .pb-agenda-layout{grid-template-columns:1fr}
+  .pb-agenda-side{
+    border-left:0;
+    border-top:1px solid var(--pb-line);
+  }
+  .pb-upcoming-list{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:760px){
+  .pb-domotica-header{
+    top:6px!important;
+    border-radius:17px!important;
+  }
+  .pb-domotica-top{
+    min-height:58px!important;
+    padding:7px 9px!important;
+  }
+  .pb-brand-icon{
+    width:35px!important;height:35px!important;border-radius:10px!important;
+  }
+  .pb-brand-icon svg{width:22px!important;height:22px!important}
+  .brand-subtitle{display:none!important}
+  .pb-header-status{display:none!important}
+  .support-project-label{display:none!important}
+
+  .pb-domotica-nav{
+    justify-content:flex-start!important;
+    overflow-x:auto!important;
+    padding:5px 7px 7px!important;
+  }
+  .pb-domotica-nav>button{
+    flex:0 0 auto!important;
+    min-height:36px!important;
+    padding:0 10px!important;
+    font-size:10px!important;
+  }
+
+  .pb-command-hero{
+    padding:17px!important;
+    border-radius:18px!important;
+  }
+  .pb-photo .pet-photo,.pb-photo .placeholder{
+    width:88px!important;height:88px!important;border-radius:18px!important;
+  }
+
+  .pb-agenda{
+    border-radius:18px!important;
+  }
+  .pb-agenda-head{
+    min-height:0;
+    align-items:flex-start;
+    padding:15px;
+  }
+  .pb-agenda-head h3{font-size:22px!important}
+  .pb-agenda-head p{font-size:10px}
+  .pb-calendar-controls button{
+    width:34px!important;height:34px!important;
+  }
+  .pb-calendar-controls .pb-today-btn{
+    padding:0 10px!important;
+  }
+  .pb-calendar-panel{
+    padding:14px 10px 12px;
+  }
+  .pb-calendar-title-row{
+    align-items:flex-start;
+    flex-direction:column;
+    gap:9px;
+  }
+  .pb-calendar-title-row .calendar-month-title{
+    font-size:22px!important;
+  }
+  .pb-calendar-legend{
+    justify-content:flex-start;
+  }
+  .pb-calendar-day{
+    min-height:58px!important;
+    padding:5px!important;
+    border-radius:9px!important;
+  }
+  .pb-calendar-day .calendar-day-number{
+    width:23px!important;height:23px!important;border-radius:7px!important;font-size:10px!important;
+  }
+  .pb-event-count{display:none}
+  .pb-event-dots{
+    gap:2px;
+    margin-top:9px;
+  }
+  .pb-event-dots i{
+    width:6px;height:6px;
+  }
+  .pb-calendar-foot{
+    justify-content:flex-start;
+    font-size:9px;
+  }
+  .pb-agenda-side{
+    padding:14px 12px;
+  }
+  .pb-upcoming-list{
+    grid-template-columns:1fr;
+  }
+  .pb-upcoming-item{
+    min-height:58px;
+  }
+}
+
+
+/* PawBook 6.10.3 Health OS stable rebuild */
+.pb-os-header{
+  position:sticky!important;top:10px!important;z-index:70!important;
+  overflow:hidden!important;border:1px solid color-mix(in srgb,var(--divider-color) 68%,transparent)!important;
+  border-radius:20px!important;background:color-mix(in srgb,var(--card-background-color) 94%,transparent)!important;
+  box-shadow:0 14px 44px rgba(0,0,0,.09)!important;
+  backdrop-filter:blur(20px) saturate(1.12)!important;-webkit-backdrop-filter:blur(20px) saturate(1.12)!important;
+}
+.pb-os-bar{min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 12px}
+.pb-os-left,.pb-os-right{display:flex;align-items:center;gap:9px}
+.pb-os-hamburger{width:38px!important;height:38px!important;border-radius:10px!important}
+.pb-os-logo{width:40px;height:40px;display:grid;place-items:center;border-radius:12px;background:color-mix(in srgb,var(--primary-color) 11%,transparent);color:var(--primary-color)}
+.pb-os-logo svg{width:24px;height:24px;fill:currentColor}
+.pb-os-brand>div{display:flex;align-items:center;gap:7px}.pb-os-brand strong{font-size:15px}.pb-os-brand>div span{padding:3px 6px;border-radius:6px;background:var(--secondary-background-color);color:var(--secondary-text-color);font-size:8px;font-weight:900}
+.pb-os-brand small{display:block;margin-top:1px;color:var(--secondary-text-color);font-size:9px}
+.pb-os-health{min-height:36px!important;display:inline-flex!important;align-items:center!important;gap:7px!important;padding:0 11px!important;border:1px solid var(--divider-color)!important;border-radius:10px!important;background:transparent!important;color:var(--primary-text-color)!important;font-size:10px!important;font-weight:800!important}
+.pb-os-health i{width:7px;height:7px;border-radius:50%;background:#44c97a;box-shadow:0 0 0 4px color-mix(in srgb,#44c97a 12%,transparent)}
+.pb-os-health i.warn{background:#ffae42;box-shadow:0 0 0 4px color-mix(in srgb,#ffae42 12%,transparent)}
+.pb-os-nav{display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:2px!important;margin:0!important;padding:4px 8px 7px!important;border-top:1px solid color-mix(in srgb,var(--divider-color) 65%,transparent)!important;background:transparent!important;overflow-x:auto!important;scrollbar-width:none}
+.pb-os-nav::-webkit-scrollbar{display:none}.pb-os-nav>button{flex:0 0 auto!important;min-height:34px!important;padding:0 11px!important;border-radius:9px!important;border:0!important;background:transparent!important;color:var(--secondary-text-color)!important;font-size:10px!important;font-weight:850!important}
+.pb-os-nav>button.active{background:color-mix(in srgb,var(--primary-color) 10%,transparent)!important;color:var(--primary-color)!important}
+.pb-os-nav>button:hover{background:var(--secondary-background-color)!important;color:var(--primary-text-color)!important}
+
+.pb-os-home{display:grid;gap:11px;margin-bottom:18px}
+.pb-os-hero{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:18px;align-items:stretch;min-height:210px;padding:22px;border:1px solid color-mix(in srgb,var(--divider-color) 68%,transparent);border-radius:22px;background:linear-gradient(135deg,color-mix(in srgb,var(--card-background-color) 96%,transparent),color-mix(in srgb,var(--primary-color) 5%,var(--card-background-color)));box-shadow:0 13px 42px rgba(0,0,0,.055)}
+.pb-os-pet{display:flex;align-items:center;gap:19px;min-width:0}.pb-os-photo{flex:0 0 auto}.pb-os-photo .pet-photo,.pb-os-photo .placeholder{width:142px!important;height:142px!important;border-radius:28px!important;box-shadow:0 12px 34px rgba(0,0,0,.10)!important}
+.pb-os-kicker{display:block;font-size:8px;font-weight:950;letter-spacing:.17em;color:var(--primary-color);margin-bottom:6px}
+.pb-os-pet-copy h2{margin:0!important;font-size:clamp(34px,4vw,50px)!important;line-height:.98!important;letter-spacing:-.045em!important}.pb-os-pet-copy>p{margin:8px 0 13px;color:var(--secondary-text-color);font-size:13px}
+.pb-os-tags{display:flex;flex-wrap:wrap;gap:6px}.pb-os-tags span{padding:6px 8px;border-radius:8px;background:color-mix(in srgb,var(--secondary-background-color) 78%,transparent);color:var(--secondary-text-color);font-size:9px}
+.pb-os-health-card{display:flex;align-items:center;gap:14px;padding:18px;border-radius:18px;background:color-mix(in srgb,var(--secondary-background-color) 65%,transparent);border:1px solid color-mix(in srgb,var(--divider-color) 62%,transparent)}
+.pb-os-health-ring{width:70px;height:70px;display:grid;place-items:center;flex:0 0 auto;border-radius:50%;background:color-mix(in srgb,#44c97a 10%,transparent);box-shadow:inset 0 0 0 7px color-mix(in srgb,#44c97a 11%,transparent)}
+.pb-os-health-ring span{width:38px;height:38px;display:grid;place-items:center;border-radius:50%;background:#44c97a;color:white;font-size:18px;font-weight:900}
+.pb-os-health-card.warn .pb-os-health-ring{background:color-mix(in srgb,#ffae42 10%,transparent);box-shadow:inset 0 0 0 7px color-mix(in srgb,#ffae42 11%,transparent)}.pb-os-health-card.warn .pb-os-health-ring span{background:#ffae42}
+.pb-os-health-card.danger .pb-os-health-ring{background:color-mix(in srgb,var(--error-color) 10%,transparent);box-shadow:inset 0 0 0 7px color-mix(in srgb,var(--error-color) 11%,transparent)}.pb-os-health-card.danger .pb-os-health-ring span{background:var(--error-color)}
+.pb-os-health-card small,.pb-os-health-card strong,.pb-os-health-card p{display:block}.pb-os-health-card small{font-size:8px;font-weight:900;letter-spacing:.12em;color:var(--secondary-text-color)}.pb-os-health-card strong{margin:4px 0;font-size:17px}.pb-os-health-card p{margin:0;color:var(--secondary-text-color);font-size:10px}
+
+.pb-os-strip{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.pb-os-strip>button{min-height:70px!important;display:flex!important;align-items:center!important;gap:10px!important;padding:11px 13px!important;text-align:left!important;border:1px solid color-mix(in srgb,var(--divider-color) 64%,transparent)!important;border-radius:14px!important;background:var(--card-background-color)!important;color:var(--primary-text-color)!important}.pb-os-strip>button>span{font-size:20px}.pb-os-strip small,.pb-os-strip strong{display:block}.pb-os-strip small{font-size:7px;letter-spacing:.1em;color:var(--secondary-text-color)}.pb-os-strip strong{margin-top:3px;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pb-os-main-grid{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(280px,.55fr);gap:8px}.pb-os-now,.pb-os-next,.pb-os-centers{padding:18px;border:1px solid color-mix(in srgb,var(--divider-color) 64%,transparent);border-radius:17px;background:var(--card-background-color)}
+.pb-os-section-head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:13px}.pb-os-section-head h3{margin:0;font-size:20px}.pb-os-section-head>button,.pb-os-next>button{padding:0!important;border:0!important;background:transparent!important;color:var(--primary-color)!important;font-size:10px!important}
+.pb-os-priority,.pb-os-clear{display:grid;grid-template-columns:40px minmax(0,1fr) auto;gap:11px;align-items:center;padding:13px;border-radius:13px;background:color-mix(in srgb,#ffae42 8%,var(--secondary-background-color))}.pb-os-clear{grid-template-columns:40px minmax(0,1fr);background:color-mix(in srgb,#44c97a 7%,var(--secondary-background-color))}
+.pb-os-priority-icon,.pb-os-clear>span{width:40px;height:40px;display:grid;place-items:center;border-radius:11px;background:color-mix(in srgb,#ffae42 17%,transparent);color:#d78a15;font-size:17px;font-weight:900}.pb-os-clear>span{background:color-mix(in srgb,#44c97a 16%,transparent);color:#36a966}.pb-os-priority strong,.pb-os-clear strong{font-size:12px}.pb-os-priority p,.pb-os-clear p{margin:3px 0 0;color:var(--secondary-text-color);font-size:9px}.pb-os-priority>button{min-height:32px!important;padding:0 9px!important;border-radius:9px!important;font-size:9px!important}
+.pb-os-next>strong{display:block;margin:5px 0 7px;font-size:27px;letter-spacing:-.035em}.pb-os-next>p{min-height:34px;margin:0 0 12px;color:var(--secondary-text-color);font-size:10px;line-height:1.45}
+.pb-os-centers-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}.pb-os-centers-grid>button{min-height:79px!important;display:grid!important;grid-template-columns:34px minmax(0,1fr) auto!important;gap:8px!important;align-items:center!important;padding:11px!important;text-align:left!important;border:1px solid color-mix(in srgb,var(--divider-color) 62%,transparent)!important;border-radius:12px!important;background:color-mix(in srgb,var(--secondary-background-color) 54%,transparent)!important;color:var(--primary-text-color)!important}.pb-os-centers-grid>button>span{font-size:18px}.pb-os-centers-grid strong,.pb-os-centers-grid small{display:block}.pb-os-centers-grid strong{font-size:11px}.pb-os-centers-grid small{margin-top:2px;color:var(--secondary-text-color);font-size:8px}.pb-os-centers-grid b{font-size:17px;color:var(--secondary-text-color)}
+.pb-os-footer-tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.pb-os-footer-tools>button{min-height:40px!important;border:1px solid color-mix(in srgb,var(--divider-color) 60%,transparent)!important;border-radius:11px!important;background:transparent!important;color:var(--secondary-text-color)!important;font-size:9px!important}.pb-os-footer-tools>button:hover{background:var(--secondary-background-color)!important;color:var(--primary-text-color)!important}
+
+/* Agenda - no card grid */
+.pb-os-agenda{padding:0!important;overflow:hidden!important;border:1px solid color-mix(in srgb,var(--divider-color) 64%,transparent)!important;border-radius:20px!important;background:var(--card-background-color)!important;box-shadow:0 12px 38px rgba(0,0,0,.05)!important}.pb-os-agenda::before{display:none!important}
+.pb-os-agenda-top{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:18px 20px;border-bottom:1px solid color-mix(in srgb,var(--divider-color) 60%,transparent)}.pb-os-agenda-top h3{margin:0!important;font-size:24px!important;text-transform:capitalize;letter-spacing:-.025em}.pb-os-agenda-top p{margin:4px 0 0;color:var(--secondary-text-color);font-size:10px}
+.pb-os-agenda-controls{display:flex;align-items:center;gap:5px}.pb-os-agenda-controls button{min-width:34px!important;height:34px!important;padding:0 9px!important;border:1px solid var(--divider-color)!important;border-radius:9px!important;background:transparent!important;color:var(--primary-text-color)!important;font-size:11px!important}.pb-os-agenda-controls button:first-child,.pb-os-agenda-controls button:last-child{font-size:18px!important}
+.pb-os-agenda-body{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,.75fr);min-height:500px}.pb-os-mini-calendar{padding:18px 20px}.pb-os-weekdays,.pb-os-days{display:grid;grid-template-columns:repeat(7,1fr)}.pb-os-weekdays{margin-bottom:8px}.pb-os-weekdays span{text-align:center;color:var(--secondary-text-color);font-size:8px;font-weight:900;letter-spacing:.08em}
+.pb-os-days{row-gap:7px}.pb-os-day{position:relative;min-height:52px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:11px;color:var(--primary-text-color)}.pb-os-day>span{width:29px;height:29px;display:grid;place-items:center;border-radius:50%;font-size:10px;font-weight:750}.pb-os-day:hover{background:color-mix(in srgb,var(--secondary-background-color) 58%,transparent)}.pb-os-day.outside{opacity:.22}.pb-os-day.today>span{background:var(--primary-color);color:#fff;box-shadow:0 5px 15px color-mix(in srgb,var(--primary-color) 25%,transparent)}.pb-os-day-events{height:6px;display:flex;align-items:center;gap:2px}.pb-os-day-events i,.pb-os-calendar-legend i{width:5px;height:5px;border-radius:50%;background:#6dc99b}.pb-os-day-events i.vaccine,.pb-os-calendar-legend i.vaccine{background:#4da3ff}.pb-os-day-events i.treatment,.pb-os-calendar-legend i.treatment{background:#a976ff}.pb-os-day-events i.heat,.pb-os-calendar-legend i.heat{background:#ff6f91}
+.pb-os-calendar-legend{display:flex;justify-content:center;flex-wrap:wrap;gap:12px;margin-top:14px;padding-top:13px;border-top:1px solid color-mix(in srgb,var(--divider-color) 55%,transparent)}.pb-os-calendar-legend span{display:flex;align-items:center;gap:5px;color:var(--secondary-text-color);font-size:8px}.pb-os-calendar-legend i{width:6px;height:6px}
+.pb-os-agenda-stream{padding:18px;border-left:1px solid color-mix(in srgb,var(--divider-color) 60%,transparent);background:color-mix(in srgb,var(--secondary-background-color) 34%,var(--card-background-color))}.pb-os-stream-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:12px}.pb-os-stream-head h4{margin:0;font-size:19px}.pb-os-stream-head>strong{min-width:27px;height:27px;display:grid;place-items:center;border-radius:8px;background:color-mix(in srgb,var(--primary-color) 10%,transparent);color:var(--primary-color);font-size:10px}
+.pb-os-stream{display:grid}.pb-os-stream-item{display:grid;grid-template-columns:38px 20px minmax(0,1fr) 28px;gap:7px;align-items:start;min-height:61px}.pb-os-stream-date{text-align:center;padding-top:2px}.pb-os-stream-date strong,.pb-os-stream-date span{display:block}.pb-os-stream-date strong{font-size:16px;line-height:1}.pb-os-stream-date span{margin-top:3px;color:var(--secondary-text-color);font-size:8px}.pb-os-stream-line{position:relative;height:100%;display:flex;justify-content:center}.pb-os-stream-line i{position:relative;z-index:2;width:8px;height:8px;margin-top:5px;border-radius:50%;background:#6dc99b;box-shadow:0 0 0 4px color-mix(in srgb,#6dc99b 12%,transparent)}.pb-os-stream-item.vaccine .pb-os-stream-line i{background:#4da3ff;box-shadow:0 0 0 4px color-mix(in srgb,#4da3ff 12%,transparent)}.pb-os-stream-item.treatment .pb-os-stream-line i{background:#a976ff;box-shadow:0 0 0 4px color-mix(in srgb,#a976ff 12%,transparent)}.pb-os-stream-item.heat .pb-os-stream-line i{background:#ff6f91;box-shadow:0 0 0 4px color-mix(in srgb,#ff6f91 12%,transparent)}.pb-os-stream-line b{position:absolute;top:15px;bottom:-5px;width:1px;background:var(--divider-color)}
+.pb-os-stream-copy{padding-top:0}.pb-os-stream-copy small,.pb-os-stream-copy strong{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.pb-os-stream-copy small{margin-bottom:3px;color:var(--secondary-text-color);font-size:7px;font-weight:800;letter-spacing:.08em}.pb-os-stream-copy strong{font-size:10px}.pb-os-stream-icon{width:27px;height:27px;display:grid;place-items:center;border-radius:8px;background:var(--card-background-color);font-size:13px}.pb-os-stream-empty{min-height:240px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;color:var(--secondary-text-color)}.pb-os-stream-empty>span{width:42px;height:42px;display:grid;place-items:center;margin-bottom:9px;border-radius:13px;background:color-mix(in srgb,#44c97a 11%,transparent);color:#36a966;font-size:19px}.pb-os-stream-empty strong{color:var(--primary-text-color)}.pb-os-stream-empty p{margin:4px 0 0;font-size:9px}
+.pb-os-agenda-smart{width:100%!important;min-height:48px!important;display:grid!important;grid-template-columns:28px minmax(0,1fr) auto!important;gap:8px!important;align-items:center!important;margin-top:8px!important;padding:7px 9px!important;text-align:left!important;border:1px solid color-mix(in srgb,var(--primary-color) 18%,var(--divider-color))!important;border-radius:11px!important;background:color-mix(in srgb,var(--primary-color) 7%,transparent)!important;color:var(--primary-text-color)!important}.pb-os-agenda-smart>span{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:color-mix(in srgb,var(--primary-color) 11%,transparent);color:var(--primary-color)}.pb-os-agenda-smart strong,.pb-os-agenda-smart small{display:block}.pb-os-agenda-smart strong{font-size:10px}.pb-os-agenda-smart small{margin-top:1px;color:var(--secondary-text-color);font-size:8px}.pb-os-agenda-smart>b{color:var(--primary-color);font-size:17px}
+
+@media(max-width:980px){
+  .pb-os-hero{grid-template-columns:1fr}.pb-os-health-card{max-width:none}.pb-os-strip{grid-template-columns:1fr 1fr}.pb-os-main-grid{grid-template-columns:1fr}.pb-os-centers-grid{grid-template-columns:1fr 1fr}.pb-os-agenda-body{grid-template-columns:1fr}.pb-os-agenda-stream{border-left:0;border-top:1px solid var(--divider-color)}
+}
+@media(max-width:760px){
+  .pb-os-header{top:6px!important;border-radius:15px!important}.pb-os-bar{min-height:54px;padding:6px 7px}.pb-os-logo{width:34px;height:34px;border-radius:10px}.pb-os-logo svg{width:20px;height:20px}.pb-os-brand small{display:none}.pb-os-health{display:none!important}.support-project-label{display:none!important}.pb-os-nav{padding:4px 6px 6px!important}.pb-os-nav>button{min-height:32px!important;padding:0 9px!important;font-size:9px!important}
+  .pb-os-home{gap:8px}.pb-os-hero{min-height:0;padding:15px;border-radius:17px}.pb-os-pet{align-items:flex-start;gap:12px}.pb-os-photo .pet-photo,.pb-os-photo .placeholder{width:84px!important;height:84px!important;border-radius:18px!important}.pb-os-pet-copy h2{font-size:30px!important}.pb-os-pet-copy>p{margin:5px 0 8px;font-size:10px}.pb-os-tags{gap:4px}.pb-os-tags span{padding:4px 6px;border-radius:6px;font-size:8px}.pb-os-health-card{padding:12px}.pb-os-health-ring{width:54px;height:54px}.pb-os-health-ring span{width:30px;height:30px;font-size:14px}.pb-os-strip{gap:5px}.pb-os-strip>button{min-height:58px!important;padding:8px 9px!important;border-radius:11px!important}.pb-os-strip>button>span{font-size:16px}.pb-os-strip strong{font-size:11px}.pb-os-now,.pb-os-next,.pb-os-centers{padding:14px;border-radius:14px}.pb-os-centers-grid{gap:5px}.pb-os-centers-grid>button{min-height:67px!important;padding:9px!important}.pb-os-footer-tools{grid-template-columns:1fr 1fr}
+  .pb-os-agenda{border-radius:16px!important}.pb-os-agenda-top{align-items:flex-start;padding:14px}.pb-os-agenda-top h3{font-size:21px!important}.pb-os-agenda-top p{font-size:9px}.pb-os-agenda-controls button{min-width:31px!important;height:31px!important;padding:0 7px!important}.pb-os-mini-calendar{padding:14px 8px}.pb-os-days{row-gap:3px}.pb-os-day{min-height:43px;border-radius:8px}.pb-os-day>span{width:26px;height:26px;font-size:9px}.pb-os-calendar-legend{gap:8px}.pb-os-agenda-stream{padding:14px 11px}.pb-os-stream-item{grid-template-columns:34px 18px minmax(0,1fr) 26px;min-height:57px}
+}
+
+
+/* PawBook 6.10.3 - Modern Health Center */
+:host{
+  --pb-accent:#58d6c7;
+  --pb-accent-2:#76e2d5;
+  --pb-accent-soft:color-mix(in srgb,var(--pb-accent) 12%,transparent);
+  --pb-accent-line:color-mix(in srgb,var(--pb-accent) 32%,transparent);
+  --pb-panel:#191b1b;
+  --pb-panel-2:#1e2121;
+  --pb-line:rgba(255,255,255,.09);
+  --pb-muted:rgba(255,255,255,.56);
+}
+.pb-modern-header{
+  position:sticky!important;top:0!important;z-index:80!important;
+  border:0!important;border-radius:0!important;
+  background:#101111!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;-webkit-backdrop-filter:none!important;
+}
+.pb-modern-brandrow{
+  min-height:66px;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:8px 16px;
+}
+.pb-modern-brandleft,.pb-modern-actions{display:flex;align-items:center;gap:10px}
+.pb-modern-hamburger{width:38px!important;height:38px!important;border-radius:10px!important}
+.pb-modern-logo{
+  width:42px;height:42px;display:grid;place-items:center;border-radius:12px;
+  background:linear-gradient(145deg,color-mix(in srgb,var(--pb-accent) 16%,#111),#141616);
+  border:1px solid color-mix(in srgb,var(--pb-accent) 42%,transparent);
+  color:var(--pb-accent);
+}
+.pb-modern-logo svg{width:24px;height:24px;fill:currentColor}
+.pb-modern-titleline{display:flex;align-items:center;gap:8px}
+.pb-modern-titleline strong{font-size:16px;letter-spacing:-.02em}
+.pb-modern-version{
+  padding:3px 6px;border-radius:999px;
+  border:1px solid color-mix(in srgb,var(--pb-accent) 44%,transparent);
+  color:var(--pb-accent);font-size:8px;font-weight:900;
+  background:color-mix(in srgb,var(--pb-accent) 8%,transparent);
+}
+.pb-modern-brandcopy small{display:block;margin-top:1px;color:var(--secondary-text-color);font-size:9px}
+.pb-modern-status{
+  min-height:34px!important;display:flex!important;align-items:center!important;gap:7px!important;padding:0 10px!important;
+  border:1px solid var(--divider-color)!important;border-radius:9px!important;background:transparent!important;color:var(--primary-text-color)!important;font-size:9px!important;font-weight:800!important;
+}
+.pb-modern-dot{width:7px;height:7px;border-radius:50%;background:#48d884;box-shadow:0 0 0 4px color-mix(in srgb,#48d884 13%,transparent)}
+.pb-modern-dot.warn{background:#ffb64c;box-shadow:0 0 0 4px color-mix(in srgb,#ffb64c 13%,transparent)}
+.pb-modern-nav{
+  display:flex!important;align-items:center!important;gap:10px!important;overflow-x:auto!important;scrollbar-width:none;
+  padding:0 16px!important;margin:0!important;border-top:0!important;border-bottom:1px solid var(--divider-color)!important;background:#101111!important;
+}
+.pb-modern-nav::-webkit-scrollbar{display:none}
+.pb-modern-nav>button{
+  position:relative;flex:0 0 auto!important;min-height:46px!important;padding:0 2px!important;
+  border:0!important;border-radius:0!important;background:transparent!important;color:var(--secondary-text-color)!important;
+  font-size:10px!important;font-weight:850!important;display:flex!important;align-items:center!important;gap:7px!important;
+}
+.pb-modern-nav>button.active{color:var(--pb-accent)!important;background:transparent!important}
+.pb-modern-nav>button.active::after{
+  content:"";position:absolute;left:0;right:0;bottom:0;height:3px;border-radius:999px 999px 0 0;background:var(--pb-accent);
+}
+.pb-nav-glyph{font-size:15px}
+
+.pb-modern-page{display:grid;gap:12px;padding-top:20px}
+.pb-modern-section-title{padding:0 6px 4px}
+.pb-modern-section-title>span,.pb-modern-block-title>span{
+  display:block;margin-bottom:6px;color:var(--secondary-text-color);font-size:8px;font-weight:900;letter-spacing:.18em;
+}
+.pb-modern-section-title h2{margin:0;font-size:32px;letter-spacing:-.035em;line-height:1}
+.pb-modern-section-title p{margin:7px 0 0;color:var(--secondary-text-color);font-size:11px}
+
+.pb-modern-hero{
+  position:relative;display:grid;grid-template-columns:minmax(0,1.2fr) minmax(360px,.8fr);gap:22px;align-items:center;
+  min-height:300px;padding:34px 40px;overflow:hidden;
+  border:1px solid var(--divider-color);border-radius:28px;
+  background:
+    radial-gradient(circle at 14% 20%,color-mix(in srgb,var(--pb-accent) 12%,transparent),transparent 26%),
+    radial-gradient(circle at 96% 0%,color-mix(in srgb,#7a89ff 7%,transparent),transparent 25%),
+    linear-gradient(135deg,#1a1d1d,#1b1e1e 65%,#161818);
+}
+.pb-modern-hero::after{
+  content:"";position:absolute;inset:auto -80px -140px auto;width:320px;height:320px;border-radius:50%;
+  background:radial-gradient(circle,color-mix(in srgb,var(--pb-accent) 8%,transparent),transparent 70%);pointer-events:none;
+}
+.pb-modern-kicker{display:block;margin-bottom:9px;color:var(--secondary-text-color);font-size:8px;font-weight:900;letter-spacing:.16em}
+.pb-modern-hero-copy h1{margin:0;max-width:720px;font-size:clamp(40px,5vw,64px);line-height:.98;letter-spacing:-.055em;font-weight:800}
+.pb-modern-hero-copy h1 em{
+  font-style:normal;background:linear-gradient(90deg,var(--pb-accent),#77c9ff);-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+.pb-modern-hero-copy>p{margin:14px 0 0;max-width:660px;color:var(--secondary-text-color);font-size:12px}
+.pb-modern-live-line{display:flex;align-items:center;flex-wrap:wrap;gap:7px;margin-top:22px;color:var(--secondary-text-color);font-size:9px}
+.pb-modern-live-dot{width:7px;height:7px;border-radius:50%;background:#48d884;box-shadow:0 0 0 4px color-mix(in srgb,#48d884 12%,transparent)}
+.pb-modern-live-dot.warn{background:#ffb64c;box-shadow:0 0 0 4px color-mix(in srgb,#ffb64c 12%,transparent)}
+.pb-modern-live-line strong{color:var(--primary-text-color)}
+
+.pb-modern-livecard{
+  position:relative;z-index:1;padding:22px 24px;border-radius:22px;background:rgba(12,14,14,.40);border:1px solid rgba(255,255,255,.08);
+}
+.pb-modern-livecard-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.pb-modern-livecard-top>span{font-size:8px;font-weight:900;letter-spacing:.13em;color:var(--secondary-text-color)}
+.pb-modern-photo{width:44px;height:44px!important;min-height:44px!important;padding:0!important;border:0!important;border-radius:12px!important;overflow:hidden!important;background:var(--secondary-background-color)!important}
+.pb-modern-photo .pet-photo,.pb-modern-photo .placeholder{width:44px!important;height:44px!important;border-radius:12px!important}
+.pb-modern-score{margin-top:16px}
+.pb-modern-score strong{display:block;font-size:48px;letter-spacing:-.05em;line-height:1;color:var(--pb-accent)}
+.pb-modern-score.warn strong{color:#ffb64c}.pb-modern-score.danger strong{color:#ff6969}
+.pb-modern-score small{display:block;margin-top:5px;color:var(--secondary-text-color);font-size:9px}
+.pb-modern-progress{height:4px;margin-top:16px;border-radius:999px;background:rgba(255,255,255,.08);overflow:hidden}
+.pb-modern-progress span{display:block;height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--pb-accent),#78d8ff)}
+.pb-modern-live-kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px;padding-top:14px;border-top:1px solid rgba(255,255,255,.08)}
+.pb-modern-live-kpis small,.pb-modern-live-kpis strong{display:block}
+.pb-modern-live-kpis small{font-size:7px;color:var(--secondary-text-color)}
+.pb-modern-live-kpis strong{margin-top:3px;font-size:12px}
+
+.pb-modern-block-title{display:flex;align-items:center;justify-content:space-between;padding:6px 0 0}
+.pb-modern-block-title>span{margin:0}.pb-modern-block-title small{color:var(--secondary-text-color);font-size:8px}
+
+.pb-modern-kpirow{display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--divider-color);border-radius:22px;overflow:hidden}
+.pb-modern-kpirow>button{
+  min-height:116px!important;display:grid!important;grid-template-columns:26px 1fr!important;gap:10px!important;align-items:start!important;
+  padding:18px 22px!important;text-align:left!important;border:0!important;border-right:1px solid var(--divider-color)!important;border-radius:0!important;background:#1a1c1c!important;color:var(--primary-text-color)!important;
+}
+.pb-modern-kpirow>button:last-child{border-right:0!important}
+.pb-modern-kpirow>button>span{font-size:17px}
+.pb-modern-kpirow small,.pb-modern-kpirow strong,.pb-modern-kpirow em{display:block}
+.pb-modern-kpirow small{font-size:7px;font-weight:900;letter-spacing:.1em;color:var(--secondary-text-color)}
+.pb-modern-kpirow strong{margin-top:10px;font-size:20px}
+.pb-modern-kpirow em{margin-top:6px;font-size:8px;font-style:normal;color:var(--secondary-text-color)}
+
+.pb-modern-duo{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.pb-modern-priority,.pb-modern-cycle{min-height:175px;padding:24px;border:1px solid var(--divider-color);border-radius:22px;background:#1a1c1c}
+.pb-modern-priority{display:flex;align-items:flex-end;justify-content:space-between;gap:20px;background:linear-gradient(145deg,color-mix(in srgb,var(--pb-accent) 7%,#1a1c1c),#1a1c1c)}
+.pb-modern-priority h3{margin:0;font-size:27px;letter-spacing:-.03em}.pb-modern-priority p{margin:8px 0 0;color:var(--secondary-text-color);font-size:10px;max-width:560px}
+.pb-modern-priority>button,.pb-modern-cycle>button{border:0!important;background:transparent!important;color:var(--pb-accent)!important;padding:0!important;font-size:9px!important}
+.pb-modern-cycle>strong{display:block;margin:8px 0 6px;font-size:36px;letter-spacing:-.04em}.pb-modern-cycle p{margin:0 0 14px;color:var(--secondary-text-color);font-size:10px}
+
+.pb-modern-centers{display:grid;grid-template-columns:repeat(5,1fr);border:1px solid var(--divider-color);border-radius:22px;overflow:hidden}
+.pb-modern-centers>button{
+  min-height:96px!important;display:flex!important;align-items:center!important;gap:11px!important;padding:16px 18px!important;text-align:left!important;
+  border:0!important;border-right:1px solid var(--divider-color)!important;border-radius:0!important;background:#1a1c1c!important;color:var(--primary-text-color)!important;
+}
+.pb-modern-centers>button:last-child{border-right:0!important}
+.pb-modern-centers>button>span{font-size:19px}
+.pb-modern-centers strong,.pb-modern-centers small{display:block}.pb-modern-centers strong{font-size:12px}.pb-modern-centers small{margin-top:3px;color:var(--secondary-text-color);font-size:8px}
+.pb-modern-tools{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.pb-modern-tools>button{min-height:40px!important;border:1px solid var(--divider-color)!important;border-radius:10px!important;background:transparent!important;color:var(--secondary-text-color)!important;font-size:9px!important}
+.pb-modern-tools>button:hover{background:var(--secondary-background-color)!important;color:var(--primary-text-color)!important}
+
+/* Agenda */
+.pb-modern-agenda{padding:18px 0 0!important;border:0!important;background:transparent!important;box-shadow:none!important}
+.pb-modern-agenda::before{display:none!important}
+.pb-modern-agenda-title{padding:0 6px 12px}
+.pb-modern-agenda-shell{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(340px,.75fr);overflow:hidden;border:1px solid var(--divider-color);border-radius:24px;background:#1a1c1c}
+.pb-modern-agenda-left{padding:22px}
+.pb-modern-agenda-controls{display:flex;gap:5px;justify-content:flex-end;margin-bottom:16px}
+.pb-modern-agenda-controls button{min-width:34px!important;height:34px!important;padding:0 9px!important;border:1px solid var(--divider-color)!important;border-radius:9px!important;background:transparent!important;color:var(--primary-text-color)!important}
+.pb-modern-weekdays,.pb-modern-days{display:grid;grid-template-columns:repeat(7,1fr)}
+.pb-modern-weekdays{margin-bottom:8px}.pb-modern-weekdays span{text-align:center;color:var(--secondary-text-color);font-size:8px;font-weight:900;letter-spacing:.08em}
+.pb-modern-days{row-gap:7px}
+.pb-modern-day{min-height:58px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;border-radius:10px}
+.pb-modern-day:hover{background:rgba(255,255,255,.025)}
+.pb-modern-day.outside{opacity:.20}
+.pb-modern-day>span{width:30px;height:30px;display:grid;place-items:center;border-radius:50%;font-size:10px;font-weight:750}
+.pb-modern-day.today>span{background:var(--pb-accent);color:#081514}
+.pb-modern-day>div{height:6px;display:flex;gap:2px}.pb-modern-day i{width:6px;height:6px;border-radius:50%;background:#66cda8}.pb-modern-day i.vaccine{background:#60a8ff}.pb-modern-day i.treatment{background:#a879ff}.pb-modern-day i.heat{background:#ff7194}
+.pb-modern-agenda-right{padding:22px;border-left:1px solid var(--divider-color);background:#171919}
+.pb-modern-agenda-right-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}.pb-modern-agenda-right-head span{font-size:8px;font-weight:900;letter-spacing:.13em;color:var(--secondary-text-color)}.pb-modern-agenda-right-head strong{min-width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:var(--pb-accent-soft);color:var(--pb-accent);font-size:10px}
+.pb-modern-eventlist{display:grid}.pb-modern-event{display:grid;grid-template-columns:40px 14px minmax(0,1fr) 28px;gap:8px;align-items:center;min-height:59px}.pb-modern-event-date{text-align:center}.pb-modern-event-date strong,.pb-modern-event-date span{display:block}.pb-modern-event-date strong{font-size:16px}.pb-modern-event-date span{font-size:8px;color:var(--secondary-text-color)}
+.pb-modern-event-dot{width:7px;height:7px;border-radius:50%;background:#66cda8;box-shadow:0 0 0 4px color-mix(in srgb,#66cda8 12%,transparent)}.pb-modern-event.vaccine .pb-modern-event-dot{background:#60a8ff;box-shadow:0 0 0 4px color-mix(in srgb,#60a8ff 12%,transparent)}.pb-modern-event.treatment .pb-modern-event-dot{background:#a879ff;box-shadow:0 0 0 4px color-mix(in srgb,#a879ff 12%,transparent)}.pb-modern-event.heat .pb-modern-event-dot{background:#ff7194;box-shadow:0 0 0 4px color-mix(in srgb,#ff7194 12%,transparent)}
+.pb-modern-event-copy small,.pb-modern-event-copy strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.pb-modern-event-copy small{font-size:7px;color:var(--secondary-text-color)}.pb-modern-event-copy strong{margin-top:3px;font-size:10px}.pb-modern-event-icon{width:28px;height:28px;display:grid;place-items:center;border-radius:8px;background:#202323;font-size:13px}
+.pb-modern-event-empty{min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}.pb-modern-event-empty>span{width:44px;height:44px;display:grid;place-items:center;margin-bottom:10px;border-radius:13px;background:var(--pb-accent-soft);color:var(--pb-accent);font-size:20px}.pb-modern-event-empty strong{font-size:12px}.pb-modern-event-empty small{margin-top:4px;color:var(--secondary-text-color);font-size:9px}
+.pb-modern-smart-btn{width:100%!important;min-height:42px!important;margin-top:10px!important;border:1px solid var(--pb-accent-line)!important;border-radius:10px!important;background:var(--pb-accent-soft)!important;color:var(--pb-accent)!important;font-size:9px!important;font-weight:850!important}
+
+/* Light theme */
+@media (prefers-color-scheme: light){
+  :host{
+    --pb-panel:#ffffff;
+    --pb-panel-2:#f6f8f8;
+    --pb-line:rgba(0,0,0,.10);
+    --pb-muted:rgba(0,0,0,.55);
+  }
+  .pb-modern-header,.pb-modern-nav{background:var(--card-background-color)!important}
+  .pb-modern-hero,
+  .pb-modern-kpirow>button,
+  .pb-modern-priority,
+  .pb-modern-cycle,
+  .pb-modern-centers>button,
+  .pb-modern-agenda-shell,
+  .pb-modern-agenda-right{background:var(--card-background-color)!important}
+  .pb-modern-livecard{background:color-mix(in srgb,var(--secondary-background-color) 72%,transparent)}
+}
+
+@media(max-width:980px){
+  .pb-modern-hero{grid-template-columns:1fr}.pb-modern-kpirow{grid-template-columns:1fr 1fr}.pb-modern-kpirow>button:nth-child(2){border-right:0!important}.pb-modern-kpirow>button:nth-child(-n+2){border-bottom:1px solid var(--divider-color)!important}
+  .pb-modern-duo{grid-template-columns:1fr}.pb-modern-centers{grid-template-columns:1fr 1fr}.pb-modern-centers>button{border-bottom:1px solid var(--divider-color)!important}.pb-modern-centers>button:nth-child(2n){border-right:0!important}.pb-modern-centers>button:last-child{grid-column:1/-1;border-bottom:0!important}
+  .pb-modern-agenda-shell{grid-template-columns:1fr}.pb-modern-agenda-right{border-left:0;border-top:1px solid var(--divider-color)}
+}
+@media(max-width:760px){
+  .pb-modern-brandrow{min-height:56px;padding:6px 8px}.pb-modern-logo{width:36px;height:36px;border-radius:10px}.pb-modern-logo svg{width:21px;height:21px}.pb-modern-brandcopy small{display:none}.pb-modern-status{display:none!important}
+  .pb-modern-nav{gap:8px!important;padding:0 9px!important}.pb-modern-nav>button{min-height:40px!important;font-size:9px!important}.pb-nav-glyph{font-size:13px}
+  .pb-modern-page{padding-top:14px}.pb-modern-section-title h2{font-size:27px}.pb-modern-hero{min-height:0;padding:22px 18px;border-radius:20px}.pb-modern-hero-copy h1{font-size:38px}.pb-modern-livecard{padding:17px;border-radius:17px}.pb-modern-score strong{font-size:40px}.pb-modern-kpirow{grid-template-columns:1fr}.pb-modern-kpirow>button{border-right:0!important;border-bottom:1px solid var(--divider-color)!important}.pb-modern-kpirow>button:last-child{border-bottom:0!important}.pb-modern-priority{align-items:flex-start;flex-direction:column}.pb-modern-centers{grid-template-columns:1fr}.pb-modern-centers>button{border-right:0!important}.pb-modern-centers>button:last-child{grid-column:auto}.pb-modern-tools{grid-template-columns:1fr 1fr}.pb-modern-agenda-left{padding:16px 8px}.pb-modern-day{min-height:48px}.pb-modern-agenda-right{padding:16px 11px}
+}
+
+
+/* PawBook 6.10.3 - true multipage */
+.grid{display:none}
+.grid>.pb-page-active{
+  grid-column:1/-1!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+}
+.pb-subpage-mode .grid{
+  min-height:calc(100vh - 150px);
+}
+.grid>.pb-page-active{
+  padding:22px 0 40px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.grid>.pb-page-active>.card-head,
+.grid>.pb-page-active>.scene-heading{
+  margin:0 0 24px!important;
+  padding:0 6px 18px!important;
+  border-bottom:1px solid var(--divider-color)!important;
+}
+.grid>.pb-page-active>.card-head h3,
+.grid>.pb-page-active>.scene-heading h2{
+  font-size:34px!important;
+  letter-spacing:-.04em!important;
+}
+
+/* Huge Evie portrait */
+.pb-modern-hero-photo{
+  grid-template-columns:minmax(330px, .78fr) minmax(0,1.22fr)!important;
+  min-height:440px!important;
+  padding:28px!important;
+}
+.pb-modern-portrait-wrap{
+  min-height:380px;
+}
+.pb-modern-portrait{
+  position:relative;
+  width:100%!important;
+  height:100%!important;
+  min-height:380px!important;
+  padding:0!important;
+  overflow:hidden!important;
+  border:0!important;
+  border-radius:24px!important;
+  background:var(--secondary-background-color)!important;
+}
+.pb-modern-portrait .pet-photo,
+.pb-modern-portrait .placeholder{
+  width:100%!important;
+  height:100%!important;
+  min-height:380px!important;
+  object-fit:cover!important;
+  border-radius:24px!important;
+}
+.pb-modern-portrait .placeholder{
+  display:grid!important;
+  place-items:center!important;
+  font-size:72px!important;
+}
+.pb-modern-photo-edit{
+  position:absolute;
+  right:14px;
+  bottom:14px;
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border-radius:12px;
+  background:rgba(10,12,12,.72);
+  color:#fff;
+  border:1px solid rgba(255,255,255,.16);
+}
+.pb-modern-hero-copy{
+  align-self:center;
+  padding:12px 20px;
+}
+.pb-modern-hero-copy h1{
+  font-size:clamp(54px,6vw,82px)!important;
+  margin:0!important;
+}
+.pb-modern-breed{
+  margin:10px 0 18px!important;
+  color:var(--secondary-text-color);
+  font-size:15px!important;
+}
+.pb-modern-profile-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+}
+.pb-modern-profile-row span{
+  padding:7px 9px;
+  border-radius:8px;
+  background:rgba(255,255,255,.045);
+  color:var(--secondary-text-color);
+  font-size:9px;
+}
+.pb-modern-health-summary{
+  display:flex;
+  align-items:end;
+  justify-content:space-between;
+  gap:16px;
+  margin-top:28px;
+  padding:20px 0 18px;
+  border-top:1px solid var(--divider-color);
+  border-bottom:1px solid var(--divider-color);
+}
+.pb-modern-health-value small,
+.pb-modern-health-value strong{
+  display:block;
+}
+.pb-modern-health-value small{
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.14em;
+  color:var(--secondary-text-color);
+}
+.pb-modern-health-value strong{
+  margin-top:6px;
+  font-size:28px;
+  color:var(--pb-accent);
+}
+.pb-modern-health-summary.warn .pb-modern-health-value strong{color:#ffb64c}
+.pb-modern-health-summary.danger .pb-modern-health-value strong{color:#ff6969}
+.pb-modern-health-meta{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--secondary-text-color);
+  font-size:9px;
+}
+
+/* Agenda becomes a timeline page; no calendar grid */
+.pb-agenda-page{
+  padding:20px 0 40px!important;
+}
+.pb-page-heading{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:20px;
+  padding:0 6px 22px;
+  border-bottom:1px solid var(--divider-color);
+}
+.pb-page-heading>div:first-child>span{
+  display:block;
+  margin-bottom:7px;
+  color:var(--pb-accent);
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.17em;
+}
+.pb-page-heading h2{
+  margin:0!important;
+  font-size:42px!important;
+  letter-spacing:-.045em!important;
+}
+.pb-page-heading p{
+  margin:7px 0 0;
+  color:var(--secondary-text-color);
+  font-size:11px;
+}
+.pb-agenda-actions{
+  display:flex;
+  gap:5px;
+}
+.pb-agenda-actions button{
+  min-width:38px!important;
+  height:38px!important;
+  padding:0 11px!important;
+  border:1px solid var(--divider-color)!important;
+  border-radius:10px!important;
+  background:transparent!important;
+  color:var(--primary-text-color)!important;
+}
+.pb-agenda-monthbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:18px;
+  margin-top:24px;
+  padding:20px 22px;
+  border:1px solid var(--divider-color);
+  border-radius:18px;
+  background:linear-gradient(135deg,color-mix(in srgb,var(--pb-accent) 6%,#1a1c1c),#1a1c1c);
+}
+.pb-agenda-monthbar small,
+.pb-agenda-monthbar strong{
+  display:block;
+}
+.pb-agenda-monthbar small{
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.13em;
+  color:var(--secondary-text-color);
+}
+.pb-agenda-monthbar strong{
+  margin-top:5px;
+  font-size:26px;
+  text-transform:capitalize;
+}
+.pb-agenda-monthstats{
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+  gap:8px;
+}
+.pb-agenda-monthstats span{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:7px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.045);
+  color:var(--secondary-text-color);
+  font-size:8px;
+}
+.pb-agenda-monthstats i{
+  width:7px;height:7px;border-radius:50%;background:#66cda8;
+}
+.pb-agenda-monthstats i.vaccine{background:#60a8ff}
+.pb-agenda-monthstats i.treatment{background:#a879ff}
+.pb-agenda-monthstats i.heat{background:#ff7194}
+
+.pb-agenda-timeline{
+  margin-top:18px;
+  padding:0 6px;
+}
+.pb-agenda-row{
+  display:grid;
+  grid-template-columns:58px 26px minmax(0,1fr) 46px;
+  gap:10px;
+  min-height:92px;
+  align-items:start;
+}
+.pb-agenda-datebox{
+  padding-top:3px;
+  text-align:center;
+}
+.pb-agenda-datebox strong,
+.pb-agenda-datebox span{
+  display:block;
+}
+.pb-agenda-datebox strong{
+  font-size:28px;
+  line-height:1;
+}
+.pb-agenda-datebox span{
+  margin-top:5px;
+  color:var(--secondary-text-color);
+  font-size:9px;
+}
+.pb-agenda-rail{
+  position:relative;
+  height:100%;
+  display:flex;
+  justify-content:center;
+}
+.pb-agenda-rail i{
+  position:relative;
+  z-index:2;
+  width:10px;
+  height:10px;
+  margin-top:10px;
+  border-radius:50%;
+  background:#66cda8;
+  box-shadow:0 0 0 5px color-mix(in srgb,#66cda8 12%,transparent);
+}
+.pb-agenda-row.vaccine .pb-agenda-rail i{
+  background:#60a8ff;
+  box-shadow:0 0 0 5px color-mix(in srgb,#60a8ff 12%,transparent);
+}
+.pb-agenda-row.treatment .pb-agenda-rail i{
+  background:#a879ff;
+  box-shadow:0 0 0 5px color-mix(in srgb,#a879ff 12%,transparent);
+}
+.pb-agenda-row.heat .pb-agenda-rail i{
+  background:#ff7194;
+  box-shadow:0 0 0 5px color-mix(in srgb,#ff7194 12%,transparent);
+}
+.pb-agenda-rail b{
+  position:absolute;
+  top:23px;
+  bottom:-10px;
+  width:1px;
+  background:var(--divider-color);
+}
+.pb-agenda-event-main{
+  padding:3px 0 22px;
+  border-bottom:1px solid var(--divider-color);
+}
+.pb-agenda-event-main small{
+  display:block;
+  margin-bottom:4px;
+  color:var(--secondary-text-color);
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.08em;
+}
+.pb-agenda-event-main strong{
+  display:block;
+  font-size:15px;
+}
+.pb-agenda-event-main p{
+  margin:5px 0 0;
+  color:var(--secondary-text-color);
+  font-size:9px;
+}
+.pb-agenda-event-icon{
+  width:42px;height:42px;
+  display:grid;
+  place-items:center;
+  margin-top:1px;
+  border-radius:12px;
+  background:var(--secondary-background-color);
+  font-size:19px;
+}
+.pb-agenda-empty{
+  min-height:360px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+}
+.pb-agenda-empty>span{
+  width:60px;height:60px;
+  display:grid;place-items:center;
+  border-radius:18px;
+  background:var(--pb-accent-soft);
+  color:var(--pb-accent);
+  font-size:28px;
+}
+.pb-agenda-empty h3{margin:14px 0 5px;font-size:25px}
+.pb-agenda-empty p{margin:0;color:var(--secondary-text-color)}
+.pb-agenda-footer{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:20px;
+  padding-top:16px;
+  border-top:1px solid var(--divider-color);
+}
+.pb-agenda-footer button{
+  border:0!important;
+  background:transparent!important;
+  color:var(--pb-accent)!important;
+  padding:0!important;
+}
+.pb-agenda-footer span{
+  color:var(--secondary-text-color);
+  font-size:8px;
+}
+
+@media(max-width:900px){
+  .pb-modern-hero-photo{
+    grid-template-columns:1fr!important;
+  }
+  .pb-modern-portrait-wrap,
+  .pb-modern-portrait,
+  .pb-modern-portrait .pet-photo,
+  .pb-modern-portrait .placeholder{
+    min-height:520px!important;
+  }
+}
+
+@media(max-width:760px){
+  .pb-modern-hero-photo{
+    padding:14px!important;
+    min-height:0!important;
+  }
+  .pb-modern-portrait-wrap,
+  .pb-modern-portrait,
+  .pb-modern-portrait .pet-photo,
+  .pb-modern-portrait .placeholder{
+    min-height:360px!important;
+  }
+  .pb-modern-hero-copy{
+    padding:10px 4px!important;
+  }
+  .pb-modern-hero-copy h1{
+    font-size:44px!important;
+  }
+  .pb-modern-health-summary{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .pb-page-heading{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+  .pb-page-heading h2{
+    font-size:34px!important;
+  }
+  .pb-agenda-monthbar{
+    align-items:flex-start;
+    flex-direction:column;
+    padding:16px;
+  }
+  .pb-agenda-monthstats{
+    justify-content:flex-start;
+  }
+  .pb-agenda-row{
+    grid-template-columns:44px 18px minmax(0,1fr) 38px;
+    min-height:82px;
+  }
+  .pb-agenda-datebox strong{font-size:22px}
+  .pb-agenda-event-icon{
+    width:36px;height:36px;border-radius:10px;font-size:16px;
+  }
+}
+
+
+/* PawBook 6.10.3 - CRUD clarity */
+.pb-crud-head{
+  align-items:center!important;
+  margin-bottom:12px!important;
+}
+.pb-crud-kicker{
+  display:block;
+  margin-bottom:6px;
+  color:var(--pb-accent);
+  font-size:8px;
+  font-weight:950;
+  letter-spacing:.16em;
+}
+.pb-crud-add{
+  min-height:42px!important;
+  padding:0 15px!important;
+  border:1px solid var(--pb-accent-line)!important;
+  border-radius:11px!important;
+  background:var(--pb-accent)!important;
+  color:#071312!important;
+  font-size:10px!important;
+  font-weight:900!important;
+  box-shadow:0 8px 22px color-mix(in srgb,var(--pb-accent) 20%,transparent)!important;
+}
+.pb-crud-help{
+  display:grid;
+  grid-template-columns:34px minmax(0,1fr);
+  gap:10px;
+  align-items:center;
+  margin:0 0 16px;
+  padding:11px 13px;
+  border:1px solid color-mix(in srgb,var(--pb-accent) 18%,var(--divider-color));
+  border-radius:12px;
+  background:color-mix(in srgb,var(--pb-accent) 5%,transparent);
+}
+.pb-crud-help>span{
+  width:34px;height:34px;
+  display:grid;place-items:center;
+  border-radius:10px;
+  background:var(--pb-accent-soft);
+  color:var(--pb-accent);
+  font-size:16px;
+}
+.pb-crud-help strong,.pb-crud-help small{display:block}
+.pb-crud-help strong{font-size:10px}
+.pb-crud-help small{margin-top:3px;color:var(--secondary-text-color);font-size:8px;line-height:1.45}
+
+/* Make all record actions explicit and always visible */
+.record-actions,
+.weight-actions,
+.visit-actions,
+.treatment-actions{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:flex-end!important;
+  gap:6px!important;
+  flex-wrap:wrap!important;
+  opacity:1!important;
+  visibility:visible!important;
+}
+.record-edit,
+.record-delete{
+  min-height:32px!important;
+  padding:0 10px!important;
+  border-radius:9px!important;
+  font-size:9px!important;
+  font-weight:850!important;
+}
+.record-edit{
+  border:1px solid color-mix(in srgb,var(--pb-accent) 28%,var(--divider-color))!important;
+  background:var(--pb-accent-soft)!important;
+  color:var(--pb-accent)!important;
+}
+.record-edit::before{content:"✎ ";font-size:10px}
+.record-delete{
+  border:1px solid color-mix(in srgb,#ff6969 28%,var(--divider-color))!important;
+  background:color-mix(in srgb,#ff6969 8%,transparent)!important;
+  color:#ff6969!important;
+}
+.record-delete::before{content:"⌫ ";font-size:10px}
+
+/* Existing attachment buttons align with CRUD controls */
+.visit-actions .small-btn,
+.treatment-actions .small-btn{
+  min-height:32px!important;
+  padding:0 10px!important;
+  border-radius:9px!important;
+  font-size:9px!important;
+}
+
+/* Make rows read like records, not passive text */
+.weight-row,
+.vaccine-history-row,
+.visit-row,
+.treatment-row,
+.heat-record{
+  border:1px solid color-mix(in srgb,var(--divider-color) 72%,transparent)!important;
+  border-radius:12px!important;
+  margin-bottom:7px!important;
+  background:color-mix(in srgb,var(--card-background-color) 94%,transparent)!important;
+}
+.weight-row:hover,
+.vaccine-history-row:hover,
+.visit-row:hover,
+.treatment-row:hover,
+.heat-record:hover{
+  border-color:color-mix(in srgb,var(--pb-accent) 24%,var(--divider-color))!important;
+}
+
+@media(max-width:760px){
+  .pb-crud-head{
+    align-items:flex-start!important;
+    flex-direction:column!important;
+  }
+  .pb-crud-add{
+    width:100%!important;
+    min-height:46px!important;
+    font-size:11px!important;
+  }
+  .pb-crud-help{
+    grid-template-columns:30px minmax(0,1fr);
+    padding:9px 10px;
+  }
+  .pb-crud-help>span{width:30px;height:30px}
+  .record-actions,
+  .weight-actions,
+  .visit-actions,
+  .treatment-actions{
+    width:100%!important;
+    justify-content:flex-start!important;
+    margin-top:8px!important;
+  }
+  .record-edit,
+  .record-delete,
+  .visit-actions .small-btn,
+  .treatment-actions .small-btn{
+    min-height:36px!important;
+    flex:1 1 auto!important;
+    text-align:center!important;
+  }
+}
+
+
+/* PawBook 6.10.3 - clearer menu + unified management */
+.pb-clear-nav{
+  display:flex!important;
+  align-items:center!important;
+  gap:25px!important;
+  padding:0 16px!important;
+  margin:0!important;
+  overflow-x:auto!important;
+  scrollbar-width:none!important;
+  border-bottom:1px solid var(--divider-color)!important;
+  background:#101111!important;
+}
+.pb-clear-nav::-webkit-scrollbar{display:none!important}
+.pb-clear-nav>button{
+  position:relative!important;
+  flex:0 0 auto!important;
+  min-height:52px!important;
+  display:flex!important;
+  align-items:center!important;
+  gap:9px!important;
+  padding:0 1px!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:rgba(255,255,255,.58)!important;
+  font-size:12px!important;
+  font-weight:800!important;
+  letter-spacing:-.01em!important;
+}
+.pb-clear-nav>button:hover{
+  color:rgba(255,255,255,.88)!important;
+}
+.pb-clear-nav>button.active{
+  color:#ffffff!important;
+}
+.pb-clear-nav>button.active::after{
+  content:"";
+  position:absolute;
+  left:0;right:0;bottom:0;
+  height:3px;
+  border-radius:999px 999px 0 0;
+  background:var(--pb-accent);
+}
+.pb-clear-icon{
+  width:20px;
+  display:inline-grid;
+  place-items:center;
+  color:inherit;
+  font-size:17px!important;
+  line-height:1;
+}
+
+/* Bigger typography throughout active subpages */
+.pb-subpage-mode .grid>.pb-page-active h3{
+  font-size:30px!important;
+  line-height:1.05!important;
+  letter-spacing:-.035em!important;
+}
+.pb-subpage-mode .grid>.pb-page-active .muted,
+.pb-subpage-mode .grid>.pb-page-active small{
+  font-size:10px!important;
+  line-height:1.45!important;
+}
+.pb-subpage-mode .grid>.pb-page-active strong{
+  font-size:inherit;
+}
+
+/* Management overview */
+.pb-management-intro{
+  display:none;
+  grid-column:1/-1!important;
+  margin:0 0 6px!important;
+  padding:28px 6px 18px!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.pb-management-mode .pb-management-intro{
+  display:flex!important;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:22px;
+}
+.pb-management-intro>div:first-child>span{
+  display:block;
+  margin-bottom:7px;
+  color:var(--pb-accent);
+  font-size:9px;
+  font-weight:950;
+  letter-spacing:.17em;
+}
+.pb-management-intro h2{
+  margin:0!important;
+  font-size:40px!important;
+  letter-spacing:-.045em!important;
+}
+.pb-management-intro p{
+  margin:8px 0 0;
+  color:var(--secondary-text-color);
+  font-size:12px;
+}
+.pb-management-legend{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
+}
+.pb-management-legend span{
+  padding:7px 9px;
+  border-radius:9px;
+  border:1px solid var(--divider-color);
+  color:var(--secondary-text-color);
+  font-size:9px;
+  font-weight:800;
+}
+
+/* In management mode, CRUD centers are true sections, not floating cards */
+.pb-management-mode .grid{
+  grid-template-columns:1fr!important;
+  gap:12px!important;
+}
+.pb-management-mode .pb-management-card{
+  display:block!important;
+  grid-column:1/-1!important;
+  padding:22px!important;
+  border:1px solid var(--divider-color)!important;
+  border-radius:20px!important;
+  background:color-mix(in srgb,var(--card-background-color) 97%,#111)!important;
+  box-shadow:none!important;
+}
+.pb-management-mode .pb-management-card>.card-head{
+  padding:0 0 15px!important;
+  margin-bottom:14px!important;
+  border-bottom:1px solid var(--divider-color)!important;
+}
+.pb-management-mode .pb-management-card .pb-crud-add{
+  min-height:46px!important;
+  padding:0 16px!important;
+  font-size:11px!important;
+}
+.pb-management-mode .pb-crud-help{
+  margin-bottom:18px!important;
+  padding:12px 14px!important;
+}
+.pb-management-mode .pb-crud-help strong{
+  font-size:11px!important;
+}
+.pb-management-mode .pb-crud-help small{
+  font-size:9px!important;
+}
+
+/* Record rows more readable */
+.pb-management-mode .weight-row,
+.pb-management-mode .vaccine-history-row,
+.pb-management-mode .visit-row,
+.pb-management-mode .treatment-row,
+.pb-management-mode .heat-record{
+  padding:13px 14px!important;
+  margin-bottom:8px!important;
+  border-radius:12px!important;
+}
+.pb-management-mode .record-edit,
+.pb-management-mode .record-delete,
+.pb-management-mode .visit-actions .small-btn,
+.pb-management-mode .treatment-actions .small-btn{
+  min-height:34px!important;
+  padding:0 10px!important;
+  font-size:9px!important;
+}
+
+/* Diagnostics grouped similarly */
+.pb-diagnostics-mode .grid{
+  grid-template-columns:1fr!important;
+  gap:12px!important;
+}
+.pb-diagnostics-mode .pb-diagnostics-card{
+  grid-column:1/-1!important;
+  padding:22px!important;
+  border:1px solid var(--divider-color)!important;
+  border-radius:20px!important;
+  background:color-mix(in srgb,var(--card-background-color) 97%,#111)!important;
+}
+
+/* Dashboard text clarity */
+.pb-modern-page .pb-modern-kpirow small,
+.pb-modern-page .pb-modern-centers small,
+.pb-modern-page .pb-modern-live-kpis small{
+  font-size:8px!important;
+}
+.pb-modern-page .pb-modern-kpirow strong{
+  font-size:21px!important;
+}
+.pb-modern-page .pb-modern-centers strong{
+  font-size:13px!important;
+}
+
+@media(max-width:760px){
+  .pb-clear-nav{
+    gap:18px!important;
+    padding:0 10px!important;
+  }
+  .pb-clear-nav>button{
+    min-height:48px!important;
+    font-size:11px!important;
+    gap:7px!important;
+  }
+  .pb-clear-icon{
+    font-size:15px!important;
+  }
+  .pb-management-mode .pb-management-intro{
+    align-items:flex-start!important;
+    flex-direction:column!important;
+    padding:22px 4px 12px!important;
+  }
+  .pb-management-intro h2{
+    font-size:33px!important;
+  }
+  .pb-management-legend{
+    justify-content:flex-start!important;
+  }
+  .pb-management-mode .pb-management-card{
+    padding:15px!important;
+    border-radius:16px!important;
+  }
+  .pb-management-mode .pb-management-card>.card-head{
+    align-items:flex-start!important;
+    flex-direction:column!important;
+  }
+  .pb-management-mode .pb-management-card .pb-crud-add{
+    width:100%!important;
+  }
+}
+
+
+/* PawBook 6.10.3 - visual refinement */
+
+/* Remove old help boxes entirely */
+.pb-crud-help{display:none!important}
+
+/* Dashboard Health Centers */
+.pb-modern-centers-v2{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  border:1px solid var(--divider-color)!important;
+  border-radius:22px!important;
+  overflow:hidden!important;
+  background:#181a1a!important;
+}
+.pb-modern-centers-v2>button{
+  min-height:126px!important;
+  display:grid!important;
+  grid-template-columns:46px minmax(0,1fr) 18px!important;
+  gap:13px!important;
+  align-items:center!important;
+  padding:20px!important;
+  text-align:left!important;
+  border:0!important;
+  border-right:1px solid var(--divider-color)!important;
+  border-radius:0!important;
+  background:transparent!important;
+  color:var(--primary-text-color)!important;
+}
+.pb-modern-centers-v2>button:last-child{border-right:0!important}
+.pb-modern-centers-v2>button:hover{
+  background:color-mix(in srgb,var(--pb-accent) 5%,transparent)!important;
+}
+.pb-center-icon{
+  width:46px;height:46px;
+  display:grid;place-items:center;
+  border-radius:13px;
+  background:color-mix(in srgb,var(--pb-accent) 8%,transparent);
+  font-size:24px!important;
+}
+.pb-modern-centers-v2 small,
+.pb-modern-centers-v2 strong,
+.pb-modern-centers-v2 p{display:block}
+.pb-modern-centers-v2 small{
+  margin:0 0 5px!important;
+  font-size:7px!important;
+  font-weight:900!important;
+  letter-spacing:.11em!important;
+  color:var(--secondary-text-color)!important;
+}
+.pb-modern-centers-v2 strong{
+  font-size:15px!important;
+}
+.pb-modern-centers-v2 p{
+  margin:5px 0 0!important;
+  color:var(--secondary-text-color)!important;
+  font-size:9px!important;
+  line-height:1.35!important;
+}
+.pb-modern-centers-v2 b{
+  color:var(--secondary-text-color)!important;
+  font-size:22px!important;
+}
+
+.pb-modern-tools-v2{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(0,1fr))!important;
+  gap:6px!important;
+}
+.pb-modern-tools-v2>button{
+  min-height:46px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:7px!important;
+  border:1px solid var(--divider-color)!important;
+  border-radius:11px!important;
+  background:transparent!important;
+  color:var(--secondary-text-color)!important;
+}
+.pb-modern-tools-v2>button span{font-size:14px}
+.pb-modern-tools-v2>button strong{font-size:10px!important}
+
+/* Management page */
+.pb-management-mode .grid{
+  grid-template-columns:1fr!important;
+  gap:16px!important;
+}
+.pb-management-mode .pb-management-intro{
+  position:relative!important;
+  display:grid!important;
+  grid-template-columns:minmax(0,1fr) auto!important;
+  align-items:end!important;
+  gap:28px!important;
+  margin:0 0 4px!important;
+  padding:34px 36px!important;
+  overflow:hidden!important;
+  border:1px solid var(--divider-color)!important;
+  border-radius:24px!important;
+  background:
+    radial-gradient(circle at 0% 0%,color-mix(in srgb,var(--pb-accent) 12%,transparent),transparent 35%),
+    linear-gradient(135deg,#1b1e1e,#181a1a)!important;
+}
+.pb-management-copy>span{
+  display:block!important;
+  margin-bottom:8px!important;
+  color:var(--pb-accent)!important;
+  font-size:9px!important;
+  font-weight:950!important;
+  letter-spacing:.18em!important;
+}
+.pb-management-copy h2{
+  margin:0!important;
+  font-size:46px!important;
+  line-height:.95!important;
+  letter-spacing:-.05em!important;
+}
+.pb-management-copy p{
+  margin:10px 0 0!important;
+  color:var(--secondary-text-color)!important;
+  font-size:12px!important;
+}
+.pb-management-overview{
+  display:grid!important;
+  grid-template-columns:repeat(5,minmax(80px,1fr))!important;
+  min-width:470px!important;
+  overflow:hidden!important;
+  border:1px solid rgba(255,255,255,.07)!important;
+  border-radius:16px!important;
+  background:rgba(0,0,0,.12)!important;
+}
+.pb-management-overview>div{
+  padding:16px 14px!important;
+  border-right:1px solid rgba(255,255,255,.07)!important;
+}
+.pb-management-overview>div:last-child{border-right:0!important}
+.pb-management-overview small,
+.pb-management-overview strong{display:block!important}
+.pb-management-overview small{
+  color:var(--secondary-text-color)!important;
+  font-size:7px!important;
+  letter-spacing:.10em!important;
+}
+.pb-management-overview strong{
+  margin-top:6px!important;
+  font-size:18px!important;
+}
+
+.pb-management-mode .pb-management-card{
+  padding:28px 30px!important;
+  border-radius:22px!important;
+  background:#191b1b!important;
+}
+.pb-management-mode .pb-management-card>.card-head{
+  min-height:74px!important;
+  align-items:center!important;
+  padding-bottom:18px!important;
+}
+.pb-management-mode .pb-management-card>.card-head h3{
+  font-size:31px!important;
+}
+.pb-management-mode .pb-management-card>.card-head .muted{
+  font-size:11px!important;
+}
+.pb-management-mode .pb-crud-kicker{
+  font-size:8px!important;
+}
+.pb-management-mode .pb-crud-add{
+  min-height:48px!important;
+  padding:0 18px!important;
+  font-size:11px!important;
+  border-radius:12px!important;
+}
+
+/* Make records much more readable */
+.pb-management-mode .weight-row,
+.pb-management-mode .vaccine-history-row,
+.pb-management-mode .visit-row,
+.pb-management-mode .treatment-row,
+.pb-management-mode .heat-record{
+  min-height:64px!important;
+  padding:15px 16px!important;
+  margin-bottom:9px!important;
+  border-radius:13px!important;
+}
+.pb-management-mode .weight-row strong,
+.pb-management-mode .vaccine-history-row strong,
+.pb-management-mode .visit-row strong,
+.pb-management-mode .treatment-row strong,
+.pb-management-mode .heat-record strong{
+  font-size:12px!important;
+}
+.pb-management-mode .weight-row small,
+.pb-management-mode .vaccine-history-row small,
+.pb-management-mode .visit-row small,
+.pb-management-mode .treatment-row small,
+.pb-management-mode .heat-record small{
+  font-size:9px!important;
+}
+
+/* ENCI main page */
+#enci-section.pb-page-active{
+  padding:26px 6px 40px!important;
+}
+#enci-section .card-head{
+  min-height:84px!important;
+}
+#enci-section .card-head h3{
+  font-size:36px!important;
+  letter-spacing:-.04em!important;
+}
+#enci-section .card-head .muted{
+  font-size:11px!important;
+}
+#enci-section .enci-grid,
+#enci-section .profile-list,
+#enci-section .enci-data{
+  font-size:12px!important;
+}
+#enci-section .enci-grid strong,
+#enci-section .profile-list strong,
+#enci-section .enci-data strong{
+  font-size:14px!important;
+}
+#enci-section .enci-grid small,
+#enci-section .profile-list small,
+#enci-section .enci-data small{
+  font-size:10px!important;
+}
+#enci-section .profile-row,
+#enci-section .enci-row{
+  min-height:58px!important;
+  padding:14px 0!important;
+}
+#enci-section button{
+  min-height:40px!important;
+  font-size:10px!important;
+}
+
+/* ENCI PRO section: enlarge everything */
+#enci-pro-section.pb-page-active{
+  padding:20px 0 40px!important;
+}
+#enci-pro-section .enci-pro-hero{
+  min-height:140px!important;
+  padding:28px 30px!important;
+  border-radius:22px!important;
+}
+#enci-pro-section .enci-pro-hero h2{
+  font-size:38px!important;
+  letter-spacing:-.04em!important;
+}
+#enci-pro-section .enci-pro-hero p,
+#enci-pro-section .enci-pro-hero small{
+  font-size:11px!important;
+}
+#enci-pro-section .enci-pro-kpis{
+  gap:10px!important;
+}
+#enci-pro-section .enci-pro-kpis>div{
+  min-height:100px!important;
+  padding:18px!important;
+  border-radius:15px!important;
+}
+#enci-pro-section .enci-pro-kpis strong{
+  font-size:17px!important;
+}
+#enci-pro-section .enci-pro-kpis small{
+  font-size:9px!important;
+}
+#enci-pro-section .enci-pro-grid{
+  gap:18px!important;
+}
+#enci-pro-section .enci-pro-grid h3{
+  font-size:18px!important;
+}
+#enci-pro-section .enci-pro-grid strong{
+  font-size:13px!important;
+}
+#enci-pro-section .enci-pro-grid small,
+#enci-pro-section .enci-pro-grid p{
+  font-size:10px!important;
+  line-height:1.45!important;
+}
+
+/* Diagnostics */
+.pb-diagnostics-mode .pb-diagnostics-card{
+  padding:30px!important;
+  border-radius:22px!important;
+}
+.pb-diagnostics-mode .pb-diagnostics-card>.card-head h3{
+  font-size:34px!important;
+  letter-spacing:-.04em!important;
+}
+.pb-diagnostics-mode .pb-diagnostics-card>.card-head .muted{
+  font-size:11px!important;
+}
+.pb-diagnostics-mode .stats-grid,
+.pb-diagnostics-mode .stat-grid{
+  gap:12px!important;
+}
+.pb-diagnostics-mode .stat-box,
+.pb-diagnostics-mode .stat-item{
+  min-height:104px!important;
+  padding:18px!important;
+  border-radius:14px!important;
+}
+.pb-diagnostics-mode .stat-box strong,
+.pb-diagnostics-mode .stat-item strong{
+  font-size:20px!important;
+}
+.pb-diagnostics-mode .stat-box small,
+.pb-diagnostics-mode .stat-item small{
+  font-size:9px!important;
+}
+.pb-diagnostics-mode button{
+  min-height:42px!important;
+  padding:0 14px!important;
+  border-radius:10px!important;
+  font-size:10px!important;
+}
+
+/* General readability */
+.pb-subpage-mode .grid>.pb-page-active{
+  font-size:12px!important;
+}
+.pb-subpage-mode .grid>.pb-page-active p{
+  font-size:10px!important;
+  line-height:1.5!important;
+}
+
+@media(max-width:1100px){
+  .pb-management-mode .pb-management-intro{
+    grid-template-columns:1fr!important;
+  }
+  .pb-management-overview{
+    min-width:0!important;
+    width:100%!important;
+  }
+  .pb-modern-centers-v2{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .pb-modern-centers-v2>button{
+    border-bottom:1px solid var(--divider-color)!important;
+  }
+  .pb-modern-centers-v2>button:nth-child(2n){border-right:0!important}
+  .pb-modern-centers-v2>button:last-child{
+    grid-column:1/-1!important;
+    border-bottom:0!important;
+  }
+}
+
+@media(max-width:760px){
+  .pb-management-mode .pb-management-intro{
+    padding:22px 18px!important;
+    border-radius:18px!important;
+  }
+  .pb-management-copy h2{
+    font-size:36px!important;
+  }
+  .pb-management-overview{
+    grid-template-columns:1fr 1fr!important;
+  }
+  .pb-management-overview>div{
+    border-bottom:1px solid rgba(255,255,255,.07)!important;
+  }
+  .pb-management-mode .pb-management-card{
+    padding:18px!important;
+    border-radius:16px!important;
+  }
+  .pb-management-mode .pb-management-card>.card-head h3{
+    font-size:25px!important;
+  }
+  .pb-modern-centers-v2{
+    grid-template-columns:1fr!important;
+  }
+  .pb-modern-centers-v2>button{
+    min-height:98px!important;
+    border-right:0!important;
+  }
+  .pb-modern-centers-v2>button:last-child{grid-column:auto!important}
+  .pb-modern-tools-v2{
+    grid-template-columns:1fr 1fr!important;
+  }
+  #enci-section .card-head h3,
+  #enci-pro-section .enci-pro-hero h2,
+  .pb-diagnostics-mode .pb-diagnostics-card>.card-head h3{
+    font-size:28px!important;
+  }
+}
+
+
+/* PawBook 6.10.3 — Health Control Center */
+:host{
+  --pb-accent:#55d8c8;
+  --pb-accent2:#65bdf4;
+  --pb-surface:#181a1a;
+  --pb-surface2:#1d2020;
+}
+
+/* Management hub */
+.pb-control-hub{
+  display:block!important;
+  grid-column:1/-1!important;
+  padding:22px 0 38px!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+}
+.pb-control-hero{
+  min-height:255px;
+  display:grid;
+  grid-template-columns:minmax(0,1.35fr) minmax(320px,.65fr);
+  gap:24px;
+  align-items:center;
+  padding:32px 36px;
+  border:1px solid var(--divider-color);
+  border-radius:26px;
+  background:
+    radial-gradient(circle at 8% 15%,color-mix(in srgb,var(--pb-accent) 12%,transparent),transparent 28%),
+    linear-gradient(135deg,#1b1e1e,#181a1a 70%);
+}
+.pb-control-kicker{
+  display:block;margin-bottom:10px;color:var(--pb-accent);
+  font-size:9px;font-weight:950;letter-spacing:.18em;
+}
+.pb-control-hero h2{
+  margin:0!important;font-size:50px!important;line-height:.96!important;letter-spacing:-.05em!important;
+}
+.pb-control-hero p{
+  max-width:680px;margin:13px 0 0!important;color:var(--secondary-text-color)!important;font-size:12px!important;
+}
+.pb-control-status{
+  padding:24px;border:1px solid rgba(255,255,255,.08);border-radius:20px;background:rgba(0,0,0,.14);
+}
+.pb-control-status small,.pb-control-status strong{display:block}
+.pb-control-status small{font-size:8px;letter-spacing:.14em;color:var(--secondary-text-color)}
+.pb-control-status strong{margin:8px 0 15px;font-size:26px;color:var(--pb-accent)}
+.pb-control-status div{display:flex;align-items:center;gap:8px;color:var(--secondary-text-color);font-size:9px}
+
+.pb-control-title{
+  display:flex;align-items:center;justify-content:space-between;margin:20px 0 9px;
+}
+.pb-control-title span{font-size:8px;font-weight:950;letter-spacing:.18em;color:var(--secondary-text-color)}
+.pb-control-title small{font-size:8px;color:var(--secondary-text-color)}
+
+.pb-control-modules{
+  display:grid;grid-template-columns:repeat(5,minmax(0,1fr));
+  border:1px solid var(--divider-color);border-radius:22px;overflow:hidden;background:var(--pb-surface);
+}
+.pb-control-modules>button{
+  min-height:165px!important;display:grid!important;grid-template-columns:1fr auto!important;
+  grid-template-rows:auto 1fr!important;gap:12px!important;padding:22px!important;text-align:left!important;
+  border:0!important;border-right:1px solid var(--divider-color)!important;border-radius:0!important;
+  background:transparent!important;color:var(--primary-text-color)!important;
+}
+.pb-control-modules>button:last-child{border-right:0!important}
+.pb-control-modules>button:hover{background:color-mix(in srgb,var(--pb-accent) 5%,transparent)!important}
+.pb-control-module-icon{
+  grid-column:1/-1;width:46px;height:46px;display:grid;place-items:center;border-radius:13px;
+  background:color-mix(in srgb,var(--pb-accent) 9%,transparent);font-size:23px;
+}
+.pb-control-modules small,.pb-control-modules strong,.pb-control-modules p{display:block}
+.pb-control-modules small{font-size:7px;font-weight:950;letter-spacing:.12em;color:var(--secondary-text-color)}
+.pb-control-modules strong{margin-top:8px;font-size:28px;letter-spacing:-.035em}
+.pb-control-modules p{margin:6px 0 0;color:var(--secondary-text-color);font-size:9px}
+.pb-control-modules b{align-self:end;font-size:24px;color:var(--secondary-text-color)}
+.pb-control-tools{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.pb-control-tools>button{
+  min-height:68px!important;display:flex!important;align-items:center!important;gap:11px!important;padding:13px 16px!important;text-align:left!important;
+  border:1px solid var(--divider-color)!important;border-radius:13px!important;background:transparent!important;color:var(--primary-text-color)!important;
+}
+.pb-control-tools>button>span{font-size:19px;color:var(--pb-accent)}
+.pb-control-tools strong,.pb-control-tools small{display:block}.pb-control-tools strong{font-size:11px}.pb-control-tools small{margin-top:3px;color:var(--secondary-text-color);font-size:8px}
+
+/* Module pages */
+.pb-management-mode .grid{display:grid!important}
+.grid>.pb-page-active{grid-column:1/-1!important}
+#health-section.pb-page-active,
+#vaccines-section.pb-page-active,
+#visits-section.pb-page-active,
+#treatments-section.pb-page-active,
+#heat-section.pb-page-active{
+  padding:22px 0 42px!important;border:0!important;background:transparent!important;box-shadow:none!important;
+}
+.pb-module-heading{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:22px;
+  margin:0 0 22px;padding:0 6px 18px;border-bottom:1px solid var(--divider-color);
+}
+.pb-module-heading-copy>span{
+  display:block;margin:10px 0 6px;color:var(--pb-accent);font-size:9px;font-weight:950;letter-spacing:.17em;
+}
+.pb-module-heading-copy h2{
+  margin:0!important;font-size:42px!important;letter-spacing:-.045em!important;line-height:1!important;
+}
+.pb-module-heading-copy p{
+  margin:8px 0 0!important;color:var(--secondary-text-color)!important;font-size:11px!important;
+}
+.pb-back-management{
+  min-height:30px!important;padding:0!important;border:0!important;background:transparent!important;color:var(--secondary-text-color)!important;font-size:9px!important;
+}
+.pb-module-add{
+  min-height:44px!important;padding:0 16px!important;border:1px solid color-mix(in srgb,var(--pb-accent) 42%,transparent)!important;
+  border-radius:11px!important;background:var(--pb-accent)!important;color:#071312!important;font-size:10px!important;font-weight:900!important;
+}
+.pb-module-secondary{
+  min-height:44px!important;padding:0 16px!important;border:1px solid var(--divider-color)!important;border-radius:11px!important;background:transparent!important;color:var(--primary-text-color)!important;
+}
+.pb-module-actions{display:flex;gap:7px}
+
+/* Hero cards become the big Fotovoltaico-style panel */
+.weight-center-hero,.vaccine-center-hero,.visit-center-hero,.treatment-center-hero,.heat-summary{
+  display:grid!important;grid-template-columns:minmax(0,1.35fr) repeat(2,minmax(180px,.55fr))!important;
+  gap:0!important;overflow:hidden!important;margin:0 0 10px!important;padding:0!important;
+  border:1px solid var(--divider-color)!important;border-radius:24px!important;background:var(--pb-surface)!important;
+}
+.weight-center-hero>div,.vaccine-center-hero>div,.visit-center-hero>div,.treatment-center-hero>div,.heat-summary>.heat-stat{
+  min-height:185px!important;display:flex!important;flex-direction:column!important;justify-content:center!important;padding:24px 26px!important;
+  border-right:1px solid var(--divider-color)!important;
+}
+.weight-center-hero>div:last-child,.vaccine-center-hero>div:last-child,.visit-center-hero>div:last-child,.treatment-center-hero>div:last-child,.heat-summary>.heat-stat:last-child{border-right:0!important}
+.weight-center-hero .primary,.vaccine-center-hero .primary,.visit-center-hero .primary,.treatment-center-hero .primary{
+  background:
+    radial-gradient(circle at 10% 10%,color-mix(in srgb,var(--pb-accent) 13%,transparent),transparent 38%),
+    linear-gradient(135deg,#1d2120,#191b1b)!important;
+}
+.weight-center-hero .primary strong,.vaccine-center-hero .primary strong,.visit-center-hero .primary strong,.treatment-center-hero .primary strong{
+  font-size:33px!important;letter-spacing:-.04em!important;
+}
+.weight-center-hero>div>strong,.vaccine-center-hero>div>strong,.visit-center-hero>div>strong,.treatment-center-hero>div>strong,.heat-summary>.heat-stat>strong{
+  font-size:25px!important;letter-spacing:-.035em!important;
+}
+.weight-center-hero small,.vaccine-center-hero small,.visit-center-hero small,.treatment-center-hero small,.heat-summary small{
+  font-size:9px!important;color:var(--secondary-text-color)!important;
+}
+
+/* KPI strips */
+.weight-summary,.vaccine-summary,.visit-summary,.treatment-summary{
+  display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:0!important;overflow:hidden!important;
+  margin:0 0 20px!important;border:1px solid var(--divider-color)!important;border-radius:18px!important;background:var(--pb-surface)!important;
+}
+.weight-summary>div,.vaccine-summary>div,.visit-summary>div,.treatment-summary>div{
+  min-height:88px!important;padding:17px 20px!important;border-right:1px solid var(--divider-color)!important;
+}
+.weight-summary>div:last-child,.vaccine-summary>div:last-child,.visit-summary>div:last-child,.treatment-summary>div:last-child{border-right:0!important}
+.weight-summary span,.vaccine-summary span,.visit-summary span,.treatment-summary span{
+  font-size:7px!important;font-weight:900!important;letter-spacing:.09em!important;color:var(--secondary-text-color)!important;
+}
+.weight-summary strong,.vaccine-summary strong,.visit-summary strong,.treatment-summary strong{
+  display:block!important;margin-top:8px!important;font-size:21px!important;
+}
+
+/* History blocks flatter and clearer */
+.weight-history,.vaccine-center-list,.visit-center-list,.treatment-list,.heat-history{
+  margin-top:16px!important;padding:18px!important;border:1px solid var(--divider-color)!important;border-radius:18px!important;background:var(--pb-surface)!important;
+}
+.weight-row,.vaccine-history-row,.visit-row,.treatment-row,.heat-record{
+  background:transparent!important;border:0!important;border-bottom:1px solid var(--divider-color)!important;border-radius:0!important;
+}
+.weight-row:last-child,.vaccine-history-row:last-child,.visit-row:last-child,.treatment-row:last-child,.heat-record:last-child{border-bottom:0!important}
+.record-edit,.record-delete{
+  min-height:34px!important;padding:0 10px!important;border-radius:8px!important;font-size:9px!important;
+}
+
+/* ENCI page */
+#enci-section.pb-page-active{
+  padding:22px 0 42px!important;border:0!important;background:transparent!important;
+}
+.pb-enci-heading{margin-bottom:18px!important}
+#enci-section>.record{
+  display:grid!important;grid-template-columns:220px 1fr!important;align-items:center!important;
+  min-height:70px!important;padding:14px 20px!important;border-bottom:1px solid var(--divider-color)!important;background:var(--pb-surface)!important;
+}
+#enci-section>.record:first-of-type{border-radius:18px 18px 0 0!important}
+#enci-section>.record:last-of-type{border-radius:0 0 18px 18px!important;border-bottom:0!important}
+#enci-section>.record strong{font-size:12px!important}
+#enci-section>.record small{font-size:11px!important;color:var(--secondary-text-color)!important}
+
+/* Genealogy */
+#genealogy-section.pb-page-active{
+  padding:22px 0 42px!important;border:0!important;background:transparent!important;
+}
+#genealogy-section>.card-head{
+  min-height:78px!important;margin-bottom:18px!important;padding:0 6px 18px!important;border-bottom:1px solid var(--divider-color)!important;
+}
+#genealogy-section>.card-head h3{font-size:38px!important;letter-spacing:-.04em!important}
+
+/* Diagnostics */
+.pb-diagnostics-intro{
+  display:none;grid-column:1/-1!important;padding:26px 6px 12px!important;border:0!important;background:transparent!important;
+}
+.pb-diagnostics-mode .pb-diagnostics-intro{display:block!important}
+.pb-diagnostics-intro>span{display:block;margin-bottom:7px;color:var(--pb-accent);font-size:9px;font-weight:950;letter-spacing:.18em}
+.pb-diagnostics-intro h2{margin:0!important;font-size:44px!important;letter-spacing:-.05em!important}
+.pb-diagnostics-intro p{margin:8px 0 0!important;color:var(--secondary-text-color)!important;font-size:11px!important}
+.pb-diagnostics-mode .pb-diagnostics-card{
+  border:0!important;border-radius:0!important;background:transparent!important;padding:20px 0 34px!important;
+}
+.pb-diagnostics-mode .pb-diagnostics-card>.card-head{
+  padding:0 6px 16px!important;margin-bottom:14px!important;border-bottom:1px solid var(--divider-color)!important;
+}
+.pb-diagnostics-mode .insight-grid{
+  display:grid!important;grid-template-columns:repeat(4,1fr)!important;gap:0!important;overflow:hidden!important;
+  border:1px solid var(--divider-color)!important;border-radius:18px!important;background:var(--pb-surface)!important;
+}
+.pb-diagnostics-mode .insight{
+  min-height:100px!important;padding:18px!important;border-right:1px solid var(--divider-color)!important;border-radius:0!important;background:transparent!important;
+}
+.pb-diagnostics-mode .insight:last-child{border-right:0!important}
+.pb-diagnostics-mode .insight strong{font-size:22px!important}
+
+/* hide old dashboard mini centers/tools when not needed? keep but improve spacing */
+.pb-modern-centers-v2{margin-bottom:8px!important}
+
+@media(max-width:1050px){
+  .pb-control-hero{grid-template-columns:1fr!important}
+  .pb-control-modules{grid-template-columns:1fr 1fr!important}
+  .pb-control-modules>button{border-bottom:1px solid var(--divider-color)!important}
+  .pb-control-modules>button:nth-child(2n){border-right:0!important}
+  .pb-control-modules>button:last-child{grid-column:1/-1!important;border-bottom:0!important}
+  .weight-center-hero,.vaccine-center-hero,.visit-center-hero,.treatment-center-hero,.heat-summary{grid-template-columns:1fr 1fr!important}
+  .weight-center-hero .primary,.vaccine-center-hero .primary,.visit-center-hero .primary,.treatment-center-hero .primary{grid-column:1/-1!important}
+}
+@media(max-width:760px){
+  .pb-control-hero{padding:22px 18px;border-radius:19px}
+  .pb-control-hero h2{font-size:38px!important}
+  .pb-control-modules{grid-template-columns:1fr!important}
+  .pb-control-modules>button{min-height:125px!important;border-right:0!important}
+  .pb-control-modules>button:last-child{grid-column:auto!important}
+  .pb-control-tools{grid-template-columns:1fr 1fr}
+  .pb-module-heading{align-items:flex-start;flex-direction:column}
+  .pb-module-heading-copy h2{font-size:34px!important}
+  .pb-module-add{width:100%!important}
+  .weight-center-hero,.vaccine-center-hero,.visit-center-hero,.treatment-center-hero,.heat-summary{grid-template-columns:1fr!important}
+  .weight-center-hero .primary,.vaccine-center-hero .primary,.visit-center-hero .primary,.treatment-center-hero .primary{grid-column:auto!important}
+  .weight-center-hero>div,.vaccine-center-hero>div,.visit-center-hero>div,.treatment-center-hero>div,.heat-summary>.heat-stat{
+    min-height:125px!important;border-right:0!important;border-bottom:1px solid var(--divider-color)!important;
+  }
+  .weight-summary,.vaccine-summary,.visit-summary,.treatment-summary{grid-template-columns:1fr 1fr!important}
+  .pb-diagnostics-mode .insight-grid{grid-template-columns:1fr 1fr!important}
+  #enci-section>.record{grid-template-columns:1fr!important;gap:4px!important}
+}
+
+
+/* PawBook 6.10.3 — management intro visibility fix */
+#management-intro{
+  display:none!important;
+}
+.pb-management-mode #management-intro{
+  display:block!important;
+}
+#diagnostics-intro{
+  display:none!important;
+}
+.pb-diagnostics-mode #diagnostics-intro{
+  display:block!important;
+}
+
+/* Never show the Gestione hero inside module pages */
+#health-section.pb-page-active ~ #management-intro,
+#vaccines-section.pb-page-active ~ #management-intro,
+#visits-section.pb-page-active ~ #management-intro,
+#treatments-section.pb-page-active ~ #management-intro,
+#heat-section.pb-page-active ~ #management-intro{
+  display:none!important;
+}
+
+
+/* PawBook 6.10.3 — typography readability */
+.pb-clear-nav>button{
+  font-size:13px!important;
+}
+
+.pb-modern-brandcopy small,
+.pb-control-kicker,
+.pb-control-title span,
+.pb-control-title small,
+.pb-module-heading-copy>span,
+.pb-modern-kicker,
+.pb-modern-block-title>span,
+.pb-modern-section-title>span,
+.pb-agenda-monthbar small,
+.pb-page-heading>div:first-child>span,
+.pb-crud-kicker{
+  font-size:9px!important;
+}
+
+.pb-modern-live-line,
+.pb-modern-profile-row span,
+.pb-modern-health-meta,
+.pb-control-status div,
+.pb-control-modules p,
+.pb-control-tools small,
+.pb-modern-centers-v2 p,
+.pb-modern-tools-v2>button strong,
+.pb-agenda-event-main p,
+.pb-agenda-footer span{
+  font-size:10px!important;
+}
+
+.pb-modern-brandcopy small,
+.pb-modern-live-kpis small,
+.pb-control-status small,
+.pb-control-modules small,
+.pb-control-tools strong,
+.pb-module-heading-copy p,
+.pb-modern-section-title p,
+.pb-modern-hero-copy>p,
+.pb-modern-kpirow em,
+.pb-modern-kpirow small,
+.pb-modern-centers-v2 small,
+.pb-agenda-event-main small,
+.pb-diagnostics-intro p{
+  font-size:10px!important;
+}
+
+.pb-control-hero p,
+.pb-modern-breed,
+.pb-management-copy p,
+#enci-section .card-head .muted,
+#enci-section .enci-grid small,
+#enci-section .profile-list small,
+#enci-section .enci-data small,
+#enci-pro-section .enci-pro-hero p,
+#enci-pro-section .enci-pro-hero small,
+#enci-pro-section .enci-pro-grid small,
+#enci-pro-section .enci-pro-grid p,
+.pb-diagnostics-mode .pb-diagnostics-card>.card-head .muted,
+.pb-diagnostics-mode .stat-box small,
+.pb-diagnostics-mode .stat-item small{
+  font-size:11px!important;
+}
+
+.pb-management-mode .pb-management-card>.card-head .muted,
+.pb-management-mode .weight-row small,
+.pb-management-mode .vaccine-history-row small,
+.pb-management-mode .visit-row small,
+.pb-management-mode .treatment-row small,
+.pb-management-mode .heat-record small{
+  font-size:10px!important;
+}
+
+.record-edit,
+.record-delete,
+.visit-actions .small-btn,
+.treatment-actions .small-btn,
+.pb-back-management,
+.pb-module-add,
+.pb-module-secondary,
+.pb-agenda-actions button,
+.pb-modern-status,
+.pb-modern-smart-btn{
+  font-size:10px!important;
+}
+
+@media(max-width:760px){
+  .pb-clear-nav>button{
+    font-size:12px!important;
+  }
+  .pb-modern-profile-row span,
+  .pb-modern-live-line,
+  .pb-control-tools small,
+  .pb-control-modules p,
+  .pb-modern-centers-v2 p{
+    font-size:9px!important;
+  }
+}
+
+
+/* PawBook 6.10.3 — BIG typography pass */
+
+/* Menu */
+.pb-clear-nav>button{
+  font-size:15px!important;
+  min-height:56px!important;
+  gap:10px!important;
+}
+.pb-clear-icon{
+  font-size:19px!important;
+}
+
+/* Generic small labels / eyebrows */
+.pb-modern-brandcopy small,
+.pb-control-kicker,
+.pb-control-title span,
+.pb-control-title small,
+.pb-module-heading-copy>span,
+.pb-modern-kicker,
+.pb-modern-block-title>span,
+.pb-modern-section-title>span,
+.pb-agenda-monthbar small,
+.pb-page-heading>div:first-child>span,
+.pb-crud-kicker,
+.pb-management-copy>span,
+.pb-diagnostics-intro>span,
+.pb-modern-livecard-top>span,
+.pb-modern-kpirow small,
+.pb-modern-centers-v2 small,
+.pb-modern-live-kpis small,
+.pb-control-status small,
+.pb-control-modules small,
+.pb-control-tools small,
+.pb-agenda-event-main small,
+.pb-management-overview small,
+.pb-modern-health-value small{
+  font-size:11px!important;
+  line-height:1.35!important;
+}
+
+/* Secondary text */
+.pb-modern-live-line,
+.pb-modern-profile-row span,
+.pb-modern-health-meta,
+.pb-control-status div,
+.pb-control-modules p,
+.pb-control-tools strong,
+.pb-modern-centers-v2 p,
+.pb-modern-tools-v2>button strong,
+.pb-agenda-event-main p,
+.pb-agenda-footer span,
+.pb-module-heading-copy p,
+.pb-modern-section-title p,
+.pb-modern-hero-copy>p,
+.pb-modern-kpirow em,
+.pb-diagnostics-intro p,
+.pb-control-hero p,
+.pb-management-copy p,
+.pb-modern-breed{
+  font-size:13px!important;
+  line-height:1.5!important;
+}
+
+/* Main values in smaller panels */
+.pb-modern-live-kpis strong,
+.pb-modern-centers-v2 strong,
+.pb-control-tools strong,
+.pb-management-overview strong,
+.pb-modern-kpirow strong{
+  font-size:16px!important;
+}
+
+/* CRUD pages */
+.pb-management-mode .pb-management-card>.card-head .muted,
+.pb-management-mode .weight-row small,
+.pb-management-mode .vaccine-history-row small,
+.pb-management-mode .visit-row small,
+.pb-management-mode .treatment-row small,
+.pb-management-mode .heat-record small,
+.pb-management-mode .pb-management-card .muted{
+  font-size:12px!important;
+  line-height:1.5!important;
+}
+.pb-management-mode .weight-row strong,
+.pb-management-mode .vaccine-history-row strong,
+.pb-management-mode .visit-row strong,
+.pb-management-mode .treatment-row strong,
+.pb-management-mode .heat-record strong{
+  font-size:15px!important;
+}
+
+/* ENCI */
+#enci-section .card-head .muted,
+#enci-section .enci-grid small,
+#enci-section .profile-list small,
+#enci-section .enci-data small,
+#enci-section>.record small{
+  font-size:13px!important;
+  line-height:1.5!important;
+}
+#enci-section .enci-grid strong,
+#enci-section .profile-list strong,
+#enci-section .enci-data strong,
+#enci-section>.record strong{
+  font-size:16px!important;
+}
+
+/* ENCI Pro */
+#enci-pro-section .enci-pro-hero p,
+#enci-pro-section .enci-pro-hero small,
+#enci-pro-section .enci-pro-grid small,
+#enci-pro-section .enci-pro-grid p,
+#enci-pro-section .enci-pro-kpis small{
+  font-size:13px!important;
+  line-height:1.5!important;
+}
+#enci-pro-section .enci-pro-grid strong,
+#enci-pro-section .enci-pro-kpis strong{
+  font-size:16px!important;
+}
+
+/* Diagnostics */
+.pb-diagnostics-mode .pb-diagnostics-card>.card-head .muted,
+.pb-diagnostics-mode .stat-box small,
+.pb-diagnostics-mode .stat-item small,
+.pb-diagnostics-mode .insight small{
+  font-size:12px!important;
+  line-height:1.5!important;
+}
+.pb-diagnostics-mode .stat-box strong,
+.pb-diagnostics-mode .stat-item strong,
+.pb-diagnostics-mode .insight strong{
+  font-size:22px!important;
+}
+
+/* Buttons */
+.record-edit,
+.record-delete,
+.visit-actions .small-btn,
+.treatment-actions .small-btn,
+.pb-back-management,
+.pb-module-add,
+.pb-module-secondary,
+.pb-agenda-actions button,
+.pb-modern-status,
+.pb-modern-smart-btn,
+.pb-modern-tools-v2>button,
+.pb-control-tools>button{
+  font-size:12px!important;
+}
+.pb-module-add,
+.pb-module-secondary{
+  min-height:48px!important;
+}
+
+/* Agenda */
+.pb-agenda-datebox span{
+  font-size:11px!important;
+}
+.pb-agenda-event-main strong{
+  font-size:16px!important;
+}
+
+/* Mobile: still large, but safe */
+@media(max-width:760px){
+  .pb-clear-nav>button{
+    font-size:14px!important;
+    min-height:52px!important;
+  }
+  .pb-clear-icon{
+    font-size:17px!important;
+  }
+
+  .pb-modern-brandcopy small,
+  .pb-control-kicker,
+  .pb-control-title span,
+  .pb-control-title small,
+  .pb-module-heading-copy>span,
+  .pb-modern-kicker,
+  .pb-modern-block-title>span,
+  .pb-modern-section-title>span,
+  .pb-agenda-monthbar small,
+  .pb-page-heading>div:first-child>span,
+  .pb-crud-kicker,
+  .pb-management-copy>span,
+  .pb-diagnostics-intro>span{
+    font-size:10px!important;
+  }
+
+  .pb-modern-live-line,
+  .pb-modern-profile-row span,
+  .pb-modern-health-meta,
+  .pb-control-status div,
+  .pb-control-modules p,
+  .pb-control-tools strong,
+  .pb-modern-centers-v2 p,
+  .pb-agenda-event-main p,
+  .pb-module-heading-copy p,
+  .pb-modern-section-title p,
+  .pb-modern-hero-copy>p,
+  .pb-modern-kpirow em,
+  .pb-diagnostics-intro p,
+  .pb-control-hero p,
+  .pb-management-copy p,
+  .pb-modern-breed{
+    font-size:12px!important;
+  }
+
+  .record-edit,
+  .record-delete,
+  .visit-actions .small-btn,
+  .treatment-actions .small-btn,
+  .pb-module-add,
+  .pb-module-secondary{
+    font-size:11px!important;
+  }
+}
+
 </style>
       <div class="page">
-        <div class="topbar inverter-shell">
-          <div class="top-row">
-            <div class="top-left">
-              <button type="button" class="ha-mobile-menu ha-menu" id="ha-mobile-menu" aria-label="Apri menu Home Assistant" title="Menu Home Assistant">
+        <div class="topbar inverter-shell pb-modern-header">
+          <div class="pb-modern-brandrow">
+            <div class="pb-modern-brandleft">
+              <button type="button" class="ha-mobile-menu ha-menu pb-modern-hamburger" id="ha-mobile-menu"
+                      aria-label="Apri menu Home Assistant" title="Menu Home Assistant">
                 <span class="hamburger-glyph" aria-hidden="true">☰</span>
               </button>
-              <div class="brand-mark brand-icon" aria-hidden="true">
+
+              <div class="pb-modern-logo" aria-hidden="true">
                 <svg viewBox="0 0 64 64" role="img">
                   <ellipse cx="17" cy="21" rx="7" ry="10" transform="rotate(-24 17 21)"></ellipse>
                   <ellipse cx="29" cy="14" rx="7" ry="10" transform="rotate(-7 29 14)"></ellipse>
@@ -2769,36 +5987,46 @@ class PawBookPanelV420 extends HTMLElement {
                   <path d="M17 47c0-11 8-20 15-20 8 0 17 9 17 20 0 8-6 12-13 9-3-1-5-1-8 0-6 3-11-1-11-9z"></path>
                 </svg>
               </div>
-              <div class="brand-copy">
-                <div class="brand-title-row">
+
+              <div class="pb-modern-brandcopy">
+                <div class="pb-modern-titleline">
                   <strong>PawBook</strong>
-                  <span class="version-badge v2-badge">6.3.0</span>
+                  <span class="pb-modern-version">6.10.3</span>
                 </div>
-                <span class="brand-subtitle">Libretto sanitario digitale · Health Center</span>
+                <small>Pet Health Center</small>
               </div>
             </div>
-            <div class="topbar-actions">
-              <button type="button" class="support-project-btn" id="support-project" title="Supporta PawBook su Ko-fi">
-                <span aria-hidden="true">☕</span><span class="support-project-label">Supporta il progetto</span>
+
+            <div class="pb-modern-actions">
+              <button type="button" class="pb-modern-status" data-nav-target="management-section">
+                <span class="pb-modern-dot ${reminders.length ? "warn" : "ok"}"></span>
+                <span>${reminders.length ? `${reminders.length} avvisi` : "Salute regolare"}</span>
+              </button>
+              <button type="button" class="support-project-btn pb-modern-support" id="support-project" title="Supporta PawBook su Ko-fi">
+                <span aria-hidden="true">☕</span>
               </button>
             </div>
           </div>
-          <nav class="dashboard-nav tabs" aria-label="Sezioni PawBook">
-            <button class="active" data-nav-target="overview"><span class="nav-icon">🐾</span><span>Panoramica</span></button>
-          <button data-nav-target="smart-section"><span class="nav-icon">❤️</span><span>Smart Health</span></button>
-          <button data-nav-target="health-section"><span class="nav-icon">⚖️</span><span>Peso</span></button>
-          <button data-nav-target="vaccines-section"><span class="nav-icon">💉</span><span>Vaccini</span></button>
-          <button data-nav-target="visits-section"><span class="nav-icon">🩺</span><span>Visite</span></button>
-          <button data-nav-target="treatments-section"><span class="nav-icon">💊</span><span>Terapie</span></button>
-          <button data-nav-target="heat-section"><span class="nav-icon">❤️</span><span>Calori</span></button>
-          <button data-nav-target="calendar-section"><span class="nav-icon">📅</span><span>Calendario</span></button>
-          <button data-nav-target="timeline-section"><span class="nav-icon">◴</span><span>Salute</span></button>
-          <button data-nav-target="genealogy-section"><span class="nav-icon">♧</span><span>Genealogia</span></button>
-          <button data-nav-target="enci-section"><span class="nav-icon">▤</span><span>ENCI</span></button>
-          <button data-nav-target="statistics-section"><span class="nav-icon">▥</span><span>Statistiche</span></button>
-          <button data-nav-target="documents-section"><span class="nav-icon">📎</span><span>Documenti</span></button>
-          <button data-nav-target="report-section"><span class="nav-icon">📄</span><span>Report</span></button>
-          <button data-nav-target="backup-section"><span class="nav-icon">⇅</span><span>Backup</span></button>
+
+          <nav class="dashboard-nav tabs pb-clear-nav" aria-label="Sezioni PawBook">
+            <button class="active" data-nav-target="overview">
+              <span class="pb-clear-icon">▦</span><span>Dashboard</span>
+            </button>
+            <button data-nav-target="management-section">
+              <span class="pb-clear-icon">✚</span><span>Gestione</span>
+            </button>
+            <button data-nav-target="calendar-section">
+              <span class="pb-clear-icon">▤</span><span>Agenda</span>
+            </button>
+            <button data-nav-target="enci-section">
+              <span class="pb-clear-icon">◆</span><span>ENCI</span>
+            </button>
+            <button data-nav-target="genealogy-section">
+              <span class="pb-clear-icon">⌘</span><span>Genealogia</span>
+            </button>
+            <button data-nav-target="diagnostics-section">
+              <span class="pb-clear-icon">🛠</span><span>Diagnostica</span>
+            </button>
           </nav>
         </div>
 
@@ -2851,86 +6079,196 @@ class PawBookPanelV420 extends HTMLElement {
               </button>`).join("")}
           </div>` : ""}
 
-        <section class="hero app-hero" id="overview">
-          <div class="profile">
-            <button type="button" class="photo-button" id="edit-photo" title="Aggiungi o modifica la foto">${photo}</button>
-            <div class="identity">
-              <span class="profile-kicker">🐾 PROFILO SANITARIO</span>
-              <h2>${this.esc(p.dog_name || book.title)}</h2>
-              <div class="identity-grid">
-                <span>${this.esc(p.breed || "Razza non inserita")}</span>
+        <section class="pb-modern-page" id="overview">
+          <div class="pb-modern-section-title">
+            <span>PAWBOOK</span>
+            <h2>Dashboard salute</h2>
+            <p>Profilo, stato sanitario e prossime attività in un’unica vista.</p>
+          </div>
+
+          <article class="pb-modern-hero pb-modern-hero-photo">
+            <div class="pb-modern-portrait-wrap">
+              <button type="button" id="edit-photo" class="pb-modern-portrait" title="Modifica foto">
+                ${photo}
+                <span class="pb-modern-photo-edit">✎</span>
+              </button>
+            </div>
+
+            <div class="pb-modern-hero-copy">
+              <span class="pb-modern-kicker">HOME ASSISTANT · PET HEALTH CENTER</span>
+              <h1>${this.esc(p.dog_name || book.title)}</h1>
+              <p class="pb-modern-breed">${this.esc(p.breed || "Profilo PawBook")}</p>
+
+              <div class="pb-modern-profile-row">
                 ${p.birth_date ? `<span>🎂 ${this.formatDate(p.birth_date)}</span>` : ""}
-                ${p.microchip ? `<span>🪪 ${this.esc(p.microchip)}</span>` : ""}
+                ${p.microchip ? `<span>◈ ${this.esc(p.microchip)}</span>` : ""}
                 ${p.enci_registry ? `<span>🏆 ${this.esc(p.enci_registry)}</span>` : ""}
               </div>
+
+              <div class="pb-modern-health-summary ${smart.some(x=>x.level === "danger") ? "danger" : smart.some(x=>x.level === "warn") ? "warn" : "ok"}">
+                <div class="pb-modern-health-value">
+                  <small>STATO SALUTE</small>
+                  <strong>${smart.some(x=>x.level === "danger") ? "DA CONTROLLARE" : smart.some(x=>x.level === "warn") ? "ATTENZIONE" : "TUTTO REGOLARE"}</strong>
+                </div>
+                <div class="pb-modern-health-meta">
+                  <span class="pb-modern-live-dot ${reminders.length ? "warn" : "ok"}"></span>
+                  <span>${reminders.length ? `${reminders.length} promemoria attivi` : "Nessuna priorità sanitaria"}</span>
+                </div>
+              </div>
+
+              <div class="pb-modern-live-kpis">
+                <div><small>Peso</small><strong>${lastWeight ? `${this.esc(lastWeight.weight)} kg` : "—"}</strong></div>
+                <div><small>Vaccino</small><strong>${nextVax ? this.formatDate(nextVax.expires_on) : "—"}</strong></div>
+                <div><small>Terapie</small><strong>${treatments.length ? treatments.length : "0"}</strong></div>
+              </div>
             </div>
+          </article>
+
+          <div class="pb-modern-block-title">
+            <span>HEALTH OVERVIEW</span>
+            <small>01</small>
           </div>
 
-          <div class="hero-kpi-rail">
-<div class="stat"><span>Peso attuale</span><strong>${lastWeight ? `${this.esc(lastWeight.weight)} kg` : "—"}</strong><div class="stat-icon">⚖️</div></div>
-          <div class="stat"><span>Prossimo vaccino</span><strong>${nextVax ? this.formatDate(nextVax.expires_on) : "—"}</strong><div class="stat-icon">💉</div></div>
-          <div class="stat"><span>Ultima visita</span><strong>${lastVisit ? this.formatDate(lastVisit.date) : "—"}</strong><div class="stat-icon">🩺</div></div>
-          <div class="stat"><span>Età</span><strong>${this.esc(this.ageLabel(p.birth_date))}</strong><div class="stat-icon">🎂</div></div>
+          <div class="pb-modern-kpirow">
+            <button type="button" data-nav-target="health-section">
+              <span>⚖️</span><div><small>PESO ATTUALE</small><strong>${lastWeight ? `${this.esc(lastWeight.weight)} kg` : "—"}</strong><em>${weightStats.delta !== null && weightStats.delta !== undefined ? `${weightStats.delta > 0 ? "+" : ""}${weightStats.delta} kg ultimo delta` : "Nessun trend"}</em></div>
+            </button>
+            <button type="button" data-nav-target="vaccines-section">
+              <span>💉</span><div><small>PROSSIMO VACCINO</small><strong>${nextVax ? this.formatDate(nextVax.expires_on) : "Nessuna scadenza"}</strong><em>${vaccineStatusCounts.expired ? `${vaccineStatusCounts.expired} scaduti` : vaccineStatusCounts.warning ? `${vaccineStatusCounts.warning} in scadenza` : "Situazione regolare"}</em></div>
+            </button>
+            <button type="button" data-nav-target="visits-section">
+              <span>🩺</span><div><small>ULTIMA VISITA</small><strong>${lastVisit ? this.formatDate(lastVisit.date) : "—"}</strong><em>${lastVisit?.reason ? this.esc(lastVisit.reason) : `${book.visits?.length || 0} visite registrate`}</em></div>
+            </button>
+            <button type="button" data-nav-target="treatments-section">
+              <span>💊</span><div><small>TERAPIE ATTIVE</small><strong>${treatments.length ? `${treatments.length}` : "0"}</strong><em>${treatments.length ? this.esc(treatments.map(x=>x.name||"Terapia").slice(0,2).join(" · ")) : "Nessuna terapia"}</em></div>
+            </button>
           </div>
-          <div class="hero-tools">
-            <button data-form="weight" title="Registra peso">⚖️ <span>Peso</span></button>
-            <button data-form="vaccination" title="Aggiungi vaccino">💉 <span>Vaccino</span></button>
-            <button data-form="visit" title="Aggiungi visita">🩺 <span>Visita</span></button>
-            <button class="secondary" id="profile-config" title="Modifica profilo">⚙️ <span>Profilo</span></button>
+
+          <div class="pb-modern-block-title">
+            <span>PRIORITÀ E CICLI</span>
+            <small>02</small>
           </div>
-        </section>
 
+          <div class="pb-modern-duo">
+            <article class="pb-modern-priority">
+              <div>
+                <span class="pb-modern-kicker">SMART HEALTH</span>
+                <h3>${reminders.length ? this.esc(reminders[0].title) : "Tutto regolare"}</h3>
+                <p>${reminders.length ? this.esc(reminders[0].detail) : "Nessuna priorità sanitaria rilevata nei dati registrati."}</p>
+              </div>
+              <button type="button" data-nav-target="${reminders[0]?.target || "smart-section"}">Apri →</button>
+            </article>
 
-
-
-
-        <section class="smart-dashboard" aria-label="Smart Dashboard PawBook">
-          <div class="smart-dashboard-head">
-            <div><h3>✨ Smart Dashboard</h3><small class="muted">Le informazioni più importanti di ${this.esc(p.dog_name || book.title)} in un colpo d'occhio</small></div>
+            <article class="pb-modern-cycle">
+              <span class="pb-modern-kicker">PROSSIMO CALORE</span>
+              <strong>${heatStats.forecast ? this.formatDate(heatStats.forecast.center) : "—"}</strong>
+              <p>${heatStats.forecast ? `Finestra ${this.formatDate(heatStats.forecast.from)} – ${this.formatDate(heatStats.forecast.to)}` : "Dati insufficienti per una previsione."}</p>
+              <button type="button" data-nav-target="heat-section">Heat Cycle Center →</button>
+            </article>
           </div>
-          <button type="button" class="smart-reminder-strip" data-nav-target="reminders-section">
-            <span>🔔 Promemoria automatici</span>
-            <span class="smart-reminder-copy">
-              <strong>${reminders[0] ? this.esc(reminders[0].title) : "Nessun promemoria urgente"}</strong>
-              <small>${reminders[0] ? this.esc(reminders[0].detail) : "Si aggiornano automaticamente usando vaccini, visite, terapie, peso e calori registrati."}</small>
-            </span>
-            <span class="smart-reminder-open">Apri →</span>
-          </button>
-          <div class="smart-dashboard-grid status-matrix">
-            <button class="smart-dash-card health" data-nav-target="smart-section">
-              <span class="smart-dash-icon">❤️</span><span><small>Stato salute</small>
-              <strong>${smart.some(x=>x.level === "danger") ? "Da controllare" : smart.some(x=>x.level === "warn") ? "Attenzione" : "Tutto regolare"}</strong>
-              <em>${smart[0]?.text ? this.esc(smart[0].text) : "Nessun avviso"}</em></span>
+
+          <div class="pb-modern-block-title">
+            <span>HEALTH CENTERS</span>
+            <small>03</small>
+          </div>
+
+          <div class="pb-modern-centers pb-modern-centers-v2">
+            <button type="button" data-nav-target="health-section">
+              <span class="pb-center-icon">⚖️</span>
+              <div><small>HEALTH CENTER</small><strong>Peso</strong><p>Trend, storico e nuove pesate</p></div>
+              <b>›</b>
             </button>
-            <button class="smart-dash-card" data-nav-target="vaccines-section">
-              <span class="smart-dash-icon">💉</span><span><small>Prossimo vaccino</small>
-              <strong>${nextVax ? this.formatDate(nextVax.expires_on) : "Nessuna scadenza"}</strong>
-              <em>${vaccineStatusCounts.expired ? `${vaccineStatusCounts.expired} vaccini scaduti` : vaccineStatusCounts.warning ? `${vaccineStatusCounts.warning} in scadenza` : "Situazione regolare"}</em></span>
+            <button type="button" data-nav-target="vaccines-section">
+              <span class="pb-center-icon">💉</span>
+              <div><small>HEALTH CENTER</small><strong>Vaccini</strong><p>Dosi, richiami e scadenze</p></div>
+              <b>›</b>
             </button>
-            <button class="smart-dash-card" data-nav-target="visits-section">
-              <span class="smart-dash-icon">🩺</span><span><small>Ultima visita</small>
-              <strong>${lastVisit ? this.formatDate(lastVisit.date) : "Nessuna visita"}</strong>
-              <em>${lastVisit?.reason ? this.esc(lastVisit.reason) : `${book.visits?.length || 0} visite registrate`}</em></span>
+            <button type="button" data-nav-target="visits-section">
+              <span class="pb-center-icon">🩺</span>
+              <div><small>HEALTH CENTER</small><strong>Visite</strong><p>Controlli e referti veterinari</p></div>
+              <b>›</b>
             </button>
-            <button class="smart-dash-card" data-nav-target="treatments-section">
-              <span class="smart-dash-icon">💊</span><span><small>Terapie attive</small>
-              <strong>${treatments.length}</strong>
-              <em>${treatments.length ? this.esc(treatments.map(x=>x.name||"Terapia").slice(0,2).join(" · ")) : "Nessuna terapia in corso"}</em></span>
+            <button type="button" data-nav-target="treatments-section">
+              <span class="pb-center-icon">💊</span>
+              <div><small>HEALTH CENTER</small><strong>Terapie</strong><p>Farmaci, dosaggi e durata</p></div>
+              <b>›</b>
             </button>
-            <button class="smart-dash-card" data-nav-target="health-section">
-              <span class="smart-dash-icon">⚖️</span><span><small>Peso</small>
-              <strong>${lastWeight ? `${this.esc(lastWeight.weight)} kg` : "—"}</strong>
-              <em>${weightStats.delta !== null && weightStats.delta !== undefined ? `${weightStats.delta > 0 ? "+" : ""}${weightStats.delta} kg dall'ultima pesata` : "Nessuna variazione disponibile"}</em></span>
+            <button type="button" data-nav-target="heat-section">
+              <span class="pb-center-icon">🌸</span>
+              <div><small>HEALTH CENTER</small><strong>Calori</strong><p>Cicli e previsione</p></div>
+              <b>›</b>
             </button>
-            <button class="smart-dash-card heat" data-nav-target="heat-section">
-              <span class="smart-dash-icon">🌸</span><span><small>Prossimo calore stimato</small>
-              <strong>${heatStats.forecast ? this.formatDate(heatStats.forecast.center) : "Dati insufficienti"}</strong>
-              <em>${heatStats.forecast ? `${this.formatDate(heatStats.forecast.from)} – ${this.formatDate(heatStats.forecast.to)}` : `${heatStats.cycles.length} cicli registrati`}</em></span>
-            </button>
+          </div>
+
+          <div class="pb-modern-tools pb-modern-tools-v2">
+            <button data-nav-target="statistics-section"><span>▥</span><strong>Statistiche</strong></button>
+            <button data-nav-target="documents-section"><span>⌕</span><strong>Documenti</strong></button>
+            <button data-nav-target="report-section"><span>▤</span><strong>Report</strong></button>
+            <button data-nav-target="backup-section"><span>⇅</span><strong>Backup</strong></button>
+            <button type="button" id="profile-config"><span>⚙</span><strong>Profilo</strong></button>
           </div>
         </section>
 
         <section class="grid">
+          <article class="pb-diagnostics-intro" id="diagnostics-intro">
+            <span>PAWBOOK SYSTEM</span>
+            <h2>Diagnostica</h2>
+            <p>Statistiche, documenti, report e strumenti di manutenzione.</p>
+          </article>
+          <article class="pb-management-intro pb-control-hub" id="management-intro">
+            <div class="pb-control-hero">
+              <div>
+                <span class="pb-control-kicker">PAWBOOK · HEALTH CONTROL CENTER</span>
+                <h2>Gestione salute</h2>
+                <p>Tutti i dati modificabili di ${this.esc(p.dog_name || book.title)}, organizzati in moduli separati.</p>
+              </div>
+
+              <div class="pb-control-status">
+                <small>STATO SANITARIO</small>
+                <strong>${reminders.length ? `${reminders.length} DA CONTROLLARE` : "TUTTO REGOLARE"}</strong>
+                <div><span class="pb-modern-live-dot ${reminders.length ? "warn" : "ok"}"></span>${reminders.length ? "Sono presenti promemoria attivi" : "Nessuna priorità sanitaria"}</div>
+              </div>
+            </div>
+
+            <div class="pb-control-title"><span>MODULI SANITARI</span><small>05</small></div>
+
+            <div class="pb-control-modules">
+              <button type="button" class="weight" data-nav-target="health-section">
+                <span class="pb-control-module-icon">⚖️</span>
+                <div><small>PESO</small><strong>${lastWeight ? `${this.esc(lastWeight.weight)} kg` : "—"}</strong><p>Pesate, trend e storico</p></div>
+                <b>›</b>
+              </button>
+              <button type="button" class="vaccine" data-nav-target="vaccines-section">
+                <span class="pb-control-module-icon">💉</span>
+                <div><small>VACCINI</small><strong>${book.vaccinations?.length || 0}</strong><p>Dosi, richiami e scadenze</p></div>
+                <b>›</b>
+              </button>
+              <button type="button" class="visit" data-nav-target="visits-section">
+                <span class="pb-control-module-icon">🩺</span>
+                <div><small>VISITE</small><strong>${book.visits?.length || 0}</strong><p>Controlli e referti</p></div>
+                <b>›</b>
+              </button>
+              <button type="button" class="treatment" data-nav-target="treatments-section">
+                <span class="pb-control-module-icon">💊</span>
+                <div><small>TERAPIE</small><strong>${treatmentStats.items.length || 0}</strong><p>Farmaci, dosaggi e durata</p></div>
+                <b>›</b>
+              </button>
+              <button type="button" class="heat" data-nav-target="heat-section">
+                <span class="pb-control-module-icon">🌸</span>
+                <div><small>CALORI</small><strong>${heatStats.cycles.length || 0}</strong><p>Cicli e previsione</p></div>
+                <b>›</b>
+              </button>
+            </div>
+
+            <div class="pb-control-title"><span>STRUMENTI</span><small>TOOLS</small></div>
+
+            <div class="pb-control-tools">
+              <button type="button" data-nav-target="statistics-section"><span>▥</span><div><strong>Statistiche</strong><small>Analisi dello storico</small></div></button>
+              <button type="button" data-nav-target="documents-section"><span>⌕</span><div><strong>Documenti</strong><small>Referti e allegati</small></div></button>
+              <button type="button" data-nav-target="report-section"><span>▤</span><div><strong>Report</strong><small>Scheda sanitaria</small></div></button>
+              <button type="button" data-nav-target="backup-section"><span>⇅</span><div><strong>Backup</strong><small>Esporta e ripristina</small></div></button>
+            </div>
+          </article>
 
           <article class="card v2-section wide" id="smart-section">
             <div class="card-head"><div><h3>❤️ Smart Health</h3><small class="muted">Riepilogo automatico dei dati già presenti in PawBook</small></div></div>
@@ -2939,7 +6277,16 @@ class PawBookPanelV420 extends HTMLElement {
           </article>
 
           <article class="card wide weight-dashboard" id="health-section">
-            <div class="card-head"><div><h3>⚖️ Weight Center</h3><small class="muted">Andamento, variazioni e cronologia completa del peso</small></div><button class="small-btn" data-form="weight">Aggiungi peso</button></div>
+            <div class="pb-module-heading">
+              <div class="pb-module-heading-copy">
+                <button type="button" class="pb-back-management" data-nav-target="management-section">← Gestione</button>
+                <span>PESO</span>
+                <h2>Weight Center</h2>
+                <p>Pesate, variazioni e storico completo.</p>
+              </div>
+              <button class="pb-module-add" data-form="weight">＋ Nuova pesata</button>
+            </div>
+
             <div class="weight-center-hero">
               <div class="primary"><span class="hero-icon">⚖️</span><span><small>Peso attuale</small><strong>${weightStats.latest ? `${this.esc(weightStats.latest.weight)} kg` : "—"}</strong><span>${weightStats.latest ? `${this.formatDate(weightStats.latest.date)} · ${weightStats.daysSince} giorni fa` : "Nessuna pesata registrata"}</span></span></div>
               <div><span>Ultima variazione</span><strong>${weightStats.delta == null ? "—" : `${weightStats.delta > 0 ? "+" : ""}${weightStats.delta} kg`}</strong><small>${weightStats.previous ? `Da ${this.esc(weightStats.previous.weight)} kg` : "Servono almeno due pesate"}</small>${weightStats.delta != null ? `<span class="weight-delta ${weightStats.delta > 0 ? "up" : weightStats.delta < 0 ? "down" : "stable"}">${weightStats.delta > 0 ? "↑ Aumento" : weightStats.delta < 0 ? "↓ Diminuzione" : "• Stabile"}</span>` : ""}</div>
@@ -2956,7 +6303,16 @@ class PawBookPanelV420 extends HTMLElement {
           </article>
 
           <article class="card wide vaccines-dashboard" id="vaccines-section">
-            <div class="card-head"><div><h3>💉 Centro Vaccinazioni</h3><small class="muted">Stato, prossimi richiami e cronologia completa di ogni vaccino</small></div><button class="small-btn" data-form="vaccination">Aggiungi dose</button></div>
+            <div class="pb-module-heading">
+              <div class="pb-module-heading-copy">
+                <button type="button" class="pb-back-management" data-nav-target="management-section">← Gestione</button>
+                <span>VACCINI</span>
+                <h2>Vaccination Center</h2>
+                <p>Dosi, richiami e scadenze vaccinali.</p>
+              </div>
+              <button class="pb-module-add" data-form="vaccination">＋ Nuova dose</button>
+            </div>
+
             <div class="vaccine-center-hero">
               <div class="primary"><span class="hero-icon">💉</span><span><small>Stato vaccinale</small><strong>${vaccineStatusCounts.expired ? `${vaccineStatusCounts.expired} vaccini scaduti` : vaccineStatusCounts.warning ? `${vaccineStatusCounts.warning} in scadenza` : vaccineGroups.length ? "Tutto in regola" : "Nessun vaccino registrato"}</strong><span>${book.vaccinations?.length || 0} somministrazioni · ${vaccineGroups.length} tipi</span></span></div>
               <div><span>Prossimo richiamo</span><strong>${nextVax ? this.formatDate(nextVax.expires_on) : "—"}</strong><small>${nextVax ? this.esc(nextVax.name || "Vaccinazione") : "Nessuna scadenza futura"}</small></div>
@@ -2984,7 +6340,16 @@ class PawBookPanelV420 extends HTMLElement {
           </article>
 
           <article class="card wide veterinary-dashboard" id="visits-section">
-            <div class="card-head"><div><h3>🩺 Veterinary Center</h3><small class="muted">Visite, controlli, esami, referti e cronologia veterinaria completa</small></div><button class="small-btn" data-form="visit">Aggiungi visita</button></div>
+            <div class="pb-module-heading">
+              <div class="pb-module-heading-copy">
+                <button type="button" class="pb-back-management" data-nav-target="management-section">← Gestione</button>
+                <span>VISITE</span>
+                <h2>Veterinary Center</h2>
+                <p>Controlli, referti e cronologia veterinaria.</p>
+              </div>
+              <button class="pb-module-add" data-form="visit">＋ Nuova visita</button>
+            </div>
+
             <div class="visit-center-hero">
               <div class="primary"><span class="hero-icon">🩺</span><span><small>Stato visite</small><strong>${visitStats.last ? (visitStats.daysSince > 365 ? "Controllo da valutare" : "Cronologia aggiornata") : "Nessuna visita registrata"}</strong><span>${visitStats.visits.length} ${visitStats.visits.length === 1 ? "visita" : "visite"} archiviate</span></span></div>
               <div><span>Ultima visita</span><strong>${visitStats.last ? this.formatDate(visitStats.last.date) : "—"}</strong><small>${visitStats.last ? this.esc(visitStats.last.reason || "Visita") : "Nessuna registrazione"}</small></div>
@@ -3000,7 +6365,16 @@ class PawBookPanelV420 extends HTMLElement {
           </article>
 
           <article class="card wide treatments-dashboard" id="treatments-section">
-            <div class="card-head"><div><h3>💊 Treatments Center</h3><small class="muted">Terapie, farmaci, dosaggi, durata e documenti in un'unica vista</small></div><button class="small-btn" data-form="treatment">Aggiungi terapia</button></div>
+            <div class="pb-module-heading">
+              <div class="pb-module-heading-copy">
+                <button type="button" class="pb-back-management" data-nav-target="management-section">← Gestione</button>
+                <span>TERAPIE</span>
+                <h2>Treatments Center</h2>
+                <p>Farmaci, dosaggi e trattamenti.</p>
+              </div>
+              <button class="pb-module-add" data-form="treatment">＋ Nuova terapia</button>
+            </div>
+
             <div class="treatment-center-hero">
               <div class="primary"><span class="hero-icon">💊</span><span><small>Stato terapie</small><strong>${treatmentStats.active.length ? `${treatmentStats.active.length} in corso` : "Nessuna terapia attiva"}</strong><span>${treatmentStats.items.length} ${treatmentStats.items.length===1?"terapia":"terapie"} archiviate</span></span></div>
               <div><span>Prossima programmata</span><strong>${treatmentStats.upcoming[0] ? this.formatDate(treatmentStats.upcoming[0].starts_on) : "—"}</strong><small>${treatmentStats.upcoming[0] ? this.esc(treatmentStats.upcoming[0].name||"Terapia") : "Nessuna terapia futura"}</small></div>
@@ -3016,13 +6390,16 @@ class PawBookPanelV420 extends HTMLElement {
           </article>
 
           <article class="card heat-center app-panel" id="heat-section">
-            <div class="card-head">
-              <div>
-                <h3>❤️ Heat Cycle Center</h3>
-                <small class="muted">Storico e proiezione indicativa del prossimo calore</small>
+            <div class="pb-module-heading">
+              <div class="pb-module-heading-copy">
+                <button type="button" class="pb-back-management" data-nav-target="management-section">← Gestione</button>
+                <span>CALORI</span>
+                <h2>Heat Cycle Center</h2>
+                <p>Cicli, storico e previsione.</p>
               </div>
-              <button class="small-btn" data-form="heat">Aggiungi calore</button>
+              <button class="pb-module-add" data-form="heat">＋ Nuovo ciclo</button>
             </div>
+            
 
             ${heatStats.cycles.length ? `
               <div class="heat-summary">
@@ -3101,35 +6478,66 @@ class PawBookPanelV420 extends HTMLElement {
             </div>
           </article>
 
-          <article class="card v2-section health-calendar-card app-panel span-2" id="calendar-section">
-            <div class="card-head">
-              <div><h3>📅 Calendario salute</h3><small class="muted">Richiami, terapie e proiezione del prossimo calore</small></div>
-              <div class="calendar-controls">
-                <button type="button" class="small-btn secondary" id="calendar-prev">‹</button>
-                <button type="button" class="small-btn secondary" id="calendar-today">Oggi</button>
-                <button type="button" class="small-btn secondary" id="calendar-next">›</button>
+          <article class="card v2-section health-calendar-card app-panel span-2 pb-agenda-page" id="calendar-section">
+            <div class="pb-page-heading">
+              <div>
+                <span>AGENDA SANITARIA</span>
+                <h2>Prossimi eventi</h2>
+                <p>Vaccini, terapie, visite e cicli ordinati nel tempo.</p>
+              </div>
+              <div class="pb-agenda-actions">
+                <button type="button" id="calendar-prev">‹</button>
+                <button type="button" id="calendar-today">Oggi</button>
+                <button type="button" id="calendar-next">›</button>
               </div>
             </div>
-            <div class="calendar-month-title">${this.esc(healthCalendar.label)}</div>
-            <div class="health-calendar-weekdays">
-              ${["Lun","Mar","Mer","Gio","Ven","Sab","Dom"].map(day=>`<span>${day}</span>`).join("")}
+
+            <div class="pb-agenda-monthbar">
+              <div>
+                <small>PERIODO</small>
+                <strong>${this.esc(healthCalendar.label)}</strong>
+              </div>
+              <div class="pb-agenda-monthstats">
+                <span><i class="vaccine"></i>${healthCalendar.upcoming.filter(e=>e.type==="vaccine").length} vaccini</span>
+                <span><i class="treatment"></i>${healthCalendar.upcoming.filter(e=>e.type==="treatment").length} terapie</span>
+                <span><i class="heat"></i>${healthCalendar.upcoming.filter(e=>e.type==="heat").length} cicli</span>
+                <span><i class="other"></i>${healthCalendar.upcoming.filter(e=>!["vaccine","treatment","heat"].includes(e.type)).length} altri</span>
+              </div>
             </div>
-            <div class="health-calendar-grid">
-              ${healthCalendar.days.map(day=>`
-                <div class="health-calendar-day ${day.currentMonth ? "" : "outside"} ${day.today ? "today" : ""}">
-                  <span class="calendar-day-number">${day.day}</span>
-                  <div class="calendar-day-events">
-                    ${day.events.slice(0,3).map(event=>`<span class="calendar-event ${event.type}" title="${this.esc(event.title)}">${event.icon}<b>${this.esc(event.title)}</b></span>`).join("")}
-                    ${day.events.length>3 ? `<small>+${day.events.length-3}</small>` : ""}
+
+            <div class="pb-agenda-timeline">
+              ${healthCalendar.upcoming.length ? healthCalendar.upcoming.slice(0,12).map((event, idx)=>`
+                <article class="pb-agenda-row ${event.type || "other"}">
+                  <div class="pb-agenda-datebox">
+                    <strong>${this.formatDate(event.date).slice(0,2)}</strong>
+                    <span>${this.formatDate(event.date).slice(3,5)}</span>
                   </div>
-                </div>`).join("")}
+
+                  <div class="pb-agenda-rail">
+                    <i></i>
+                    ${idx < Math.min(healthCalendar.upcoming.length,12)-1 ? `<b></b>` : ""}
+                  </div>
+
+                  <div class="pb-agenda-event-main">
+                    <small>${event.estimate ? "DATA STIMATA" : this.formatDate(event.date)}</small>
+                    <strong>${this.esc(event.title)}</strong>
+                    <p>${event.estimate ? "Previsione PawBook" : "Evento sanitario registrato"}</p>
+                  </div>
+
+                  <div class="pb-agenda-event-icon">${event.icon}</div>
+                </article>
+              `).join("") : `
+                <div class="pb-agenda-empty">
+                  <span>✓</span>
+                  <h3>Agenda libera</h3>
+                  <p>Nessun evento sanitario futuro registrato.</p>
+                </div>`}
             </div>
-            <div class="calendar-upcoming">
-              <h4>Prossimi eventi</h4>
-              ${healthCalendar.upcoming.length ? healthCalendar.upcoming.map(event=>`
-                <div class="calendar-upcoming-row"><span>${event.icon}</span><strong>${this.formatDate(event.date)}</strong><em>${this.esc(event.title)}</em>${event.estimate ? `<small>stima</small>` : ""}</div>`).join("") : `<div class="empty">Nessun evento futuro registrato</div>`}
+
+            <div class="pb-agenda-footer">
+              <button type="button" data-nav-target="management-section">♥ Apri Smart Health</button>
+              <span>Sincronizzato con Home Assistant</span>
             </div>
-            <div class="calendar-native-note">🏠 Gli stessi richiami, le terapie e la finestra stimata del calore sono disponibili anche nell'entità calendario nativa di Home Assistant.</div>
           </article>
 
           <article class="card v2-section health-timeline-card app-panel span-2" id="timeline-section">
@@ -3186,7 +6594,17 @@ class PawBookPanelV420 extends HTMLElement {
           </article>
 
           <article class="card" id="enci-section">
-            <div class="card-head"><h3>🏆 ENCI</h3><span><button class="small-btn" id="import-enci">Importa / aggiorna</button> <button class="small-btn secondary" id="open-enci">Apri ENCI</button></span></div>
+            <div class="pb-module-heading pb-enci-heading">
+              <div class="pb-module-heading-copy">
+                <span>REGISTRO UFFICIALE</span>
+                <h2>ENCI</h2>
+                <p>Anagrafica, pedigree e dati ufficiali del cane.</p>
+              </div>
+              <div class="pb-module-actions">
+                <button class="pb-module-add" id="import-enci">Importa / aggiorna</button>
+                <button class="pb-module-secondary" id="open-enci">Apri ENCI</button>
+              </div>
+            </div>
             <div class="record"><strong>Nome registrato</strong><small>${this.esc(p.enci_name || "—")}</small></div>
             <div class="record"><strong>ROI/RSR</strong><small>${this.esc(p.enci_registry || "—")}</small></div>
             <div class="record"><strong>Pedigree</strong><small>${this.esc(p.pedigree_number || "—")}</small></div>
@@ -3253,17 +6671,16 @@ class PawBookPanelV420 extends HTMLElement {
         this._mobileGenealogyPath = [];
         this._calendarOffset = 0;
         const targetId = button.dataset.familyTarget || "overview";
+        this._activeView = targetId;
         this.render();
-        requestAnimationFrame(() => this.shadowRoot.querySelector(`#${targetId}`)?.scrollIntoView({behavior:"smooth",block:"start"}));
       });
     });
 
     this.shadowRoot.querySelectorAll("[data-nav-target]").forEach((button) => {
       button.addEventListener("click", () => {
-        const target = this.shadowRoot.querySelector(`#${button.dataset.navTarget}`);
-        target?.scrollIntoView({ behavior: "smooth", block: "start" });
-        this.shadowRoot.querySelectorAll(".dashboard-nav button").forEach((item) => item.classList.remove("active"));
-        button.classList.add("active");
+        this._activeView = button.dataset.navTarget || "overview";
+        this.applyPageView();
+        window.scrollTo({ top: 0, behavior: "smooth" });
       });
     });
     this.shadowRoot.querySelector("[data-nav-action=\"settings\"]")?.addEventListener("click", () => this.openConfig());
@@ -3283,8 +6700,8 @@ class PawBookPanelV420 extends HTMLElement {
       button.addEventListener("click", () => {
         try {
           this._mobileGenealogyPath = JSON.parse(decodeURIComponent(button.dataset.mobileGenealogyPath));
+          this._activeView = "genealogy-section";
           this.render();
-          requestAnimationFrame(() => this.shadowRoot.querySelector("#genealogy-section")?.scrollIntoView({ block:"start" }));
         } catch (err) {
           console.error("PawBook: percorso genealogico mobile non valido", err);
         }
@@ -3292,13 +6709,13 @@ class PawBookPanelV420 extends HTMLElement {
     });
     this.shadowRoot.querySelector("[data-mobile-genealogy-back]")?.addEventListener("click", () => {
       this._mobileGenealogyPath = (this._mobileGenealogyPath || []).slice(0, -1);
+      this._activeView = "genealogy-section";
       this.render();
-      requestAnimationFrame(() => this.shadowRoot.querySelector("#genealogy-section")?.scrollIntoView({ block:"start" }));
     });
     this.shadowRoot.querySelector("[data-mobile-genealogy-root]")?.addEventListener("click", () => {
       this._mobileGenealogyPath = [];
+      this._activeView = "genealogy-section";
       this.render();
-      requestAnimationFrame(() => this.shadowRoot.querySelector("#genealogy-section")?.scrollIntoView({ block:"start" }));
     });
     this.shadowRoot.querySelector("[data-mobile-ancestor-details]")?.addEventListener("click", (buttonEvent) => {
       try {
@@ -3309,19 +6726,21 @@ class PawBookPanelV420 extends HTMLElement {
     });
     this.shadowRoot.querySelector("#calendar-prev")?.addEventListener("click", () => {
       this._calendarOffset = (this._calendarOffset || 0) - 1;
+      this._activeView = "calendar-section";
       this.render();
-      requestAnimationFrame(() => this.shadowRoot.querySelector("#calendar-section")?.scrollIntoView({block:"start"}));
     });
     this.shadowRoot.querySelector("#calendar-next")?.addEventListener("click", () => {
       this._calendarOffset = (this._calendarOffset || 0) + 1;
+      this._activeView = "calendar-section";
       this.render();
-      requestAnimationFrame(() => this.shadowRoot.querySelector("#calendar-section")?.scrollIntoView({block:"start"}));
     });
     this.shadowRoot.querySelector("#calendar-today")?.addEventListener("click", () => {
       this._calendarOffset = 0;
+      this._activeView = "calendar-section";
       this.render();
-      requestAnimationFrame(() => this.shadowRoot.querySelector("#calendar-section")?.scrollIntoView({block:"start"}));
     });
+
+    this.applyPageView();
 
     let timelineExpanded = false;
     const applyTimelineFilter = (filter = "all") => {
