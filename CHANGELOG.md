@@ -1,3 +1,11 @@
+## 6.10.5 - Light Theme Fix
+
+- Replaces remaining hardcoded dark surfaces with Home Assistant theme-aware colors.
+- Fixes black cards and panels when using light themes.
+- Preserves the approved dark-theme appearance.
+- Keeps the PawBook teal accent and all existing layout/functionality unchanged.
+- Keeps the stable `pawbook-panel-v630.js` frontend base.
+
 ## 6.10.4 - Distribution Hotfix
 
 - Repackages the approved PawBook 6.10.3 Health Control Center build with correct GitHub/HACS versioning.
