@@ -1,3 +1,11 @@
+## 6.10.4 - Distribution Hotfix
+
+- Repackages the approved PawBook 6.10.3 Health Control Center build with correct GitHub/HACS versioning.
+- Updates `manifest.json` and visible frontend version to 6.10.4.
+- Preserves the stable `pawbook-panel-v630.js` frontend base.
+- Preserves all UI, Health Control Center, ENCI, genealogy, agenda, diagnostics and Recorder-safe behavior from 6.10.3.
+- Intended to replace the incorrectly tagged 6.10.3 distribution without changing the approved interface.
+
 ## 6.3.0 - Structural Visual Redesign
 
 - Rebuilt the PawBook home structure instead of applying cosmetic CSS only.

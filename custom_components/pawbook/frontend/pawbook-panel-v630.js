@@ -2135,7 +2135,7 @@ class PawBookPanelV420 extends HTMLElement {
       .support-project-btn:hover{border-color:var(--primary-color);background:var(--secondary-background-color)}
       @media(max-width:900px){.topbar-actions{margin-left:auto}.support-project-btn{width:44px;height:44px;min-height:44px;padding:0;border-radius:12px;font-size:20px}.support-project-label{display:none}}
 
-      /* PawBook 6.10.3 definitive mobile header */
+      /* PawBook 6.10.4 definitive mobile header */
       .topbar{
         display:flex !important;
         align-items:center !important;
@@ -2257,7 +2257,7 @@ class PawBookPanelV420 extends HTMLElement {
         }
       }
 
-      /* PawBook 6.10.3 · DOMOTICA / Inverter shell */
+      /* PawBook 6.10.4 · DOMOTICA / Inverter shell */
       :host{
         --paw-accent:var(--primary-color);
         --paw-green:#48d58b;
@@ -2462,7 +2462,7 @@ class PawBookPanelV420 extends HTMLElement {
         .version-badge{font-size:9px !important;padding:3px 6px !important}
       }
 
-      /* PawBook 6.10.3 · Visual Redesign */
+      /* PawBook 6.10.4 · Visual Redesign */
       :host{
         --paw-surface:color-mix(in srgb,var(--card-background-color) 96%,var(--primary-background-color));
         --paw-line:color-mix(in srgb,var(--divider-color) 78%,transparent);
@@ -2608,7 +2608,7 @@ class PawBookPanelV420 extends HTMLElement {
         }
       }
 
-      /* PawBook 6.10.3 — true structural redesign */
+      /* PawBook 6.10.4 — true structural redesign */
       .page{
         padding:16px 20px 56px !important;
       }
@@ -2826,7 +2826,7 @@ class PawBookPanelV420 extends HTMLElement {
         }
       }
 
-/* PawBook 6.10.3 Recovery UI Polish */
+/* PawBook 6.10.4 Recovery UI Polish */
 :host {
   --pb-radius-lg: 24px;
   --pb-radius-md: 16px;
@@ -2949,7 +2949,7 @@ class PawBookPanelV420 extends HTMLElement {
 }
 
 
-/* PawBook 6.10.3 DOMOTICA Rebuild */
+/* PawBook 6.10.4 DOMOTICA Rebuild */
 :host {
   --pb-gap: 18px;
   --pb-radius-xl: 28px;
@@ -3231,7 +3231,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 New UI */
+/* PawBook 6.10.4 New UI */
 :host{
   --pb-surface:color-mix(in srgb,var(--card-background-color) 94%,transparent);
   --pb-soft:color-mix(in srgb,var(--secondary-background-color) 86%,transparent);
@@ -3378,7 +3378,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 DOMOTICA shell + Agenda */
+/* PawBook 6.10.4 DOMOTICA shell + Agenda */
 .pb-domotica-header{
   position:sticky!important;
   top:10px!important;
@@ -3919,7 +3919,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 Health OS stable rebuild */
+/* PawBook 6.10.4 Health OS stable rebuild */
 .pb-os-header{
   position:sticky!important;top:10px!important;z-index:70!important;
   overflow:hidden!important;border:1px solid color-mix(in srgb,var(--divider-color) 68%,transparent)!important;
@@ -3986,7 +3986,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 - Modern Health Center */
+/* PawBook 6.10.4 - Modern Health Center */
 :host{
   --pb-accent:#58d6c7;
   --pb-accent-2:#76e2d5;
@@ -4187,7 +4187,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 - true multipage */
+/* PawBook 6.10.4 - true multipage */
 .grid{display:none}
 .grid>.pb-page-active{
   grid-column:1/-1!important;
@@ -4605,7 +4605,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 - CRUD clarity */
+/* PawBook 6.10.4 - CRUD clarity */
 .pb-crud-head{
   align-items:center!important;
   margin-bottom:12px!important;
@@ -4748,7 +4748,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 - clearer menu + unified management */
+/* PawBook 6.10.4 - clearer menu + unified management */
 .pb-clear-nav{
   display:flex!important;
   align-items:center!important;
@@ -4982,7 +4982,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 - visual refinement */
+/* PawBook 6.10.4 - visual refinement */
 
 /* Remove old help boxes entirely */
 .pb-crud-help{display:none!important}
@@ -5373,7 +5373,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 — Health Control Center */
+/* PawBook 6.10.4 — Health Control Center */
 :host{
   --pb-accent:#55d8c8;
   --pb-accent2:#65bdf4;
@@ -5625,7 +5625,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 — management intro visibility fix */
+/* PawBook 6.10.4 — management intro visibility fix */
 #management-intro{
   display:none!important;
 }
@@ -5649,7 +5649,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 — typography readability */
+/* PawBook 6.10.4 — typography readability */
 .pb-clear-nav>button{
   font-size:13px!important;
 }
@@ -5750,7 +5750,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.3 — BIG typography pass */
+/* PawBook 6.10.4 — BIG typography pass */
 
 /* Menu */
 .pb-clear-nav>button{
@@ -5991,7 +5991,7 @@ textarea {
               <div class="pb-modern-brandcopy">
                 <div class="pb-modern-titleline">
                   <strong>PawBook</strong>
-                  <span class="pb-modern-version">6.10.3</span>
+                  <span class="pb-modern-version">6.10.4</span>
                 </div>
                 <small>Pet Health Center</small>
               </div>
