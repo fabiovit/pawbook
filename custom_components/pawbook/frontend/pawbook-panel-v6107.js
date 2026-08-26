@@ -1,3 +1,5 @@
+/* PawBook HA theme-aware frontend v6.10.7 */
+/* PawBook cache-bust asset: v6.10.7 */
 class PawBookPanelV420 extends HTMLElement {
   constructor() {
     super();
@@ -1367,6 +1369,17 @@ class PawBookPanelV420 extends HTMLElement {
   }
 
 
+
+  syncHomeAssistantTheme() {
+    const isDark = Boolean(this._hass?.themes?.darkMode);
+    this.classList.toggle("pb-ha-dark", isDark);
+    this.classList.toggle("pb-ha-light", !isDark);
+    if (this.shadowRoot) {
+      this.shadowRoot.host?.classList?.toggle("pb-ha-dark", isDark);
+      this.shadowRoot.host?.classList?.toggle("pb-ha-light", !isDark);
+    }
+  }
+
   applyPageView() {
     const root = this.shadowRoot;
     if (!root) return;
@@ -1439,6 +1452,7 @@ class PawBookPanelV420 extends HTMLElement {
   }
 
   render() {
+    this.syncHomeAssistantTheme();
     if (!this.shadowRoot) return;
 
     const styles = `
@@ -2135,7 +2149,7 @@ class PawBookPanelV420 extends HTMLElement {
       .support-project-btn:hover{border-color:var(--primary-color);background:var(--secondary-background-color)}
       @media(max-width:900px){.topbar-actions{margin-left:auto}.support-project-btn{width:44px;height:44px;min-height:44px;padding:0;border-radius:12px;font-size:20px}.support-project-label{display:none}}
 
-      /* PawBook 6.10.6 definitive mobile header */
+      /* PawBook 6.10.7 definitive mobile header */
       .topbar{
         display:flex !important;
         align-items:center !important;
@@ -2257,7 +2271,7 @@ class PawBookPanelV420 extends HTMLElement {
         }
       }
 
-      /* PawBook 6.10.6 · DOMOTICA / Inverter shell */
+      /* PawBook 6.10.7 · DOMOTICA / Inverter shell */
       :host{
         --paw-accent:var(--primary-color);
         --paw-green:#48d58b;
@@ -2462,7 +2476,7 @@ class PawBookPanelV420 extends HTMLElement {
         .version-badge{font-size:9px !important;padding:3px 6px !important}
       }
 
-      /* PawBook 6.10.6 · Visual Redesign */
+      /* PawBook 6.10.7 · Visual Redesign */
       :host{
         --paw-surface:color-mix(in srgb,var(--card-background-color) 96%,var(--primary-background-color));
         --paw-line:color-mix(in srgb,var(--divider-color) 78%,transparent);
@@ -2608,7 +2622,7 @@ class PawBookPanelV420 extends HTMLElement {
         }
       }
 
-      /* PawBook 6.10.6 — true structural redesign */
+      /* PawBook 6.10.7 — true structural redesign */
       .page{
         padding:16px 20px 56px !important;
       }
@@ -2826,7 +2840,7 @@ class PawBookPanelV420 extends HTMLElement {
         }
       }
 
-/* PawBook 6.10.6 Recovery UI Polish */
+/* PawBook 6.10.7 Recovery UI Polish */
 :host {
   --pb-radius-lg: 24px;
   --pb-radius-md: 16px;
@@ -2949,7 +2963,7 @@ class PawBookPanelV420 extends HTMLElement {
 }
 
 
-/* PawBook 6.10.6 DOMOTICA Rebuild */
+/* PawBook 6.10.7 DOMOTICA Rebuild */
 :host {
   --pb-gap: 18px;
   --pb-radius-xl: 28px;
@@ -3231,7 +3245,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 New UI */
+/* PawBook 6.10.7 New UI */
 :host{
   --pb-surface:color-mix(in srgb,var(--card-background-color) 94%,transparent);
   --pb-soft:color-mix(in srgb,var(--secondary-background-color) 86%,transparent);
@@ -3378,7 +3392,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 DOMOTICA shell + Agenda */
+/* PawBook 6.10.7 DOMOTICA shell + Agenda */
 .pb-domotica-header{
   position:sticky!important;
   top:10px!important;
@@ -3919,7 +3933,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 Health OS stable rebuild */
+/* PawBook 6.10.7 Health OS stable rebuild */
 .pb-os-header{
   position:sticky!important;top:10px!important;z-index:70!important;
   overflow:hidden!important;border:1px solid color-mix(in srgb,var(--divider-color) 68%,transparent)!important;
@@ -3986,7 +4000,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 - Modern Health Center */
+/* PawBook 6.10.7 - Modern Health Center */
 :host{
   --pb-accent:#58d6c7;
   --pb-accent-2:#76e2d5;
@@ -4187,7 +4201,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 - true multipage */
+/* PawBook 6.10.7 - true multipage */
 .grid{display:none}
 .grid>.pb-page-active{
   grid-column:1/-1!important;
@@ -4605,7 +4619,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 - CRUD clarity */
+/* PawBook 6.10.7 - CRUD clarity */
 .pb-crud-head{
   align-items:center!important;
   margin-bottom:12px!important;
@@ -4748,7 +4762,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 - clearer menu + unified management */
+/* PawBook 6.10.7 - clearer menu + unified management */
 .pb-clear-nav{
   display:flex!important;
   align-items:center!important;
@@ -4982,7 +4996,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 - visual refinement */
+/* PawBook 6.10.7 - visual refinement */
 
 /* Remove old help boxes entirely */
 .pb-crud-help{display:none!important}
@@ -5373,7 +5387,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 — Health Control Center */
+/* PawBook 6.10.7 — Health Control Center */
 :host{
   --pb-accent:#55d8c8;
   --pb-accent2:#65bdf4;
@@ -5625,7 +5639,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 — management intro visibility fix */
+/* PawBook 6.10.7 — management intro visibility fix */
 #management-intro{
   display:none!important;
 }
@@ -5649,7 +5663,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 — typography readability */
+/* PawBook 6.10.7 — typography readability */
 .pb-clear-nav>button{
   font-size:13px!important;
 }
@@ -5750,7 +5764,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 — BIG typography pass */
+/* PawBook 6.10.7 — BIG typography pass */
 
 /* Menu */
 .pb-clear-nav>button{
@@ -5969,7 +5983,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 — light theme fix only */
+/* PawBook 6.10.7 — light theme fix only */
 
 /* Shared theme-aware surfaces */
 :host{
@@ -6195,7 +6209,7 @@ textarea {
 }
 
 
-/* PawBook 6.10.6 — dark theme restoration */
+/* PawBook 6.10.7 — dark theme restoration */
 @media (prefers-color-scheme: dark){
   :host{
     --pb-bg:#101111;
@@ -6368,6 +6382,207 @@ textarea {
   }
 }
 
+
+/* PawBook 6.10.7 — Home Assistant theme-aware override */
+
+/* DARK MODE: driven by hass.themes.darkMode, not OS preference */
+:host(.pb-ha-dark){
+  --pb-bg:#0f1010;
+  --pb-card:#181a1a;
+  --pb-card-soft:#1e2121;
+  --pb-card-strong:#232626;
+  --pb-border:rgba(255,255,255,.10);
+  --pb-text:#f4f7f7;
+  --pb-text-soft:rgba(255,255,255,.64);
+}
+
+:host(.pb-ha-dark) .pb-modern-header,
+:host(.pb-ha-dark) .pb-modern-nav,
+:host(.pb-ha-dark) .pb-clear-nav{
+  background:#0f1010!important;
+  color:#f4f7f7!important;
+  border-color:rgba(255,255,255,.09)!important;
+  box-shadow:none!important;
+}
+
+:host(.pb-ha-dark) .pb-clear-nav>button,
+:host(.pb-ha-dark) .pb-modern-nav>button{
+  color:rgba(255,255,255,.60)!important;
+}
+:host(.pb-ha-dark) .pb-clear-nav>button.active,
+:host(.pb-ha-dark) .pb-modern-nav>button.active{
+  color:#ffffff!important;
+}
+
+:host(.pb-ha-dark) .pb-modern-hero{
+  background:
+    radial-gradient(circle at 15% 18%, rgba(85,216,200,.11), transparent 27%),
+    radial-gradient(circle at 96% 0%, rgba(101,189,244,.06), transparent 25%),
+    linear-gradient(135deg,#191c1c,#1b1e1e 62%,#141616)!important;
+  border-color:rgba(255,255,255,.09)!important;
+}
+
+:host(.pb-ha-dark) .pb-control-hero,
+:host(.pb-ha-dark) .pb-management-mode .pb-management-intro{
+  background:
+    radial-gradient(circle at 8% 14%, rgba(85,216,200,.12), transparent 30%),
+    linear-gradient(135deg,#1b1e1e,#171919 74%)!important;
+  border-color:rgba(255,255,255,.09)!important;
+}
+
+:host(.pb-ha-dark) .pb-control-status,
+:host(.pb-ha-dark) .pb-modern-livecard,
+:host(.pb-ha-dark) .pb-management-overview{
+  background:#131515!important;
+  border-color:rgba(255,255,255,.08)!important;
+}
+
+:host(.pb-ha-dark) .pb-modern-kpirow,
+:host(.pb-ha-dark) .pb-modern-kpirow>button,
+:host(.pb-ha-dark) .pb-modern-priority,
+:host(.pb-ha-dark) .pb-modern-cycle,
+:host(.pb-ha-dark) .pb-modern-centers-v2,
+:host(.pb-ha-dark) .pb-modern-centers-v2>button,
+:host(.pb-ha-dark) .pb-control-modules,
+:host(.pb-ha-dark) .pb-control-modules>button,
+:host(.pb-ha-dark) .pb-control-tools>button,
+:host(.pb-ha-dark) .pb-management-mode .pb-management-card,
+:host(.pb-ha-dark) .weight-center-hero,
+:host(.pb-ha-dark) .vaccine-center-hero,
+:host(.pb-ha-dark) .visit-center-hero,
+:host(.pb-ha-dark) .treatment-center-hero,
+:host(.pb-ha-dark) .heat-summary,
+:host(.pb-ha-dark) .weight-summary,
+:host(.pb-ha-dark) .vaccine-summary,
+:host(.pb-ha-dark) .visit-summary,
+:host(.pb-ha-dark) .treatment-summary,
+:host(.pb-ha-dark) .weight-history,
+:host(.pb-ha-dark) .vaccine-center-list,
+:host(.pb-ha-dark) .visit-center-list,
+:host(.pb-ha-dark) .treatment-list,
+:host(.pb-ha-dark) .heat-history,
+:host(.pb-ha-dark) .pb-diagnostics-mode .insight-grid,
+:host(.pb-ha-dark) .pb-diagnostics-mode .insight,
+:host(.pb-ha-dark) .pb-agenda-monthbar,
+:host(.pb-ha-dark) .pb-modern-agenda-shell,
+:host(.pb-ha-dark) #enci-section>.record{
+  background:#181a1a!important;
+  color:#f4f7f7!important;
+  border-color:rgba(255,255,255,.09)!important;
+}
+
+:host(.pb-ha-dark) .pb-modern-agenda-right{
+  background:#151717!important;
+  color:#f4f7f7!important;
+  border-color:rgba(255,255,255,.09)!important;
+}
+
+:host(.pb-ha-dark) .pb-modern-profile-row span,
+:host(.pb-ha-dark) .pb-modern-tools-v2>button,
+:host(.pb-ha-dark) .pb-agenda-monthstats span,
+:host(.pb-ha-dark) .pb-modern-event-icon,
+:host(.pb-ha-dark) .pb-agenda-event-icon{
+  background:#202323!important;
+  color:#f4f7f7!important;
+  border-color:rgba(255,255,255,.09)!important;
+}
+
+:host(.pb-ha-dark) .weight-center-hero .primary,
+:host(.pb-ha-dark) .vaccine-center-hero .primary,
+:host(.pb-ha-dark) .visit-center-hero .primary,
+:host(.pb-ha-dark) .treatment-center-hero .primary{
+  background:
+    radial-gradient(circle at 10% 10%,rgba(85,216,200,.12),transparent 38%),
+    linear-gradient(135deg,#1d2120,#191b1b)!important;
+}
+
+:host(.pb-ha-dark) .weight-row,
+:host(.pb-ha-dark) .vaccine-history-row,
+:host(.pb-ha-dark) .visit-row,
+:host(.pb-ha-dark) .treatment-row,
+:host(.pb-ha-dark) .heat-record{
+  background:transparent!important;
+  color:#f4f7f7!important;
+  border-color:rgba(255,255,255,.09)!important;
+}
+
+:host(.pb-ha-dark) .pb-modern-section-title p,
+:host(.pb-ha-dark) .pb-modern-hero-copy>p,
+:host(.pb-ha-dark) .pb-modern-breed,
+:host(.pb-ha-dark) .pb-modern-live-line,
+:host(.pb-ha-dark) .pb-modern-health-meta,
+:host(.pb-ha-dark) .pb-control-hero p,
+:host(.pb-ha-dark) .pb-control-status div,
+:host(.pb-ha-dark) .pb-control-modules p,
+:host(.pb-ha-dark) .pb-control-tools small,
+:host(.pb-ha-dark) .pb-module-heading-copy p,
+:host(.pb-ha-dark) .pb-management-copy p,
+:host(.pb-ha-dark) .pb-diagnostics-intro p,
+:host(.pb-ha-dark) .pb-agenda-event-main p,
+:host(.pb-ha-dark) .pb-agenda-footer span,
+:host(.pb-ha-dark) #enci-section small,
+:host(.pb-ha-dark) #enci-pro-section small,
+:host(.pb-ha-dark) #enci-pro-section p{
+  color:rgba(255,255,255,.64)!important;
+}
+
+/* LIGHT MODE: driven by hass.themes.darkMode=false */
+:host(.pb-ha-light){
+  --pb-bg:var(--primary-background-color,#f5f7f8);
+  --pb-card:var(--card-background-color,#ffffff);
+  --pb-card-soft:var(--secondary-background-color,#f3f5f6);
+  --pb-card-strong:color-mix(in srgb,var(--card-background-color,#fff) 86%,#dfe6e7);
+  --pb-border:color-mix(in srgb,var(--divider-color,rgba(0,0,0,.12)) 92%,transparent);
+  --pb-text:var(--primary-text-color,#111);
+  --pb-text-soft:var(--secondary-text-color,#687274);
+}
+
+:host(.pb-ha-light) .pb-modern-header,
+:host(.pb-ha-light) .pb-modern-nav,
+:host(.pb-ha-light) .pb-clear-nav{
+  background:var(--card-background-color,#fff)!important;
+  color:var(--primary-text-color,#111)!important;
+  border-color:var(--divider-color,rgba(0,0,0,.12))!important;
+}
+
+:host(.pb-ha-light) .pb-modern-hero,
+:host(.pb-ha-light) .pb-control-hero,
+:host(.pb-ha-light) .pb-management-mode .pb-management-intro{
+  background:
+    radial-gradient(circle at 8% 15%,rgba(85,216,200,.08),transparent 32%),
+    linear-gradient(135deg,#ffffff,#f6f8f8)!important;
+  color:var(--primary-text-color,#111)!important;
+}
+
+:host(.pb-ha-light) .pb-modern-kpirow>button,
+:host(.pb-ha-light) .pb-modern-priority,
+:host(.pb-ha-light) .pb-modern-cycle,
+:host(.pb-ha-light) .pb-modern-centers-v2>button,
+:host(.pb-ha-light) .pb-control-modules>button,
+:host(.pb-ha-light) .pb-management-mode .pb-management-card,
+:host(.pb-ha-light) .weight-center-hero,
+:host(.pb-ha-light) .vaccine-center-hero,
+:host(.pb-ha-light) .visit-center-hero,
+:host(.pb-ha-light) .treatment-center-hero,
+:host(.pb-ha-light) .heat-summary,
+:host(.pb-ha-light) .weight-summary,
+:host(.pb-ha-light) .vaccine-summary,
+:host(.pb-ha-light) .visit-summary,
+:host(.pb-ha-light) .treatment-summary,
+:host(.pb-ha-light) .weight-history,
+:host(.pb-ha-light) .vaccine-center-list,
+:host(.pb-ha-light) .visit-center-list,
+:host(.pb-ha-light) .treatment-list,
+:host(.pb-ha-light) .heat-history,
+:host(.pb-ha-light) .pb-diagnostics-mode .insight-grid,
+:host(.pb-ha-light) .pb-agenda-monthbar,
+:host(.pb-ha-light) .pb-modern-agenda-shell,
+:host(.pb-ha-light) .pb-modern-agenda-right,
+:host(.pb-ha-light) #enci-section>.record{
+  background:#ffffff!important;
+  color:var(--primary-text-color,#111)!important;
+}
+
 </style>
       <div class="page">
         <div class="topbar inverter-shell pb-modern-header">
@@ -6391,7 +6606,7 @@ textarea {
               <div class="pb-modern-brandcopy">
                 <div class="pb-modern-titleline">
                   <strong>PawBook</strong>
-                  <span class="pb-modern-version">6.10.6</span>
+                  <span class="pb-modern-version">6.10.7</span>
                 </div>
                 <small>Pet Health Center</small>
               </div>

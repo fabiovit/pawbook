@@ -1,3 +1,19 @@
+## 6.10.7 - Home Assistant Theme-Aware Fix
+
+- PawBook now follows the active Home Assistant theme through `hass.themes.darkMode`.
+- Fixes incorrect dark/light rendering when the browser or operating system theme differs from Home Assistant.
+- Preserves the approved dark palette and the v6.10.5 light-theme improvements.
+- Uses the cache-busting frontend asset `pawbook-panel-v6107.js`.
+- No layout, navigation, data or backend behavior changes.
+
+## 6.10.6 - Dark Theme Fix
+
+- Restores the approved deep dark PawBook palette.
+- Preserves the light-theme fixes introduced in 6.10.5.
+- Restores dark header, hero, Health Control Center and module surfaces.
+- Keeps the teal accent and all layout/functionality unchanged.
+- Keeps the stable `pawbook-panel-v630.js` frontend base.
+
 ## 6.10.5 - Light Theme Fix
 
 - Replaces remaining hardcoded dark surfaces with Home Assistant theme-aware colors.

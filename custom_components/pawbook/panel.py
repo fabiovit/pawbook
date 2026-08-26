@@ -30,8 +30,8 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
     await hass.http.async_register_static_paths(
         [
             StaticPathConfig(
-                f"{STATIC_URL}/pawbook-panel-v630.js",
-                str(frontend_path / "pawbook-panel-v630.js"),
+                f"{STATIC_URL}/pawbook-panel-v6107.js",
+                str(frontend_path / "pawbook-panel-v6107.js"),
                 False,
             )
         ]
@@ -48,7 +48,7 @@ async def async_setup_panel(hass: HomeAssistant) -> None:
                 "name": PANEL_ELEMENT,
                 "embed_iframe": False,
                 "trust_external": False,
-                "js_url": f"{STATIC_URL}/pawbook-panel-v630.js",
+                "js_url": f"{STATIC_URL}/pawbook-panel-v6107.js",
             }
         },
         require_admin=False,

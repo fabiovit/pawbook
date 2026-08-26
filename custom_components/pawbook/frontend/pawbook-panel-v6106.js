@@ -1,3 +1,4 @@
+/* PawBook cache-bust asset: v6.10.6 */
 class PawBookPanelV420 extends HTMLElement {
   constructor() {
     super();
