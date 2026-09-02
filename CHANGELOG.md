@@ -1,14 +1,19 @@
 # Changelog
 
+## 7.1.1
+- Fixed HTTP 500 when opening PawBook options.
+- Corrected automatic weight sensor selector schema.
+
+## 7.1.0 - Automatic Weight Sensor
+
+- Adds an optional Home Assistant sensor as an automatic weight source for each pet.
+- Records valid sensor changes directly in PawBook weight history.
+- Ignores unknown, unavailable, empty and non-positive values.
+- Prevents duplicate automatic records with the same value on the same day.
+- Converts pounds to kilograms when the source sensor reports lb/lbs.
+- Keeps manual weight entry fully available.
+- Uses a new cache-bust frontend asset: `pawbook-panel-v710.js`.
+
 ## 7.0.0 - Clean Major Release
 
-- Major cleanup and consolidation of the PawBook package.
-- Keeps the approved Health Control Center interface.
-- Keeps multi-page navigation.
-- Keeps dedicated Weight, Vaccination, Veterinary, Treatments and Heat Cycle pages.
-- Keeps Agenda, ENCI, Genealogy and Diagnostics.
-- Keeps enlarged typography and responsive desktop/mobile layout.
-- Keeps Home Assistant theme-aware light/dark rendering through `hass.themes.darkMode`.
-- Keeps Recorder-safe sensor attributes.
-- Removes obsolete frontend assets, legacy release notes, cache files and publication helpers.
-- Uses a single frontend asset: `pawbook-panel-v700.js`.
+- Major cleanup and consolidation of PawBook.

@@ -18,6 +18,7 @@ CONF_FATHER = "father"
 CONF_MOTHER = "mother"
 
 CONF_PHOTO_URL = "photo_url"
+CONF_WEIGHT_SENSOR = "weight_sensor"
 
 ENCI_PUBLIC_URL = "https://www.enci.it/libro-genealogico/libro-genealogico-on-line"
 ENCI_LOGIN_URL = "https://auth.enci.it/Identity/Account/Login"

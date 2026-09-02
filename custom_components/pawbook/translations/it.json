@@ -32,7 +32,7 @@
     "step": {
       "init": {
         "title": "Modifica PawBook",
-        "description": "Aggiorna anagrafica, veterinario e informazioni genealogiche ENCI. Per sicurezza PawBook non salva le credenziali ENCI.",
+        "description": "Aggiorna anagrafica e informazioni ENCI. Puoi anche scegliere un sensore Home Assistant per registrare automaticamente le pesate.",
         "data": {
           "breed": "Razza",
           "color": "Colore",
@@ -45,7 +45,8 @@
           "breeder": "Allevatore",
           "father": "Padre",
           "mother": "Madre",
-          "enci_url": "Collegamento scheda/ricerca ENCI"
+          "enci_url": "Collegamento scheda/ricerca ENCI",
+          "weight_sensor": "Sensore peso automatico"
         }
       }
     }

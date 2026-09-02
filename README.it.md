@@ -115,6 +115,18 @@ Quando sono configurati più animali, PawBook attiva automaticamente la dashboar
 
 Mostra le schede dei singoli cani, i promemoria di tutta la famiglia e un'agenda sanitaria condivisa, mantenendo però completamente separati i dati di ciascun animale.
 
+## Sensore peso automatico
+
+PawBook può utilizzare qualsiasi `sensor` di Home Assistant come sorgente automatica del peso per ogni animale.
+
+Apri le opzioni dell'integrazione PawBook e scegli **Sensore peso automatico**. Quando il sensore selezionato rileva un nuovo valore valido, PawBook registra automaticamente la pesata nello storico.
+
+- supporta direttamente i kg
+- converte automaticamente lb/lbs in kg
+- ignora `unknown`, `unavailable`, valori non validi o non positivi
+- evita pesate automatiche identiche nello stesso giorno
+- l'inserimento manuale del peso rimane disponibile
+
 ## ☕ Sostieni PawBook
 
 Se PawBook ti è utile e vuoi sostenere lo sviluppo del progetto, puoi offrirmi un caffè su Ko-fi:

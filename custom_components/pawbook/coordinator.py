@@ -66,6 +66,40 @@ class PawBookCoordinator(DataUpdateCoordinator[PetBookData]):
         await self._save()
         return record_id
 
+
+    async def async_add_automatic_weight(
+        self,
+        weight: float,
+        record_date: Any,
+        source_entity: str,
+        source_name: str | None = None,
+    ) -> str | None:
+        """Add a weight from a configured HA sensor, avoiding same-day duplicates."""
+        normalized_date = normalize_date(record_date)
+        numeric_weight = round(float(weight), 3)
+
+        for item in reversed(self.data.weights):
+            if (
+                item.get("date") == normalized_date
+                and item.get("source_entity") == source_entity
+                and abs(float(item.get("weight", 0)) - numeric_weight) < 0.001
+            ):
+                return None
+
+        record_id = new_id()
+        self.data.weights.append({
+            "id": record_id,
+            "date": normalized_date,
+            "weight": numeric_weight,
+            "notes": "",
+            "source": "automatic",
+            "source_entity": source_entity,
+            "source_name": source_name or source_entity,
+        })
+        self.data.weights.sort(key=lambda item: item.get("date") or "")
+        await self._save()
+        return record_id
+
     async def async_add_vaccination(
         self, name: str, administered_on: Any, expires_on: Any,
         veterinarian: str | None, batch: str | None, notes: str | None

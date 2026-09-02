@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import date
+import math
 import json
 import voluptuous as vol
 
@@ -8,6 +9,7 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.event import async_track_state_change_event
 
 from .const import *
 from .coordinator import PawBookCoordinator
@@ -229,12 +231,70 @@ async def async_setup(hass: HomeAssistant, config: dict) -> bool:
     return True
 
 
+async def _async_reload_entry(hass: HomeAssistant, entry: PawBookConfigEntry) -> None:
+    """Reload PawBook when options (including the automatic weight sensor) change."""
+    await hass.config_entries.async_reload(entry.entry_id)
+
+
+def _weight_to_kg(raw_value: str, unit: str | None) -> float | None:
+    """Convert a Home Assistant weight sensor value to kilograms."""
+    try:
+        value = float(raw_value)
+    except (TypeError, ValueError):
+        return None
+
+    if not math.isfinite(value) or value <= 0:
+        return None
+
+    normalized_unit = (unit or "kg").strip().lower()
+    if normalized_unit in {"lb", "lbs", "pound", "pounds"}:
+        value *= 0.45359237
+    elif normalized_unit not in {"kg", "kilogram", "kilograms", ""}:
+        return None
+
+    return round(value, 3)
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: PawBookConfigEntry) -> bool:
     coordinator = PawBookCoordinator(hass, entry)
     await coordinator.async_initialize()
     await async_setup_panel(hass)
     entry.runtime_data = coordinator
     hass.data.setdefault(DOMAIN, {})[entry.entry_id] = coordinator
+
+    weight_sensor = entry.options.get(CONF_WEIGHT_SENSOR, "")
+    if weight_sensor:
+        async def _handle_weight_state(event) -> None:
+            old_state = event.data.get("old_state")
+            new_state = event.data.get("new_state")
+            if new_state is None:
+                return
+
+            raw_state = new_state.state
+            if raw_state in {"unknown", "unavailable", "none", ""}:
+                return
+            if old_state is not None and old_state.state == raw_state:
+                return
+
+            weight_kg = _weight_to_kg(
+                raw_state,
+                new_state.attributes.get("unit_of_measurement"),
+            )
+            if weight_kg is None:
+                return
+
+            await coordinator.async_add_automatic_weight(
+                weight_kg,
+                date.today(),
+                weight_sensor,
+                new_state.attributes.get("friendly_name"),
+            )
+
+        entry.async_on_unload(
+            async_track_state_change_event(hass, [weight_sensor], _handle_weight_state)
+        )
+
+    entry.async_on_unload(entry.add_update_listener(_async_reload_entry))
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     return True
 

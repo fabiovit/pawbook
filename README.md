@@ -115,6 +115,18 @@ When more than one pet is configured, PawBook automatically enables the **PawBoo
 
 It provides pet cards, family-wide reminders and a shared upcoming health agenda while keeping every pet's data completely separate.
 
+## Automatic weight sensor
+
+PawBook can optionally use any Home Assistant `sensor` as the automatic weight source for a pet.
+
+Open the PawBook integration options and choose **Automatic weight sensor**. When the selected sensor reports a new valid value, PawBook stores the weight in the pet history automatically.
+
+- supports kg directly
+- converts lb/lbs to kg
+- ignores `unknown`, `unavailable`, invalid and non-positive values
+- prevents identical automatic entries on the same day
+- manual weight entry remains available
+
 ## ☕ Support PawBook
 
 If you enjoy PawBook and want to support its development, you can buy me a coffee on Ko-fi:

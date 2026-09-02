@@ -23,12 +23,13 @@ from .const import (
     CONF_PHOTO_URL,
     CONF_SEX,
     CONF_VETERINARIAN,
+    CONF_WEIGHT_SENSOR,
     DOMAIN,
     ENCI_PUBLIC_URL,
 )
 
 
-def profile_schema(defaults: dict, *, include_identity: bool) -> vol.Schema:
+def profile_schema(defaults: dict, *, include_identity: bool, include_automation: bool = False) -> vol.Schema:
     fields: dict = {}
 
     if include_identity:
@@ -68,6 +69,21 @@ def profile_schema(defaults: dict, *, include_identity: bool) -> vol.Schema:
             default=defaults.get(CONF_ENCI_URL, ENCI_PUBLIC_URL),
         ): str,
     })
+
+    if include_automation:
+        current_weight_sensor = defaults.get(CONF_WEIGHT_SENSOR, "")
+        weight_sensor_key = (
+            vol.Optional(
+                CONF_WEIGHT_SENSOR,
+                description={"suggested_value": current_weight_sensor},
+            )
+            if current_weight_sensor
+            else vol.Optional(CONF_WEIGHT_SENSOR)
+        )
+        fields[weight_sensor_key] = selector.EntitySelector(
+            selector.EntitySelectorConfig(domain="sensor")
+        )
+
     return vol.Schema(fields)
 
 
@@ -95,13 +111,12 @@ class PawBookConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
-        return PawBookOptionsFlow(config_entry)
+        # Home Assistant injects config_entry into OptionsFlow.
+        # Do not assign self.config_entry manually: this is no longer supported.
+        return PawBookOptionsFlow()
 
 
 class PawBookOptionsFlow(config_entries.OptionsFlow):
-    def __init__(self, config_entry) -> None:
-        self.config_entry = config_entry
-
     async def async_step_init(self, user_input=None) -> FlowResult:
         coordinator = self.hass.data.get(DOMAIN, {}).get(self.config_entry.entry_id)
         defaults = (
@@ -111,16 +126,14 @@ class PawBookOptionsFlow(config_entries.OptionsFlow):
         )
 
         if user_input is not None:
+            profile_updates = dict(user_input)
+            profile_updates.pop(CONF_WEIGHT_SENSOR, None)
             if coordinator is not None:
-                await coordinator.async_set_profile(dict(user_input))
+                await coordinator.async_set_profile(profile_updates)
 
-            self.hass.config_entries.async_update_entry(
-                self.config_entry,
-                options=dict(user_input),
-            )
             return self.async_create_entry(title="", data=dict(user_input))
 
         return self.async_show_form(
             step_id="init",
-            data_schema=profile_schema(defaults, include_identity=False),
+            data_schema=profile_schema(defaults, include_identity=False, include_automation=True),
         )
