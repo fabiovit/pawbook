@@ -1,7 +1,7 @@
 # 🐾 PawBook
 
 [![release](https://img.shields.io/github/v/release/fabiovit/pawbook?label=release)](https://github.com/fabiovit/pawbook/releases)
-![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)
+![Home Assistant Marketplace](https://img.shields.io/badge/Home%20Assistant-Marketplace-41BDF5.svg)
 [![Validate](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml/badge.svg)](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml)
 [![Hassfest](https://github.com/fabiovit/pawbook/actions/workflows/hassfest.yml/badge.svg)](https://github.com/fabiovit/pawbook/actions/workflows/hassfest.yml)
 [![license](https://img.shields.io/github/license/fabiovit/pawbook?label=license)](LICENSE)
@@ -66,12 +66,17 @@ Riunisce cartella sanitaria, vaccinazioni, terapie, andamento del peso, Smart He
 - Backup e ripristino locale in JSON
 - Report sanitario stampabile
 
-## 📦 Installazione tramite HACS
+## 📦 Installazione tramite Home Assistant Marketplace
 
-1. Apri **HACS → Repository personalizzati**.
-2. Aggiungi `https://github.com/fabiovit/pawbook` come **Integrazione**.
-3. Scarica PawBook e riavvia Home Assistant.
-4. Vai in **Impostazioni → Dispositivi e servizi → Aggiungi integrazione** e cerca **PawBook**.
+Il Marketplace integrato richiede **Home Assistant 2026.11 o successivo**.
+
+1. Apri **Impostazioni → Marketplace**.
+2. Seleziona **Aggiungi da link** e inserisci `https://github.com/fabiovit/pawbook`.
+3. Se richiesto, scegli **Integrazione** e aggiungi il repository.
+4. Apri PawBook nel Marketplace, seleziona **Installa** e riavvia Home Assistant se richiesto.
+5. Vai in **Impostazioni → Dispositivi e servizi → Aggiungi integrazione** e cerca **PawBook**.
+
+**Arrivi da HACS?** Home Assistant migra automaticamente i repository installati e le relative entità di aggiornamento nel Marketplace: non devi reinstallare PawBook. Per versioni di Home Assistant precedenti alla 2026.11, continua a utilizzare HACS.
 
 Non è necessario aggiungere risorse Lovelace o modificare `configuration.yaml`.
 
