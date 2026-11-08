@@ -3,7 +3,7 @@
 🇬🇧 English | 🇮🇹 [Italiano](README.it.md)
 
 [![release](https://img.shields.io/github/v/release/fabiovit/pawbook?label=release)](https://github.com/fabiovit/pawbook/releases)
-![HACS Custom](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)
+![Home Assistant Marketplace](https://img.shields.io/badge/Home%20Assistant-Marketplace-41BDF5.svg)
 [![Validate](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml/badge.svg)](https://github.com/fabiovit/pawbook/actions/workflows/validate.yml)
 [![Hassfest](https://github.com/fabiovit/pawbook/actions/workflows/hassfest.yml/badge.svg)](https://github.com/fabiovit/pawbook/actions/workflows/hassfest.yml)
 [![license](https://img.shields.io/github/license/fabiovit/pawbook?label=license)](LICENSE)
@@ -66,12 +66,17 @@ It combines veterinary records, vaccinations, treatments, weight tracking, Smart
 - Local JSON backup and restore
 - Printable health report
 
-## 📦 Installation with HACS
+## 📦 Installation with Home Assistant Marketplace
 
-1. Open **HACS → Custom repositories**.
-2. Add `https://github.com/fabiovit/pawbook` as **Integration**.
-3. Download PawBook and restart Home Assistant.
-4. Go to **Settings → Devices & services → Add integration** and search for **PawBook**.
+Requires **Home Assistant 2026.11 or later** for the built-in Marketplace.
+
+1. Open **Settings → Marketplace**.
+2. Select **Add from link** and enter `https://github.com/fabiovit/pawbook`.
+3. Choose **Integration** if prompted, then add the repository.
+4. Open PawBook in Marketplace, select **Install**, and restart Home Assistant if requested.
+5. Go to **Settings → Devices & services → Add integration** and search for **PawBook**.
+
+**Upgrading from HACS?** Home Assistant automatically migrates installed repositories and their update entities to Marketplace. You do not need to reinstall PawBook. For Home Assistant versions before 2026.11, use HACS.
 
 No Lovelace resources or `configuration.yaml` changes are required.
 
